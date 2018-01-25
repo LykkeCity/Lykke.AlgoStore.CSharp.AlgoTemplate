@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.AlgoTemplate", "src\Lykke.AlgoStore.CSharp.AlgoTemplate\Lykke.AlgoStore.CSharp.AlgoTemplate.csproj", "{E414FDB9-FEEA-4CD0-9BBA-D1541601DF29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.AlgoTemplate.API", "src\Lykke.AlgoStore.CSharp.AlgoTemplate.API\Lykke.AlgoStore.CSharp.AlgoTemplate.API.csproj", "{E414FDB9-FEEA-4CD0-9BBA-D1541601DF29}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Instrastructure", "1. Instrastructure", "{CC2067D7-1971-47BB-B491-5649EA3C18B2}"
 EndProject

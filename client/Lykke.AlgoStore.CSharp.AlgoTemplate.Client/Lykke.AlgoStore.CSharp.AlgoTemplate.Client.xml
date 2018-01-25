@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Lykke.Service.CSharpAlgoTemplate.Client</name>
+        <name>Lykke.AlgoStore.CSharp.AlgoTemplate.Client</name>
     </assembly>
     <members>
     </members>
