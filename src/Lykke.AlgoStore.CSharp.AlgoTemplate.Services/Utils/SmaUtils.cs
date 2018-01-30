@@ -4,8 +4,18 @@ using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
+    /// <summary>
+    /// Custom Simple Moving Average (SMA) utilities
+    /// </summary>
     public static class SmaUtils
     {
+        /// <summary>
+        /// Calculate SMA
+        /// </summary>
+        /// <param name="values">Values that are used to calculate SMA</param>
+        /// <param name="period">Period (window) that is used to calculate SMA</param>
+        /// <param name="decimals">Number of decimals</param>
+        /// <returns>Array with calculated SMA values</returns>
         public static double[] CalculateSma(double[] values, int period, int? decimals = null)
         {
             var result = new double[values.Length];
