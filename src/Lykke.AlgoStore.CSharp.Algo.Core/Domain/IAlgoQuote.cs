@@ -1,0 +1,12 @@
+﻿using System;
+
+namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
+{
+    public interface IAlgoQuote
+    {
+        bool IsBuy { get; }
+        double Price { get; }
+        DateTime Timestamp { get; }
+        bool IsOnline { get; }
+    }
+}

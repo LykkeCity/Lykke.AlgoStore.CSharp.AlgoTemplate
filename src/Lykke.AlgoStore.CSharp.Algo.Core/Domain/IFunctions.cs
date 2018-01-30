@@ -2,6 +2,6 @@
 {
     public interface IFunctions
     {
-        
+        double GetValue(string functionName);
     }
 }
