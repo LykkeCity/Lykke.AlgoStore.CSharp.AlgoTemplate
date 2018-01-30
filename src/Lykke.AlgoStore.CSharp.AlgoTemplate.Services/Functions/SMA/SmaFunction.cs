@@ -15,8 +15,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
 
         public void CalculateSma()
         {
-            SmaLongTerm = Utils.CalculateSma(Values, Parameters.LongTermPeriod, Parameters.Decimals);
-            SmaShortTerm = Utils.CalculateSma(Values, Parameters.ShortTermPeriod, Parameters.Decimals);
+            SmaLongTerm = Utils.SmaUtils.CalculateSma(Values, Parameters.LongTermPeriod, Parameters.Decimals);
+            SmaShortTerm = Utils.SmaUtils.CalculateSma(Values, Parameters.ShortTermPeriod, Parameters.Decimals);
         }
 
         public override string ToString()

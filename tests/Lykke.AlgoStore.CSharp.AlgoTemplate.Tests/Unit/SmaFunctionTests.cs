@@ -1,4 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions;
+﻿using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
 using NUnit.Framework;
 
@@ -7,7 +8,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     [TestFixture]
     public class SmaFunctionTests
     {
-        private static double[] CustomPriceValues => Utils.GenerateRandomDoubles(100, 164, 168, 4).ToArray();
+        private static double[] CustomPriceValues => new Random().GenerateRandomDoubles(100, 164, 168, 4).ToArray();
 
         [Test]
         public void CalculateSmaTest()
