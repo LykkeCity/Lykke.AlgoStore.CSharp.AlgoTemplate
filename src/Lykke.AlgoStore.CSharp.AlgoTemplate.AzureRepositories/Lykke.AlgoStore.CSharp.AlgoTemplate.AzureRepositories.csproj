@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories</AssemblyName>
+    <RootNamespace>Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories</RootNamespace>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lykke.AzureStorage" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Core\Lykke.AlgoStore.CSharp.AlgoTemplate.Core.csproj" />
+  </ItemGroup>
+
+</Project>
