@@ -17,6 +17,27 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions
             return result;
         }
 
+        public static double NextDouble(this Random random, double minValue, double maxValue)
+        {
+            if(minValue > maxValue)
+                throw new ArgumentOutOfRangeException();
+
+            return random.NextDouble() * (maxValue - minValue) + minValue;
+        }
+
+        public static List<double> GenerateRandomDoubles(int capacity)
+        {
+            var randomGenerator = new Random();
+            var result = new List<double>();
+
+            for (int i = 0; i < capacity; i++)
+            {
+                result.Add(randomGenerator.NextDouble(164, 168));
+            }
+
+            return result;
+        }
+
         private static Func<double, double> Sma(int period)
         {
             var queue = new Queue<double>(period);

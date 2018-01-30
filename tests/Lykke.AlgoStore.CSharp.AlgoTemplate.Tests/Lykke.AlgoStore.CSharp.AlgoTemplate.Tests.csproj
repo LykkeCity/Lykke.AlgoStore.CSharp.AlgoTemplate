@@ -22,5 +22,9 @@
     <Folder Include="Infrastructure\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Lykke.AlgoStore.CSharp.AlgoTemplate.Services\Lykke.AlgoStore.CSharp.AlgoTemplate.Services.csproj" />
+  </ItemGroup>
+
 
 </Project>
