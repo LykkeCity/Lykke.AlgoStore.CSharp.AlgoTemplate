@@ -7,7 +7,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     [TestFixture]
     public class SmaFunctionTests
     {
-        private static double[] CustomPriceValues => Utils.GenerateRandomDoubles(100).ToArray();
+        private static double[] CustomPriceValues => Utils.GenerateRandomDoubles(100, 164, 168, 4).ToArray();
 
         [Test]
         public void CalculateSmaTest()
@@ -17,7 +17,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 Parameters = new SmaParameters
                 {
                     LongTermPeriod = 50,
-                    ShortTermPeriod = 20
+                    ShortTermPeriod = 20,
+                    Decimals = 4
                 },
                 Values = CustomPriceValues
             };

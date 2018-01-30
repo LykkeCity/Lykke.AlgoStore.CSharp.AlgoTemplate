@@ -4,5 +4,6 @@
     {
         public int ShortTermPeriod { get; set; }
         public int LongTermPeriod { get; set; }
+        public int? Decimals { get; set; }
     }
 }
