@@ -1,32 +1,34 @@
-﻿namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
 {
     /// <summary>
-    /// An algo context. Represents a user consumable resources from an algo.
+    /// The <see cref="IContext"/> implementation provided to an algo when running.
     /// </summary>
-    public interface IContext
+    public class Context : IContext
     {
         /// <summary>
         /// Access to the data needed by an algo to run
         /// <see cref="IData"/>
         /// </summary>
-        IData Data { get; }
+        public IData Data { get; set; }
 
         /// <summary>
         /// Access point to functions and function results for an
         /// algo <see cref="IFunctions"/>
         /// </summary>
-        IFunctions Functions { get; }
+        public IFunctions Functions { get; set; }
 
         /// <summary>
         /// Access point for the user action, which can be performed 
         /// by an algo <see cref="IActions"/>
         /// </summary>
-        IActions Actions { get; }
+        public IActions Actions { get; set; }
 
         /// <summary>
         /// Access to statistics information and service available to
         /// an algo. <see cref="IStatistics"/>
         /// </summary>
-        IStatistics Statistics { get; }
+        public IStatistics Statistics { get; set; }
     }
 }

@@ -1,16 +1,16 @@
-﻿namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
+﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
     /// <summary>
-    /// Represents the algo actions, which can be executed.
+    /// Service providing trading capabilities
     /// </summary>
-    public interface IActions
+    public interface ITradingService
     {
+        void Initialise();
+
         double BuyStraight(double volume);
         double BuyReverse(double volume);
 
         double SellStraight(double volume);
         double SellReverse(double volume);
-
-        void Log(string message);
     }
 }
