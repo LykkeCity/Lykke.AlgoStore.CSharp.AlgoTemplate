@@ -1,11 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TraddingService;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
-    public class WorkflowService : IStartupManager, IShutdownManager, IActions
+    /// <summary>
+    /// A service for managing the workflow of an algo execution
+    /// </summary>
+    public class WorkflowService : IStartupManager, IShutdownManager
     {
         private readonly IAlgoSettingsService _algoSettingsService;
         private readonly IQuoteProviderService _quoteProviderService;
@@ -14,8 +19,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ITradingService _tradingService;
         private readonly IStatisticsService _statisticsService;
         private readonly IAlgo _algo;
+        private readonly ActionsService actions;
 
-        public WorkflowService(IAlgoSettingsService algoSettingsService,
+        public WorkflowService(
+            IAlgoSettingsService algoSettingsService,
             IQuoteProviderService quoteProviderService,
             IHistoryDataService historyDataService,
             IFunctionsService functionsService,
@@ -27,8 +34,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _quoteProviderService = quoteProviderService;
             _historyDataService = historyDataService;
             _functionsService = functionsService;
-            _tradingService = tradingService;
             _statisticsService = statisticsService;
+            _tradingService = tradingService;
+            actions = new ActionsService(_tradingService, _statisticsService, this.OnErrorHandler);
         }
 
         public Task StartAsync()
@@ -40,6 +48,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // create functions
             _functionsService.Initialise();
 
+            // This should be putted in a separate class.
             var historyRequest = _functionsService.GetRequest();
             foreach (CandlesHistoryRequest candlesHistoryRequest in historyRequest)
             {
@@ -48,10 +57,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
 
             // Gets not finished limited orders?!?
-            // cen we get it for algo ?!?
+            // can we get it for algo ?!?
             _tradingService.Initialise();
 
-            // subscribe for rabbitmq quotes
+            // subscribe for RabbitMQ quotes
             // throws if fail
             // pass _algoSettingsService in constructor
             _quoteProviderService.Initialize();
@@ -63,9 +72,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnQuote(IAlgoQuote quote)
         {
+            // Handling of the synchronization could extract it in a separate class
             IContext ctx = CreateContext(quote);
 
-            _algo.OnQuoteReceived(ctx);
+            try
+            {
+                _algo.OnQuoteReceived(ctx);
+            }
+            catch (TradingServiceException e)
+            {
+                OnErrorHandler(e);
+            }
+        }
+
+        private void OnErrorHandler(TradingServiceException e)
+        {
+            throw new NotImplementedException();
         }
 
         private IContext CreateContext(IAlgoQuote quote)
@@ -80,7 +102,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _statisticsService.OnQuote(quote);
             context.Data = _statisticsService;
 
-            context.Actions = this;
+            context.Actions = this.actions;
 
             return context;
         }
@@ -90,39 +112,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             throw new System.NotImplementedException();
         }
 
-        #region IActions
-        public double BuyStraight(double volume)
+        public void OnErrorHandler(Exception e, string message)
         {
-            var price = _tradingService.BuyStraight(volume);
-            // TODO what if price is not executed
-
-            if (price > 0)
-            {
-                _statisticsService.OnAction(true, volume);
-            }
-
-            return price;
+            throw new NotImplementedException();
         }
 
-        public double BuyReverse(double volume)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public double SellStraight(double volume)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public double SellReverse(double volume)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Log(string message)
-        {
-            throw new System.NotImplementedException();
-        }
-        #endregion
     }
 }
