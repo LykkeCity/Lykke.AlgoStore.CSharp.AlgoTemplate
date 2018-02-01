@@ -6,7 +6,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
-    public class FunctionService : IFunctionsService
+    public class FunctionsService : IFunctionsService
     {
         public void Initialise()
         {
