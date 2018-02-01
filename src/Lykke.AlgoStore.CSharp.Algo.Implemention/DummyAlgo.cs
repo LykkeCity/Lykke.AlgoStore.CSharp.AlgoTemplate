@@ -1,4 +1,5 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using System;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 {
@@ -10,7 +11,10 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
     {
         public void OnQuoteReceived(IContext context)
         {
-            throw new System.NotImplementedException();
+            var quote = context.Data.GetQuote();
+            context.Actions.Log($"Receiving quote at {DateTime.UtcNow} " +
+                $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
+                $"{{quote.IsBuy: {quote.IsBuy}}}, {{quote.IsOnline: {quote.IsOnline}}}");
         }
     }
 }
