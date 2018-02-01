@@ -57,7 +57,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
                 Log = CreateLogWithSlack(services, appSettings);
 
-                builder.RegisterModule(new ServiceModule(appSettings.Nested(x => x.CSharpAlgoTemplateService), Log));
+                builder.RegisterModule(new ServiceModule(Log));
                 builder.Populate(services);
                 ApplicationContainer = builder.Build();
 
