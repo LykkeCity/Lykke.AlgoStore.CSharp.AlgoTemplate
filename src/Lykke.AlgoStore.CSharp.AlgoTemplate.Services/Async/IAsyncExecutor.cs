@@ -11,7 +11,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async
         /// Executes the action provided and returns control to the caller
         /// </summary>
         /// <param name="a"><see cref="Action"/> to be executed</param>
-        void Execute(Action a);
+        void ExecuteAsync(Action a);
 
         /// <summary>
         /// Executes the action provided and returns control to the caller
