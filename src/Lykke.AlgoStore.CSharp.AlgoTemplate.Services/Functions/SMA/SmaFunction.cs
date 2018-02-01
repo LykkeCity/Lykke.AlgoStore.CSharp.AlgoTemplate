@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
@@ -17,8 +18,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         /// <param name="values">Values that will be used to warm up data</param>
         public void WarmUp(double[] values)
         {
+            if (values == null)
+                throw new ArgumentException();
+
             _capacity = values.Length;
-            _storageQueue = new Queue<double>(_capacity);
+
+            if (_capacity == 0)
+                _storageQueue = new Queue<double>();
+            else
+                _storageQueue = new Queue<double>(_capacity);
 
             foreach (var value in values)
                 AddNewValue(value);
@@ -28,7 +36,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         /// Get calculated SMA value
         /// </summary>
         /// <returns>SMA calculated value</returns>
-        public double GetSmaValue() => _storageQueue.Average();
+        public double GetSmaValue()
+        {
+            if (_storageQueue == null || _storageQueue.Count == 0)
+                return 0;
+
+            return _storageQueue.Average();
+        }
 
         /// <summary>
         /// Add new value to SMA function
@@ -36,7 +50,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         /// <param name="value">New value that will be used in future calculus</param>
         public void AddNewValue(double value)
         {
-            if (_storageQueue.Count >= _capacity)
+            if (_storageQueue.Count >= _capacity && _capacity > 0)
                 _storageQueue.Dequeue();
 
             _storageQueue.Enqueue(value);
