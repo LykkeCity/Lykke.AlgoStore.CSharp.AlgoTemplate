@@ -1,58 +1,54 @@
-﻿using System.Globalization;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
 {
     /// <summary>
-    /// Simple Moving Average (SMA) function
+    /// Custom Simple Moving Average (SMA) function
     /// </summary>
     public class SmaFunction
     {
-        /// <summary>
-        /// Parameters <see cref="SmaParameters"/>
-        /// </summary>
-        public SmaParameters Parameters { get; set; }
+        private Queue<double> _storageQueue;
+        private int _capacity;
 
         /// <summary>
-        /// Values that are used to calculate SMA
+        /// Warm up function with data
         /// </summary>
-        public double[] Values { get; set; }
-
-        /// <summary>
-        /// SMA calculated values based on long period (window)
-        /// </summary>
-        public double[] SmaLongTerm { get; private set; }
-
-        /// <summary>
-        /// SMA calculated values based on short period (window)
-        /// </summary>
-        public double[] SmaShortTerm { get; private set; }
-
-        /// <summary>
-        /// Calculate SMA
-        /// </summary>
-        public void CalculateSma()
+        /// <param name="values">Values that will be used to warm up data</param>
+        public void WarmUp(double[] values)
         {
-            SmaLongTerm = Utils.SmaUtils.CalculateSma(Values, Parameters.LongTermPeriod, Parameters.Decimals);
-            SmaShortTerm = Utils.SmaUtils.CalculateSma(Values, Parameters.ShortTermPeriod, Parameters.Decimals);
+            _capacity = values.Length;
+            _storageQueue = new Queue<double>(_capacity);
+
+            foreach (var value in values)
+                AddNewValue(value);
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Get calculated SMA value
+        /// </summary>
+        /// <returns>SMA calculated value</returns>
+        public double GetSmaValue() => _storageQueue.Average();
+
+        /// <summary>
+        /// Add new value to SMA function
+        /// </summary>
+        /// <param name="value">New value that will be used in future calculus</param>
+        public void AddNewValue(double value)
         {
-            var sb = new StringBuilder();
+            if (_storageQueue.Count >= _capacity)
+                _storageQueue.Dequeue();
 
-            sb.AppendLine($"{"Price".PadLeft(20)}{"SmaShort".PadLeft(20)}{"SmaLong".PadLeft(20)}");
-            sb.AppendLine("-".PadLeft(60, '-'));
+            _storageQueue.Enqueue(value);
+        }
 
-            for (int i = 0; i < Values.Length; i++)
-            {
-                sb.AppendLine(
-                    $"{Values[i].ToString(CultureInfo.InvariantCulture).PadLeft(20)}{SmaShortTerm[i].ToString(CultureInfo.InvariantCulture).PadLeft(20)}{SmaLongTerm[i].ToString(CultureInfo.InvariantCulture).PadLeft(20)}");
-            }
-
-            sb.AppendLine("-".PadLeft(60, '-'));
-
-            return sb.ToString();
+        /// <summary>
+        /// Get value that we are calculating SMA for
+        /// </summary>
+        /// <returns>Latest value that we calculate SMA for</returns>
+        public double GetValue()
+        {
+            return _storageQueue.Last();
         }
     }
 }
