@@ -6,7 +6,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
-    public class StatistisService : IStatisticsService
+    public class StatisticsService : IStatisticsService
     {
         public IAlgoQuote GetQuote()
         {
