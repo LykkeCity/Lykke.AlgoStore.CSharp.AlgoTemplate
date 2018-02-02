@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async
 {
@@ -11,7 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async
         /// Executes the action provided and returns control to the caller
         /// </summary>
         /// <param name="a"><see cref="Action"/> to be executed</param>
-        void ExecuteAsync(Action a);
+        Task ExecuteAsync(Action a);
 
         /// <summary>
         /// Executes the action provided and returns control to the caller
@@ -19,6 +20,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async
         /// <typeparam name="T">The type of the action parameter</typeparam>
         /// <param name="a"><see cref="Action"/> to be executed</param>
         /// <param name="param">The action param</param>
-        void ExecuteAsync<T>(Action<T> a, T param);
+        Task ExecuteAsync<T>(Action<T> a, T param);
     }
 }
