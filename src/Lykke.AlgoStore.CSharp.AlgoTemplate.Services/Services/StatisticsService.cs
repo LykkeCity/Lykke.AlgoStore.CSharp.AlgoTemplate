@@ -6,6 +6,9 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
+    /// <summary>
+    /// <see cref="IStatisticsService"/> implementation
+    /// </summary>
     public class StatisticsService : IStatisticsService
     {
         public IAlgoQuote GetQuote()
@@ -18,6 +21,31 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         }
 
         public void OnAction(bool isBuy, double volume)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetBoughtAmount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetBoughtAmountByAsset(string assetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetSoldAmount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetSoldAmountByAsset(string assetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetBoughtQuantityByAsset(string assetName)
         {
             throw new NotImplementedException();
         }

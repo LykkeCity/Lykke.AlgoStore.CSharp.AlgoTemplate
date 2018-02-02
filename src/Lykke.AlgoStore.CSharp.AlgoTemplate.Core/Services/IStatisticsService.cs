@@ -2,7 +2,10 @@
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
-    public interface IStatisticsService : IData
+    /// <summary>
+    /// Service providing statistics capabilities
+    /// </summary>
+    public interface IStatisticsService : IData, IStatistics
     {
         void OnQuote(IAlgoQuote quote);
         void OnAction(bool isBuy, double volume);
