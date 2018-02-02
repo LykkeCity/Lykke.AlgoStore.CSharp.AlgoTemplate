@@ -58,7 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void Log(string message)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(message);
         }
 
         public double SellReverse(double volume)
