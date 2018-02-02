@@ -3,14 +3,15 @@ using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TraddingService;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
+using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     /// <summary>
     /// A service for managing the workflow of an algo execution
     /// </summary>
-    public class WorkflowService : IStartupManager, IShutdownManager
+    public class WorkflowService : IAlgoWorkflowService
     {
         private readonly IAlgoSettingsService _algoSettingsService;
         private readonly IQuoteProviderService _quoteProviderService;
@@ -37,6 +38,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _statisticsService = statisticsService;
             _tradingService = tradingService;
             actions = new ActionsService(_tradingService, _statisticsService, this.OnErrorHandler);
+            _algo = algo;
         }
 
         public Task StartAsync()
@@ -49,12 +51,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _functionsService.Initialise();
 
             // This should be putted in a separate class.
-            var historyRequest = _functionsService.GetRequest();
-            foreach (CandlesHistoryRequest candlesHistoryRequest in historyRequest)
-            {
-                var candles = _historyDataService.GetHistoryCandles(candlesHistoryRequest);
-                _functionsService.WarmUp(candles);
-            }
+            //var historyRequest = _functionsService.GetRequest();
+            //foreach (CandlesHistoryRequest candlesHistoryRequest in historyRequest)
+            //{
+            //    var candles = _historyDataService.GetHistoryCandles(candlesHistoryRequest);
+            //    _functionsService.WarmUp(candles);
+            //}
 
             // Gets not finished limited orders?!?
             // can we get it for algo ?!?
@@ -63,11 +65,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // subscribe for RabbitMQ quotes
             // throws if fail
             // pass _algoSettingsService in constructor
-            _quoteProviderService.Initialize();
+            var quoteGeneration = _quoteProviderService.Initialize();
 
             _quoteProviderService.Subscribe(OnQuote);
 
-            return Task.FromResult(0);
+            return Task.WhenAll(quoteGeneration);
         }
 
         private void OnQuote(IAlgoQuote quote)
@@ -100,7 +102,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             context.Functions = _functionsService;
 
             _statisticsService.OnQuote(quote);
-            context.Data = _statisticsService;
+            context.Data = new AlgoData(quote);
 
             context.Actions = this.actions;
 

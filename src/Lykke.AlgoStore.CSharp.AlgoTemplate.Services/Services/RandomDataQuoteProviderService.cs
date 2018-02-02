@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -15,11 +16,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// </summary>
     public class RandomDataQuoteProviderService : IQuoteProviderService
     {
-        private const int MIN_DELAY_BETWEEN_TICKS_IN_MILIS = 100;
-        private const int MAX_DELAY_BETWEEN_TICKS_IN_MILIS = 1000;
+        private const int MIN_DELAY_BETWEEN_TICKS_IN_MILIS = 500;
+        private const int MAX_DELAY_BETWEEN_TICKS_IN_MILIS = 2000;
 
         private const decimal INITIAL_PRICE = 100.00M;
-        private const int MAX_PRICE_CHANGE_ABS = 5;
+        private const int MAX_PRICE_CHANGE_ABS = 3;
 
         private Random _random = new Random();
         private readonly IList<Action<IAlgoQuote>> subscribers = new List<Action<IAlgoQuote>>();
@@ -47,12 +48,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// <summary>
         /// Initializes the quote provider
         /// </summary>
-        public void Initialize()
+        public Task Initialize()
         {
             // Reinitialize the random
             _random = new Random();
             _lastPrice = INITIAL_PRICE;
-            StartGenerating();
+            return StartGenerating();
         }
 
         /// <summary>
@@ -67,10 +68,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// <summary>
         /// Start generating quotes
         /// </summary>
-        public void StartGenerating()
+        private Task StartGenerating()
         {
             this._isGenerating = true;
-            asyncExecutor.ExecuteAsync(() =>
+            return asyncExecutor.ExecuteAsync(() =>
             {
                 while (_isGenerating)
                 {
@@ -88,7 +89,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             foreach (var subscriber in this.subscribers)
             {
-                asyncExecutor.ExecuteAsync(subscriber, GenerateRandomQuote());
+                //asyncExecutor.ExecuteAsync(subscriber, GenerateRandomQuote());
+                subscriber(GenerateRandomQuote());
             }
         }
 
@@ -109,7 +111,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var result = new AlgoQuote();
             decimal priceChange = _random.Next(0, MAX_PRICE_CHANGE_ABS - 1);
             priceChange += (decimal)_random.NextDouble();
-            result.Price = _lastPrice + priceChange;
+            if (_random.GenerateRandomBoolean(0.51))
+            {
+                result.Price = _lastPrice + priceChange;
+            }
+            else
+            {
+                result.Price = _lastPrice - priceChange;
+            }
 
             //result.Price = 
             var probabilityToBeBuy = 0.60;

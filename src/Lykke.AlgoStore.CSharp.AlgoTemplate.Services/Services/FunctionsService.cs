@@ -10,7 +10,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         public void Initialise()
         {
-            throw new NotImplementedException();
+
         }
 
         public List<CandlesHistoryRequest> GetRequest()
@@ -25,7 +25,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void Calculate(IAlgoQuote quote)
         {
-            throw new NotImplementedException();
+
         }
 
         public double GetValue(string functionName)

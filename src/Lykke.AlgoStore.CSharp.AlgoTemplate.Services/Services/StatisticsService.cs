@@ -15,7 +15,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnQuote(IAlgoQuote quote)
         {
-            throw new NotImplementedException();
         }
 
         public void OnAction(bool isBuy, double volume)

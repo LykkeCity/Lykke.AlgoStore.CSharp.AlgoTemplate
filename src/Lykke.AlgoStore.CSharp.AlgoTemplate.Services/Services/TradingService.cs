@@ -8,7 +8,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// <summary>
     /// <see cref="ITradingService"/> implementation
     /// </summary>
-    public class TraddingService : ITradingService
+    public class TradingService : ITradingService
     {
         /// <summary>
         /// This class is placeholder for sample exception and 
@@ -28,7 +28,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void Initialise()
         {
-            throw new NotImplementedException();
+
         }
 
         public virtual double SellReverse(double volume)
