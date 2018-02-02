@@ -55,5 +55,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
 
             return result;
         }
+
+        /// <summary>
+        /// Generates a random boolean value
+        /// </summary>
+        /// <param name="random"><see cref="System.Random"/></param>
+        /// <param name="propabilityToBeTrue">The probability for the value to be true in percentage</param>
+        /// <returns></returns>
+        public static bool GenerateRandomBoolean(this Random random, double propabilityToBeTrue = 0.5)
+        {
+            return random.NextDouble() < propabilityToBeTrue;
+        }
     }
 }
