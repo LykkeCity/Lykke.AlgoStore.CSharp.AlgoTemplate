@@ -10,23 +10,27 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
     public class SmaFunction
     {
         private Queue<double> _storageQueue;
-        private int _capacity;
+
+        /// <summary>
+        /// Function capacity (max number of values that will be used for calculus)
+        /// </summary>
+        public int Capacity { get; private set; }
 
         /// <summary>
         /// Warm up function with data
         /// </summary>
         /// <param name="values">Values that will be used to warm up data</param>
-        public void WarmUp(double[] values)
+        /// <param name="capacity">By default function capacity is set to number of provided values. 
+        /// If you want to change that you should use this parameter.
+        /// If this value is less then number of provided values it will be ignored.</param>
+        public void WarmUp(double[] values, int capacity = 0)
         {
             if (values == null)
                 throw new ArgumentException();
 
-            _capacity = values.Length;
+            Capacity = values.Length < capacity ? values.Length : capacity;
 
-            if (_capacity == 0)
-                _storageQueue = new Queue<double>();
-            else
-                _storageQueue = new Queue<double>(_capacity);
+            _storageQueue = Capacity == 0 ? new Queue<double>() : new Queue<double>(Capacity);
 
             foreach (var value in values)
                 AddNewValue(value);
@@ -50,7 +54,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         /// <param name="value">New value that will be used in future calculus</param>
         public void AddNewValue(double value)
         {
-            if (_storageQueue.Count >= _capacity && _capacity > 0)
+            if (_storageQueue.Count >= Capacity && Capacity > 0)
                 _storageQueue.Dequeue();
 
             _storageQueue.Enqueue(value);

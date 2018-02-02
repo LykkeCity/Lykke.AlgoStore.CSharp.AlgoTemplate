@@ -125,34 +125,34 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test]
-        public void CalculateSmaForOneValueInputAndOneAddedValueReturnsThatNewlyAddedValue()
+        public void CalculateSmaForOneValueInputAndOneAddedValueReturnsAverageValue()
         {
             var values = FixedPriceValues.Take(1).ToArray();
             var function = new SmaFunction();
 
             function.WarmUp(values);
-            function.AddNewValue(99);
+            function.AddNewValue(12);
 
             var sma = function.GetSmaValue();
 
-            Assert.AreEqual(sma, 99);
+            Assert.AreEqual(sma, 11.5);
         }
 
         [Test]
-        public void CalculateSmaForOneValueInputAndMultipleAddedValuesReturnsLastAddedValue()
+        public void CalculateSmaForOneValueInputAndMultipleAddedValuesReturnsAverageValue()
         {
             var values = FixedPriceValues.Take(1).ToArray();
             var function = new SmaFunction();
 
             function.WarmUp(values);
-            function.AddNewValue(99);
-            function.AddNewValue(88);
-            function.AddNewValue(77);
-            function.AddNewValue(66);
+            function.AddNewValue(12);
+            function.AddNewValue(13);
+            function.AddNewValue(14);
+            function.AddNewValue(15);
 
             var sma = function.GetSmaValue();
 
-            Assert.AreEqual(sma, 66);
+            Assert.AreEqual(sma, 13);
         }
 
         [Test, Explicit("Run manually only cause it uses random generated data for calculus")]
