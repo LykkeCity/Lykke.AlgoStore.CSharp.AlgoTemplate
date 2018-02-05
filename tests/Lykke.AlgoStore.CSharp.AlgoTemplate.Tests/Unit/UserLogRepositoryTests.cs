@@ -24,7 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             {
                 AlgoId = AlgoId,
                 Date = DateTime.UtcNow,
-                Message = "Test user log message"
+                Message = "User log message TEST!!!"
             };
 
             Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile>());

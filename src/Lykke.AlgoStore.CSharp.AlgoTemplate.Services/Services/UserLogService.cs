@@ -5,6 +5,9 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
+    /// <summary>
+    /// <see cref="IUserLogService"/> implementation
+    /// </summary>
     public class UserLogService : IUserLogService
     {
         private readonly IUserLogRepository _userLogRepository;
