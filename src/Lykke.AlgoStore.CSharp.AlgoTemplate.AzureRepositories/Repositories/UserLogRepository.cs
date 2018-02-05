@@ -7,6 +7,9 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
 {
+    /// <summary>
+    /// <see cref="IUserLogRepository"/> implementation
+    /// </summary>
     public class UserLogRepository : IUserLogRepository
     {
         private readonly INoSQLTableStorage<UserLogEntity> _table;
