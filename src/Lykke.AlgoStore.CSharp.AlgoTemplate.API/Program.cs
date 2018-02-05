@@ -10,7 +10,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
     {
         public static string EnvInfo => Environment.GetEnvironmentVariable("ENV_INFO");
 
-        public static async Task Main(string[] args)
+        public async Task Main(string[] args)
         {
             Console.WriteLine($"{PlatformServices.Default.Application.ApplicationName} version {PlatformServices.Default.Application.ApplicationVersion}");
 #if DEBUG

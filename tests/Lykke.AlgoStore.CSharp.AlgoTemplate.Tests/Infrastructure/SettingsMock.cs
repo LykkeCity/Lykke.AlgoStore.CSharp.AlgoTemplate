@@ -60,20 +60,5 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
 
 
         }
-
-        //public static IReloadingManager<string> GetSettings()
-        //{
-        //    var reloadingMock = new Mock<IReloadingManager<string>>();
-
-        //    reloadingMock
-        //        .Setup(x => x.Reload())
-        //        .Returns(() => Task.FromResult(Conn));
-
-        //    reloadingMock
-        //        .Setup(x => x.CurrentValue)
-        //        .Returns(Conn);
-
-        //    return reloadingMock.Object;
-        //}
     }
 }
