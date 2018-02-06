@@ -11,10 +11,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
 {
     public static class SettingsMock
     {
-        //private static string Conn =
-        //        "DefaultEndpointsProtocol=https;AccountName=algostoredev;AccountKey=d2VaBHrf8h8t622KvLeTPGwRP4Dxz9DTPeBT9H3zmjcQprQ1e+Z6Sx9RDqJc+zKwlSO900fzYF2Dg6oUBVDe1w=="
-        //    ;
-
         private static readonly string FileName = "appsettings.Development.json";
 
         public static IReloadingManager<AppSettings> InitConfigurationFromFile()
@@ -40,14 +36,29 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                         Db = new DbSettings
                         {
                             LogsConnString = "Mock connectionString"
-                        }
+                        },
+                        InstanceId = "Mock InstanceId"
                     }
                 }
             );
             return reloadingMock.Object;
         }
 
-        public static IReloadingManager<string> GetSettings()
+        public static IReloadingManager<string> GetLogsConnectionString()
+        {
+            var config = InitConfig();
+
+            return config.ConnectionString(x => x.CSharpAlgoTemplateService.Db.LogsConnString);
+        }
+
+        public static IReloadingManager<string> GetInstanceId()
+        {
+            var config = InitConfig();
+
+            return config.Nested(x => x.CSharpAlgoTemplateService.InstanceId);
+        }
+
+        private static IReloadingManager<AppSettings> InitConfig()
         {
             IReloadingManager<AppSettings> config;
 
@@ -55,10 +66,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                 config = InitConfigurationFromFile();
             else
                 config = InitMockConfiguration();
-
-            return config.ConnectionString(x => x.CSharpAlgoTemplateService.Db.LogsConnString);
-
-
+            return config;
         }
     }
 }

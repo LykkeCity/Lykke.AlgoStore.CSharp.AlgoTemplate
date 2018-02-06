@@ -13,7 +13,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     [TestFixture]
     public class UserLogRepositoryTests
     {
-        private const string AlgoId = "5fc5562b-79aa-4b23-977a-5c2e93018978";
         private UserLog _entity;
         private static bool _entitySaved;
 
@@ -22,7 +21,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             _entity = new UserLog
             {
-                AlgoId = AlgoId,
+                InstanceId = SettingsMock.GetInstanceId().CurrentValue,
                 Date = DateTime.UtcNow,
                 Message = "User log message TEST!!!"
             };
@@ -66,7 +65,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private static UserLogRepository Given_UserLog_Repository()
         {
             return new UserLogRepository(
-                AzureTableStorage<UserLogEntity>.Create(SettingsMock.GetSettings(), UserLogRepository.TableName, new LogMock())
+                AzureTableStorage<UserLogEntity>.Create(SettingsMock.GetLogsConnectionString(), UserLogRepository.TableName, new LogMock())
             );
         }
     }

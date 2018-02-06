@@ -5,7 +5,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
 {
     public class UserLog
     {
-        public string AlgoId { get; set; }
+        public string InstanceId { get; set; }
 
         public string Message { get; set; }
 

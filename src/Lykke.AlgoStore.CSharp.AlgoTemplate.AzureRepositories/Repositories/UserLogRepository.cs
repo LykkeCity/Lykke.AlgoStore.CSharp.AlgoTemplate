@@ -29,7 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
         {
             var entity = AutoMapper.Mapper.Map<UserLogEntity>(userLog);
 
-            entity.PartitionKey = GeneratePartitionKey(userLog.AlgoId);
+            entity.PartitionKey = GeneratePartitionKey(userLog.InstanceId);
             entity.RowKey = GenerateRowKey(userLog.Date);
 
             await _table.InsertOrMergeAsync(entity);
