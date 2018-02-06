@@ -3,5 +3,6 @@
     public class CSharpAlgoTemplateSettings
     {
         public DbSettings Db { get; set; }
+        public string InstanceId { get; set; }
     }
 }
