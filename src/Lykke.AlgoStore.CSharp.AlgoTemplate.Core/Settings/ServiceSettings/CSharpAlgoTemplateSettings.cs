@@ -3,5 +3,6 @@
     public class CSharpAlgoTemplateSettings
     {
         public DbSettings Db { get; set; }
+        public QuoteRabbitMqSubscriptionSettings QuoteRabbitMqSettings { get; set; }
     }
 }
