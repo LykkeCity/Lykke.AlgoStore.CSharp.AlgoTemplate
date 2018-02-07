@@ -7,6 +7,10 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
+using Lykke.SettingsReader;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -15,6 +19,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
     /// </summary>
     public class ServiceModule : Module
     {
+        private readonly IReloadingManager<CSharpAlgoTemplateSettings> _settings;
         private readonly ILog _log;
         // NOTE: you can remove it if you don't need to use IServiceCollection extensions to register service specific dependencies
         private readonly IServiceCollection _services;
@@ -23,8 +28,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
         /// Initializes new instance of the <see cref="ServiceModule"/>
         /// </summary>
         /// <param name="log">The <see cref="ILog"/> implementation to be used</param>
-        public ServiceModule(ILog log)
+        public ServiceModule(IReloadingManager<CSharpAlgoTemplateSettings> settings, ILog log)
         {
+            _settings = settings;
             _log = log;
             _services = new ServiceCollection();
         }
@@ -50,9 +56,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<ShutdownManager>()
                 .As<IShutdownManager>();
 
+            builder.RegisterInstance<IUserLogRepository>(
+                    AzureRepoFactories.CreateUserLogRepository(_settings.Nested(x => x.Db.LogsConnString), _log)
+                )
+                .SingleInstance();
+
             // The algo and the algo workflow dependencies
-            builder.RegisterType(AlgoType)
-                .As<IAlgo>();
+            //builder.RegisterType(AlgoType)
+            //    .As<IAlgo>();
 
             builder.RegisterType<WorkflowService>()
                 .As<IAlgoWorkflowService>();
@@ -77,6 +88,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();
+
+            builder.RegisterType<UserLogService>()
+                .As<IUserLogService>();
 
             builder.Populate(_services);
         }
