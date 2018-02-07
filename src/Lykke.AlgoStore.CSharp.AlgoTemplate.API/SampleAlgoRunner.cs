@@ -4,7 +4,12 @@ using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Modules;
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
+using Lykke.SettingsReader;
+using Microsoft.Extensions.Configuration;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -53,8 +58,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
         /// <returns></returns>
         private static IContainer BuildIoc()
         {
+            var config = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .Build();
+
+            config.Providers.First().Set("SettingsUrl", "appsettings.Development.json");
+            config.Providers.First().Set("ASPNETCORE_ENVIRONMENT", "Development");
+
+            var appSettings = config.LoadSettings<AppSettings>();
+
             var builder = new ContainerBuilder();
-            var serviceModule = new ServiceModule(new LogToConsole());
+            var serviceModule = new ServiceModule(appSettings.Nested(x => x.CSharpAlgoTemplateService), new LogToConsole());
             serviceModule.AlgoType = typeof(DummyAlgo);
             builder.RegisterModule(serviceModule);
 
