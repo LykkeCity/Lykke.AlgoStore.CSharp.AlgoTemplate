@@ -4,6 +4,8 @@
     {
         public string InstanceId { get; set; }
 
+        public string Id { get; set; }
+
         public bool IsBought { get; set; }
 
         public double Price { get; set; }

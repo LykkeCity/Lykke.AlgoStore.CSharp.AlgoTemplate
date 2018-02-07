@@ -6,6 +6,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entitites
     {
         public string InstanceId => PartitionKey;
 
+        public string Id => RowKey;
+
         public bool IsBought { get; set; }
 
         public double Price { get; set; }
