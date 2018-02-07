@@ -20,7 +20,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
         }
 
-        public void OnAction(bool isBuy, double volume)
+        public void OnAction(bool isBuy, double volume, double price)
         {
             throw new NotImplementedException();
         }
