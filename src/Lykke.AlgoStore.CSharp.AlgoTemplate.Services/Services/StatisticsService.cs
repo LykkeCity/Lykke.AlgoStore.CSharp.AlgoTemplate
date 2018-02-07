@@ -30,22 +30,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             throw new NotImplementedException();
         }
 
-        public double GetBoughtAmountByAsset(string assetName)
-        {
-            throw new NotImplementedException();
-        }
-
         public double GetSoldAmount()
         {
             throw new NotImplementedException();
         }
 
-        public double GetSoldAmountByAsset(string assetName)
+        public double GetBoughtQuantity()
         {
             throw new NotImplementedException();
         }
 
-        public double GetBoughtQuantityByAsset(string assetName)
+        public double GetSoldQuantity()
         {
             throw new NotImplementedException();
         }

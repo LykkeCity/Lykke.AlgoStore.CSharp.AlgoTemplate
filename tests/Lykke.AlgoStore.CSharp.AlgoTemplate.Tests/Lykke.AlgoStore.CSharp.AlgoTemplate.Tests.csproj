@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Moq" Version="4.8.0" />
     <PackageReference Include="NUnit" Version="3.9.0" />
@@ -23,7 +25,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories\Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.csproj" />
     <ProjectReference Include="..\..\src\Lykke.AlgoStore.CSharp.AlgoTemplate.Services\Lykke.AlgoStore.CSharp.AlgoTemplate.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 

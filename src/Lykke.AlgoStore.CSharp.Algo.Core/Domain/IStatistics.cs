@@ -6,9 +6,8 @@
     public interface IStatistics
     {
         double GetBoughtAmount();
-        double GetBoughtAmountByAsset(string assetName);
         double GetSoldAmount();
-        double GetSoldAmountByAsset(string assetName);
-        double GetBoughtQuantityByAsset(string assetName);
+        double GetBoughtQuantity();
+        double GetSoldQuantity();
     }
 }
