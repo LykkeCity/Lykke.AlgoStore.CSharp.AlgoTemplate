@@ -54,10 +54,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
 
             var settings = _settings.CurrentValue.ToRabbitMqSettings();
+
+            // Look at https://github.com/LykkeCity/Lykke.RabbitMqDotNetBroker
+            // https://github.com/LykkeCity/Lykke.RabbitMqDotNetBroker/blob/master/src/Lykke.RabbitMqBroker/Subscriber/RabbitMqSubscriber.cs
+            // In general ResilientErrorHandlingStrategy will retry invoke OnQuoteInternal.GetAwaiter().GetResult()
+            // specified times on specified intervals and then will continue with DeadQueueErrorHandlingStrategy
+            // which will reject message
+            // BUT THESE ErrorHandlingStrategy are executed AFTER message is received - They handle just OnQuoteInternal exceptions, but not reconnect
+            // They try to reconnect silenlty specified in RabbitMqSubscriptionSettings times on specified intervals and on error just log fatal error
+            // not so sure if this is acceptable because default values are 20 times on 3 secs = 1 min ?!?
+            // please look at implementation again - but this is what i see in ReadThread
+            // the only way that i see is my initial idea to wrap ILog and handle this Fatal error
+            // and then on quote received to clear error
+            // Based on this i think that it is not a good idea to have many subscibers - 
+            // what should this service do if just one of subscibers throws ?!? - accept or reject message
+            // I think we should delegate this on upper level - so just one subscriber
+            // Think about it :-)
             _subscriber = new RabbitMqSubscriber<QuoteMessage>(settings,
                     new ResilientErrorHandlingStrategy(_log, settings,
-                        retryTimeout: TimeSpan.FromSeconds(10),
-                        retryNum: 10,
+                        retryTimeout: TimeSpan.FromSeconds(10), // this is just for ResilientErrorHandlingStrategy
+                        retryNum: 10, // this is just for ResilientErrorHandlingStrategy - after all retries will invoke DeadQueueErrorHandlingStrategy to reject message
                         next: new DeadQueueErrorHandlingStrategy(_log, settings)))
                 .SetMessageDeserializer(new JsonMessageDeserializer<QuoteMessage>())
                 .SetMessageReadStrategy(new MessageReadQueueStrategy())
