@@ -15,12 +15,20 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
         /// <summary>
         /// The price of the quote
         /// </summary>
-        decimal Price { get; }
+        double Price { get; }
 
         /// <summary>
         /// Time stamp for the quote
         /// </summary>
         DateTime Timestamp { get; }
+
+        /// <summary>
+        /// Gets the date received.
+        /// </summary>
+        /// <value>
+        /// The date received.
+        /// </value>
+        DateTime DateReceived { get; }
 
         /// <summary>
         /// Whether the operation is being processed in real time or not.

@@ -19,5 +19,7 @@
         /// Count of silent reconnection attempts before write error message to the log. Lykke Default is - 20
         /// </summary>
         public int ReconnectionsCountToAlarm { get; set; }
+
+        public string SubscriptionAsset { get; set; }
     }
 }

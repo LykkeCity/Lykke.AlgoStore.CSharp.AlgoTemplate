@@ -72,7 +72,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return Task.WhenAll(quoteGeneration);
         }
 
-        private void OnQuote(IAlgoQuote quote)
+        private Task OnQuote(IAlgoQuote quote)
         {
             // Handling of the synchronization could extract it in a separate class
             IContext ctx = CreateContext(quote);
@@ -85,6 +85,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 OnErrorHandler(e);
             }
+
+            return Task.CompletedTask;
         }
 
         private void OnErrorHandler(TradingServiceException e)
