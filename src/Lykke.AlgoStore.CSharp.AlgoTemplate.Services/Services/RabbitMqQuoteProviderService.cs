@@ -112,9 +112,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (quoteMessage.AssetPair != _settings.CurrentValue.SubscriptionAsset)
                 return Task.CompletedTask;
 
+            // i think that here should NOT use reference swap
+            // now we will also block next quote - this way will try to make it serial
             lock (_subsciptionLock)
             {
-                Task[] tasks = new Task[_subscriptions.Count];
+                var tasks = new List<Task>(_subscriptions.Count);
 
                 var quote = new AlgoQuote
                 {
@@ -125,12 +127,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     DateReceived = DateTime.UtcNow
                 };
 
-                for (int i = 0; i < tasks.Length; i++)
+                foreach (Func<IAlgoQuote, Task> subscription in _subscriptions)
                 {
-                    tasks[i] = _subscriptions[i](quote);
+                    try
+                    {
+                        var task = subscription(quote);
+                        tasks.Add(task);
+                    }
+                    catch (Exception ex)
+                    {
+                        // WHAT TO DO ?!? Now i accept message
+                        _log.WriteErrorAsync(string.Empty, string.Empty, ex).Wait();
+                    }
                 }
 
-                Task.WaitAll(tasks);
+                Task.WaitAll(tasks.ToArray());
                 return Task.CompletedTask;
             }
         }
