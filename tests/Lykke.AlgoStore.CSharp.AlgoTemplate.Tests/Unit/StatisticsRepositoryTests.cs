@@ -17,6 +17,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     {
         private Statistics _entity;
         private static bool _entitySaved;
+        private List<Statistics> _entitiesToSell;
+        private static bool _entitiesToSellSaved;
+        private List<Statistics> _entitiesToBuy;
+        private static bool _entitiesToBuySaved;
 
         [SetUp]
         public void SetUp()
@@ -41,6 +45,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             }
 
             _entity = null;
+
+            if (_entitiesToBuySaved)
+            {
+                foreach (var entity in _entitiesToBuy)
+                {
+                    repo.DeleteAsync(entity.InstanceId, entity.Id).Wait();
+                }
+            }
+
+            if (_entitiesToSellSaved)
+            {
+                foreach (var entity in _entitiesToSell)
+                {
+                    repo.DeleteAsync(entity.InstanceId, entity.Id).Wait();
+                }
+            }
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -83,38 +103,35 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var instanceId = SettingsMock.GetInstanceId().CurrentValue;
             var repo = Given_Statistics_Repository();
 
-            _entity = new Statistics
+            _entitiesToBuy = new List<Statistics>
             {
-                InstanceId = instanceId,
-                Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                IsBought = true,
-                Price = 1,
-                Amount = 1
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
+                    IsBought = true,
+                    Price = 1,
+                    Amount = 1
+                },
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = DateTime.UtcNow.AddMinutes(1).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
+                    IsBought = true,
+                    Price = 2,
+                    Amount = 2
+                },
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = DateTime.UtcNow.AddMinutes(2).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
+                    IsBought = true,
+                    Price = 3,
+                    Amount = 3
+                }
             };
 
-            When_Invoke_Create(repo, _entity);
-
-            _entity = new Statistics
-            {
-                InstanceId = instanceId,
-                Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                IsBought = true,
-                Price = 2,
-                Amount = 2
-            };
-
-            When_Invoke_Create(repo, _entity);
-
-            _entity = new Statistics
-            {
-                InstanceId = instanceId,
-                Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                IsBought = true,
-                Price = 3,
-                Amount = 3
-            };
-
-            When_Invoke_Create(repo, _entity);
+            When_Invoke_Create(repo);
 
             Then_BoughtAmount_ShouldBe_Valid(repo, instanceId);
             Then_BoughtQuantity_ShouldBe_Valid(repo, instanceId);
@@ -126,41 +143,60 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var instanceId = SettingsMock.GetInstanceId().CurrentValue;
             var repo = Given_Statistics_Repository();
 
-            _entity = new Statistics
+            _entitiesToSell = new List<Statistics>
             {
-                InstanceId = instanceId,
-                Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                IsBought = false,
-                Price = 1,
-                Amount = 1
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
+                    IsBought = false,
+                    Price = 1,
+                    Amount = 1
+                },
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = DateTime.UtcNow.AddMinutes(1).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
+                    IsBought = false,
+                    Price = 2,
+                    Amount = 2
+                },
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = DateTime.UtcNow.AddMinutes(2).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
+                    IsBought = false,
+                    Price = 3,
+                    Amount = 3
+                }
             };
 
-            When_Invoke_Create(repo, _entity);
-
-            _entity = new Statistics
-            {
-                InstanceId = instanceId,
-                Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                IsBought = false,
-                Price = 2,
-                Amount = 2
-            };
-
-            When_Invoke_Create(repo, _entity);
-
-            _entity = new Statistics
-            {
-                InstanceId = instanceId,
-                Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                IsBought = false,
-                Price = 3,
-                Amount = 3
-            };
-
-            When_Invoke_Create(repo, _entity);
+            When_Invoke_Create(repo);
 
             Then_SellQuantity_ShouldBe_Valid(repo, instanceId);
             Then_SellPrice_ShouldBe_Valid(repo, instanceId);
+        }
+
+        private void When_Invoke_Create(StatisticsRepository repository)
+        {
+            if (_entitiesToBuy?.Count > 0)
+            {
+                foreach (var entity in _entitiesToBuy)
+                {
+                    repository.CreateAsync(entity).Wait();
+                }
+
+                _entitiesToBuySaved = true;
+            }
+
+            if (_entitiesToSell?.Count > 0)
+            {
+                foreach (var entity in _entitiesToSell)
+                {
+                    repository.CreateAsync(entity).Wait();
+                }
+                _entitiesToSellSaved = true;
+            }
         }
 
         private static void Then_SellPrice_ShouldBe_Valid(StatisticsRepository repo, string instanceId)
