@@ -101,6 +101,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<UserLogService>()
                 .As<IUserLogService>();
 
+            builder.RegisterType<PredefinedDataFeedCandleService>()
+                .As<ICandlesService>();
+
+            builder.RegisterType<HardCodedMovingAverageCrossFunctionInitializationService>()
+                .As<IFunctionInitializationService>();
+
+            builder.RegisterType<PredefinedHistoryDataService>()
+                .As<IHistoryDataService>();
+
+            builder.RegisterType<TaskAsyncExecutor>()
+                .As<IAsyncExecutor>();
+
+
             builder.Populate(_services);
         }
     }
