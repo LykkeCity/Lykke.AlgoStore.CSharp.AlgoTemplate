@@ -45,6 +45,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public double GetBoughtAmount()
         {
+            //return _statisticsRepository.GetBoughtAmount()
             throw new NotImplementedException();
         }
 

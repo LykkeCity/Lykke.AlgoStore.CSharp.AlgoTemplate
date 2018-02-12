@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entitites;
@@ -41,6 +42,46 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
             var rowKey = id;
 
             await _table.DeleteAsync(partitionKey, rowKey);
+        }
+
+        public async Task<double> GetBoughtAmountAsync(string instanceId)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId);
+            var data = await _table.GetDataAsync(partitionKey, x => x.IsBought);
+
+            var result = data.Sum(x => x.Price);
+
+            return result;
+        }
+
+        public async Task<double> GetSoldAmountAsync(string instanceId)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId);
+            var data = await _table.GetDataAsync(partitionKey, x => !x.IsBought);
+
+            var result = data.Sum(x => x.Price);
+
+            return result;
+        }
+
+        public async Task<double> GetBoughtQuantityAsync(string instanceId)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId);
+            var data = await _table.GetDataAsync(partitionKey, x => x.IsBought);
+
+            var result = data.Sum(x => x.Amount);
+
+            return result;
+        }
+
+        public async Task<double> GetSoldQuantityAsync(string instanceId)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId);
+            var data = await _table.GetDataAsync(partitionKey, x => !x.IsBought);
+
+            var result = data.Sum(x => x.Amount);
+
+            return result;
         }
     }
 }
