@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
+namespace Lykke.AlgoStore.CSharp.Algo.Core.Candles
 {
     public class Candle
     {

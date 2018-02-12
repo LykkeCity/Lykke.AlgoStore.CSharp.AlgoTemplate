@@ -13,9 +13,9 @@
 
         /// <summary>
         /// Access point to functions and function results for an
-        /// algo <see cref="IFunctions"/>
+        /// algo <see cref="IFunctionsResultsProvider"/>
         /// </summary>
-        IFunctions Functions { get; }
+        IFunctionsResultsProvider Functions { get; }
 
         /// <summary>
         /// Access point for the user action, which can be performed 

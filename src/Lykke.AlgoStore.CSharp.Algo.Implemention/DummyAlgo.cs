@@ -15,6 +15,10 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             context.Actions.Log($"Receiving quote at {DateTime.UtcNow} " +
                 $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
                 $"{{quote.IsBuy: {quote.IsBuy}}}, {{quote.IsOnline: {quote.IsOnline}}}");
+
+            var smaShort = context.Functions.GetValue("SMA_Short");
+            var smaLong = context.Functions.GetValue("SMA_Long");
+            context.Actions.Log($"Function values are: SMA_Short: {smaShort}, SMA_Long: {smaLong}");
         }
     }
 }
