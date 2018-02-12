@@ -14,10 +14,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     public class StatisticsService : IStatisticsService
     {
         private readonly IStatisticsRepository _statisticsRepository;
+        private readonly string _instanceId;
 
-        public StatisticsService(IStatisticsRepository statisticsRepository)
+        public StatisticsService(IStatisticsRepository statisticsRepository, string instanceId)
         {
             _statisticsRepository = statisticsRepository;
+            _instanceId = instanceId;
         }
 
         public IAlgoQuote GetQuote()
@@ -33,9 +35,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             var data = new Statistics
             {
-                //InstanceId = 
+                InstanceId = _instanceId,
                 Amount = volume,
-                //Id = 
                 IsBought = isBuy,
                 Price = price
             };
@@ -45,23 +46,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public double GetBoughtAmount()
         {
-            //return _statisticsRepository.GetBoughtAmount()
-            throw new NotImplementedException();
+            return _statisticsRepository.GetBoughtAmountAsync(_instanceId).Result;
         }
 
         public double GetSoldAmount()
         {
-            throw new NotImplementedException();
+            return _statisticsRepository.GetSoldAmountAsync(_instanceId).Result;
         }
 
         public double GetBoughtQuantity()
         {
-            throw new NotImplementedException();
+            return _statisticsRepository.GetBoughtQuantityAsync(_instanceId).Result;
         }
 
         public double GetSoldQuantity()
         {
-            throw new NotImplementedException();
+            return _statisticsRepository.GetSoldQuantityAsync(_instanceId).Result;
         }
     }
 }
