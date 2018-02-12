@@ -38,10 +38,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
             if(values.Length < Parameters.LongTermPeriod || values.Length < Parameters.ShortTermPeriod)
                 throw new ArgumentOutOfRangeException();
 
-            LongTermSma = new SmaFunction();
+            LongTermSma = new SmaFunction(new SmaParameters() { Capacity = values.Length });
             LongTermSma.WarmUp(values.Skip(values.Length - Parameters.LongTermPeriod).Take(Parameters.LongTermPeriod).ToArray());
 
-            ShortTermSma = new SmaFunction();
+            ShortTermSma = new SmaFunction(new SmaParameters() { Capacity = values.Length });
             ShortTermSma.WarmUp(values.Skip(values.Length - Parameters.ShortTermPeriod).Take(Parameters.ShortTermPeriod).ToArray());
         }
 

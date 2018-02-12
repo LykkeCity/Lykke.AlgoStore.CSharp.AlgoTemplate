@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,33 +8,38 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
     /// <summary>
     /// Custom Simple Moving Average (SMA) function
     /// </summary>
-    public class SmaFunction
+    public class SmaFunction : AbstractFunction
     {
         private Queue<double> _storageQueue;
+        private SmaParameters _functionParams = new SmaParameters();
+
+        public override FunctionParamsBase FunctionParameters => _functionParams;
 
         /// <summary>
-        /// Function capacity (max number of values that will be used for calculus)
+        /// Initializes new instance of <see cref="SmaFunction"/>
         /// </summary>
-        public int Capacity { get; private set; }
+        /// <param name="capacity">The capacity of the function. 
+        /// (NOTE: this will eventualy be part of the <see cref="FunctionParamsBase"/>)</param>
+        public SmaFunction(SmaParameters smaParameters)
+        {
+            _functionParams = smaParameters;
+        }
 
         /// <summary>
         /// Warm up function with data
         /// </summary>
         /// <param name="values">Values that will be used to warm up data</param>
-        /// <param name="capacity">By default function capacity is set to number of provided values. 
-        /// If you want to change that you should use this parameter.
-        /// If this value is less then number of provided values it will be ignored.</param>
-        public void WarmUp(double[] values, int capacity = 0)
+        public override double WarmUp(double[] values)
         {
             if (values == null)
                 throw new ArgumentException();
 
-            Capacity = values.Length < capacity ? values.Length : capacity;
-
-            _storageQueue = Capacity == 0 ? new Queue<double>() : new Queue<double>(Capacity);
+            _storageQueue = _functionParams.Capacity == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Capacity);
 
             foreach (var value in values)
                 AddNewValue(value);
+
+            return GetSmaValue();
         }
 
         /// <summary>
@@ -52,12 +58,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         /// Add new value to SMA function
         /// </summary>
         /// <param name="value">New value that will be used in future calculus</param>
-        public void AddNewValue(double value)
+        public override double AddNewValue(double value)
         {
-            if (_storageQueue.Count >= Capacity && Capacity > 0)
+            if (_storageQueue.Count >= _functionParams.Capacity && _functionParams.Capacity > 0)
                 _storageQueue.Dequeue();
 
             _storageQueue.Enqueue(value);
+
+            return GetSmaValue();
         }
 
         /// <summary>
