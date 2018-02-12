@@ -5,6 +5,6 @@
     /// </summary>
     public interface IFunctionsResultsProvider
     {
-        double GetValue(string functionName);
+        object GetValue(string functionName);
     }
 }
