@@ -1,14 +1,47 @@
 ﻿using System.Collections.Generic;
+using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
-    public interface IFunctionsService : IFunctions
+    /// <summary>
+    /// Interface for a service handling the functions <see cref="IFunction"/>
+    /// </summary>
+    public interface IFunctionsService
     {
-        void Initialise();
-        List<CandlesHistoryRequest> GetRequest();
-        void WarmUp(List<Candle> candles);
-        void Calculate(IAlgoQuote quote);
+        /// <summary>
+        /// Initializes the service.
+        /// </summary>
+        void Initialize();
+
+        /// <summary>
+        /// Generate <see cref="CandleServiceRequest"/> request needed for the function
+        /// executions
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<CandleServiceRequest> GetCandleRequests();
+
+        /// <summary>
+        /// Perform a warm-up of all function. This will feed the function with historical
+        /// data. <see cref="IFunction.WarmUp(Candle)"/>
+        /// </summary>
+        /// <param name="candles"></param>
+        void WarmUp(IList<MultipleCandlesResponse> candles);
+
+        /// <summary>
+        /// Recalculates the function with a new candle data provided. 
+        /// <see cref="IFunction.AddNewValue(Candle)"/>
+        /// </summary>
+        /// <param name="candles"></param>
+        void Recalculate(IList<SingleCandleResponse> candles);
+
+        /// <summary>
+        /// Gets the current function results
+        /// </summary>
+        /// <returns></returns>
+        IFunctionsResultsProvider GetFunctionResults();
     }
 }
