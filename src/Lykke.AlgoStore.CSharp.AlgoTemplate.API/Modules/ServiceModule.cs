@@ -4,6 +4,7 @@ using Common.Log;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -77,6 +78,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();
+
+            builder.RegisterType<PredefinedDataFeedCandleService>()
+                .As<ICandlesService>();
+
+            builder.RegisterType<HardCodedMovingAverageCrossFunctionInitializationService>()
+                .As<IFunctionInitializationService>();
+
+            builder.RegisterType<PredefinedHistoryDataService>()
+                .As<IHistoryDataService>();
+
+            builder.RegisterType<TaskAsyncExecutor>()
+                .As<IAsyncExecutor>();
+
 
             builder.Populate(_services);
         }
