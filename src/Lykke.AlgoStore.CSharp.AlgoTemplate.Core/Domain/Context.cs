@@ -15,9 +15,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
 
         /// <summary>
         /// Access point to functions and function results for an
-        /// algo <see cref="IFunctions"/>
+        /// algo <see cref="IFunctionsResultsProvider"/>
         /// </summary>
-        public IFunctions Functions { get; set; }
+        public IFunctionsResultsProvider Functions { get; set; }
 
         /// <summary>
         /// Access point for the user action, which can be performed 

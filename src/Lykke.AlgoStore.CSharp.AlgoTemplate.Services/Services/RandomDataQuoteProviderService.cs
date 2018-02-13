@@ -89,8 +89,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             foreach (var subscriber in this.subscribers)
             {
-                //asyncExecutor.ExecuteAsync(subscriber, GenerateRandomQuote());
-                subscriber(GenerateRandomQuote());
+                asyncExecutor.ExecuteAsync(subscriber, GenerateRandomQuote());
             }
         }
 
