@@ -13,6 +13,9 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
     /// </summary>
     public abstract class AbstractFunction : IFunction
     {
+        /// <summary>
+        /// Base exception for function invocation exceptions
+        /// </summary>
         public class FunctionInvocationException : Exception
         {
             public FunctionParamsBase FunctionParameters { get; set; }
@@ -21,14 +24,20 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
                 : base(message, innerException) { }
         }
 
-        public class AddNewVlaueException : FunctionInvocationException
+        /// <summary>
+        /// <see cref="FunctionInvocationException"/> with a value
+        /// </summary>
+        public class AddNewValueException : FunctionInvocationException
         {
             public Candle ValueInvokedWith { get; set; }
 
-            public AddNewVlaueException(string message, Exception innerException)
+            public AddNewValueException(string message, Exception innerException)
                 : base(message, innerException) { }
         }
 
+        /// <summary>
+        /// <see cref="FunctionInvocationException"/> with a warm-up value
+        /// </summary>
         public class WarmUpException : FunctionInvocationException
         {
             public IList<Candle> ValueInvokedWith { get; set; }
@@ -85,7 +94,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         {
             if (value == null)
             {
-                throw new AddNewVlaueException("Invalid value of null provided for add new value", null)
+                throw new AddNewValueException("Invalid value of null provided for add new value", null)
                 {
                     FunctionParameters = FunctionParameters,
                     ValueInvokedWith = value
@@ -100,7 +109,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
             }
             catch (Exception e)
             {
-                throw new AddNewVlaueException($"Exception thrown while adding new value for a function '{GetType().Name}'", e)
+                throw new AddNewValueException($"Exception thrown while adding new value for a function '{GetType().Name}'", e)
                 {
                     FunctionParameters = FunctionParameters,
                     ValueInvokedWith = value

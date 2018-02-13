@@ -233,7 +233,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         {
             var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.OPEN);
 
-            var ex = Assert.Throws<AddNewVlaueException>(() => function.AddNewValue(null));
+            var ex = Assert.Throws<AddNewValueException>(() => function.AddNewValue(null));
             Assert.That(ex.Message, Is.EqualTo("Invalid value of null provided for add new value"));
             Assert.That(ex.FunctionParameters, Is.EqualTo(function.FunctionParameters));
             Assert.That(ex.ValueInvokedWith, Is.EqualTo(null));
@@ -251,7 +251,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
             };
 
             var invokedWith = new Candle();
-            var ex = Assert.Throws<AddNewVlaueException>(() => function.AddNewValue(invokedWith));
+            var ex = Assert.Throws<AddNewValueException>(() => function.AddNewValue(invokedWith));
             Assert.That(ex.Message, Is.EqualTo("Exception thrown while adding new value for a function 'AbstractFunctionUnderTestImpl'"));
             Assert.That(ex.FunctionParameters, Is.EqualTo(function.FunctionParameters));
             Assert.That(ex.ValueInvokedWith, Is.EqualTo(invokedWith));
