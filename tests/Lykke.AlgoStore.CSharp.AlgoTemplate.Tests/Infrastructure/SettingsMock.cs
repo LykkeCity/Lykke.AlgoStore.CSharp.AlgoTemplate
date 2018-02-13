@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
 using Lykke.SettingsReader;
@@ -37,7 +36,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                         {
                             LogsConnString = "Mock connectionString"
                         },
-                        InstanceId = "Mock InstanceId"
+                        InstanceId = "Mock InstanceId",
+                        QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings()
                     }
                 }
             );
@@ -56,6 +56,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
             var config = InitConfig();
 
             return config.Nested(x => x.CSharpAlgoTemplateService.InstanceId);
+        }
+
+        public static IReloadingManager<QuoteRabbitMqSubscriptionSettings> GetQuoteSettings()
+        {
+            var config = InitConfig();
+
+            return config.Nested(x => x.CSharpAlgoTemplateService.QuoteRabbitMqSettings);
         }
 
         private static IReloadingManager<AppSettings> InitConfig()
