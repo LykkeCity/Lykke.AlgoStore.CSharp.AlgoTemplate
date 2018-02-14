@@ -71,7 +71,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = SettingsMock.GetInstanceId().CurrentValue,
                 Amount = 123.45,
                 Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                IsBought = true,
+                IsBuy = true,
                 Price = 123.45
             };
 
@@ -88,7 +88,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = SettingsMock.GetInstanceId().CurrentValue,
                 Amount = 123.45,
                 Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                IsBought = false,
+                IsBuy = false,
                 Price = 123.45
             };
 
@@ -109,7 +109,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 {
                     InstanceId = instanceId,
                     Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                    IsBought = true,
+                    IsBuy = true,
                     Price = 1,
                     Amount = 1
                 },
@@ -117,7 +117,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 {
                     InstanceId = instanceId,
                     Id = DateTime.UtcNow.AddMinutes(1).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                    IsBought = true,
+                    IsBuy = true,
                     Price = 2,
                     Amount = 2
                 },
@@ -125,7 +125,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 {
                     InstanceId = instanceId,
                     Id = DateTime.UtcNow.AddMinutes(2).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                    IsBought = true,
+                    IsBuy = true,
                     Price = 3,
                     Amount = 3
                 }
@@ -149,7 +149,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 {
                     InstanceId = instanceId,
                     Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                    IsBought = false,
+                    IsBuy = false,
                     Price = 1,
                     Amount = 1
                 },
@@ -157,7 +157,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 {
                     InstanceId = instanceId,
                     Id = DateTime.UtcNow.AddMinutes(1).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                    IsBought = false,
+                    IsBuy = false,
                     Price = 2,
                     Amount = 2
                 },
@@ -165,7 +165,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 {
                     InstanceId = instanceId,
                     Id = DateTime.UtcNow.AddMinutes(2).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
-                    IsBought = false,
+                    IsBuy = false,
                     Price = 3,
                     Amount = 3
                 }

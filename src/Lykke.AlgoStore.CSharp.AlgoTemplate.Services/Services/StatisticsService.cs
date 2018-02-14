@@ -37,7 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 InstanceId = _instanceId,
                 Amount = volume,
-                IsBought = isBuy,
+                IsBuy = isBuy,
                 Price = price
             };
 
