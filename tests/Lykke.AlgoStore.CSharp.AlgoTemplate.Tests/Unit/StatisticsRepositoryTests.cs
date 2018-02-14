@@ -177,6 +177,30 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Then_SellPrice_ShouldBe_Valid(repo, instanceId);
         }
 
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void Statistics_AlgoStart_Test()
+        {
+            var instanceId = SettingsMock.GetInstanceId().CurrentValue;
+            var repo = Given_Statistics_Repository();
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
+                IsStarted = true
+            };
+
+            When_Invoke_Create(repo, _entity);
+            Then_NumberOfRunningForAnAlgo_ShouldBe_One(repo, instanceId);
+        }
+
+        private static void Then_NumberOfRunningForAnAlgo_ShouldBe_One(StatisticsRepository repo, string instanceId)
+        {
+            var numberOfRunningForAnAlgo = repo.GetNumberOfRunnings(instanceId).Result;
+
+            Assert.AreEqual(numberOfRunningForAnAlgo, 1);
+        }
+
         private void When_Invoke_Create(StatisticsRepository repository)
         {
             if (_entitiesToBuy?.Count > 0)

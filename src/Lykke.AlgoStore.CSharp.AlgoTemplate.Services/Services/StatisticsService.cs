@@ -44,6 +44,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _statisticsRepository.CreateAsync(data).Wait();
         }
 
+        public void OnAlgoStarted()
+        {
+            var data = new Statistics { IsStarted = true };
+
+            _statisticsRepository.CreateAsync(data).Wait();
+        }
+
         public double GetBoughtAmount()
         {
             return _statisticsRepository.GetBoughtAmountAsync(_instanceId).Result;
@@ -62,6 +69,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public double GetSoldQuantity()
         {
             return _statisticsRepository.GetSoldQuantityAsync(_instanceId).Result;
+        }
+
+        public int GetNumberOfRunningsForAnAlgo()
+        {
+            return _statisticsRepository.GetNumberOfRunnings(_instanceId).Result;
         }
     }
 }

@@ -47,39 +47,49 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
         public async Task<double> GetBoughtAmountAsync(string instanceId)
         {
             var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => x.IsBought);
+            var data = await _table.GetDataAsync(partitionKey, x => x.IsBuy.HasValue && x.IsBuy.Value && x.Price.HasValue);
 
             var result = data.Sum(x => x.Price);
 
-            return result;
+            return result ?? 0;
         }
 
         public async Task<double> GetSoldAmountAsync(string instanceId)
         {
             var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => !x.IsBought);
+            var data = await _table.GetDataAsync(partitionKey, x => x.IsBuy.HasValue && !x.IsBuy.Value);
 
             var result = data.Sum(x => x.Price);
 
-            return result;
+            return result ?? 0;
         }
 
         public async Task<double> GetBoughtQuantityAsync(string instanceId)
         {
             var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => x.IsBought);
+            var data = await _table.GetDataAsync(partitionKey, x => x.IsBuy.HasValue && x.IsBuy.Value);
 
             var result = data.Sum(x => x.Amount);
 
-            return result;
+            return result ?? 0;
         }
 
         public async Task<double> GetSoldQuantityAsync(string instanceId)
         {
             var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => !x.IsBought);
+            var data = await _table.GetDataAsync(partitionKey, x => x.IsBuy.HasValue && !x.IsBuy.Value);
 
             var result = data.Sum(x => x.Amount);
+
+            return result ?? 0;
+        }
+
+        public async Task<int> GetNumberOfRunnings(string instanceId)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId);
+            var data = await _table.GetDataAsync(partitionKey, x => x.IsStarted.HasValue && x.IsStarted.Value);
+
+            var result = data.Count();
 
             return result;
         }

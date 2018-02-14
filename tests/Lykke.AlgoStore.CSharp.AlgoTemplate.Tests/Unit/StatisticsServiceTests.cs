@@ -140,6 +140,42 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Then_Data_ShouldBe_Zero(data);
         }
 
+        [Test]
+        public void GetNumberOfRunningsForAnAlgo_Returns_Data()
+        {
+            var repo = Given_Correct_StatisticsRepositoryMock();
+            var service = Given_StatisticsService(repo);
+            var data = When_Invoke_GetNumberOfRunningsForAnAlgo(service, out var exception);
+
+            Then_Exception_ShouldBe_Null(exception);
+            Then_Data_ShouldNotBe_Zero(data);
+        }
+
+        [Test]
+        public void GetNumberOfRunningsForAnAlgo_Throws_Exception()
+        {
+            var repo = Given_Error_StatisticsRepositoryMock();
+            var service = Given_StatisticsService(repo);
+            var data = When_Invoke_GetNumberOfRunningsForAnAlgo(service, out var exception);
+
+            Then_Exception_ShouldNotBe_Null(exception);
+            Then_Data_ShouldBe_Zero(data);
+        }
+
+        private static double When_Invoke_GetNumberOfRunningsForAnAlgo(IStatisticsService service, out Exception exception)
+        {
+            exception = null;
+            try
+            {
+                return service.GetNumberOfRunningsForAnAlgo();
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                return 0;
+            }
+        }
+
         private static void Then_Exception_ShouldNotBe_Null(Exception exception)
         {
             Assert.NotNull(exception);
@@ -231,6 +267,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             result.Setup(repo => repo.GetBoughtQuantityAsync(_instanceId)).Returns(() => Task.FromResult<double>(5));
             result.Setup(repo => repo.GetSoldAmountAsync(_instanceId)).Returns(() => Task.FromResult<double>(5));
             result.Setup(repo => repo.CreateAsync(new Statistics()));
+            result.Setup(repo => repo.GetNumberOfRunnings(_instanceId)).Returns(() => Task.FromResult<int>(5));
 
             return result.Object;
         }
@@ -245,6 +282,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             result.Setup(repo => repo.GetBoughtQuantityAsync(_instanceId)).ThrowsAsync(new Exception("GetBoughtQuantity"));
             result.Setup(repo => repo.GetSoldAmountAsync(_instanceId)).ThrowsAsync(new Exception("GetSoldAmount"));
             result.Setup(repo => repo.CreateAsync(It.IsAny<Statistics>())).ThrowsAsync(new Exception("CreateAsync"));
+            result.Setup(repo => repo.GetNumberOfRunnings(_instanceId)).ThrowsAsync(new Exception("GetNumberOfRunnings"));
 
             return result.Object;
         }

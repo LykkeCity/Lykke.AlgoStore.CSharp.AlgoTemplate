@@ -11,5 +11,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories
         Task<double> GetSoldAmountAsync(string instanceId);
         Task<double> GetBoughtQuantityAsync(string instanceId);
         Task<double> GetSoldQuantityAsync(string instanceId);
+        Task<int> GetNumberOfRunnings(string instanceId);
     }
 }

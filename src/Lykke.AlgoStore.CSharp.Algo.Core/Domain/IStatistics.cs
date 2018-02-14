@@ -9,5 +9,6 @@
         double GetSoldAmount();
         double GetBoughtQuantity();
         double GetSoldQuantity();
+        int GetNumberOfRunningsForAnAlgo();
     }
 }

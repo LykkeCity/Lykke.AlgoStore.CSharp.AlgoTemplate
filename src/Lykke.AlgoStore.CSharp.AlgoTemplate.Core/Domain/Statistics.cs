@@ -6,10 +6,12 @@
 
         public string Id { get; set; }
 
-        public bool IsBuy { get; set; }
+        public bool? IsBuy { get; set; }
 
-        public double Price { get; set; }
+        public double? Price { get; set; }
 
-        public double Amount { get; set; }
+        public double? Amount { get; set; }
+
+        public bool? IsStarted { get; set; }
     }
 }

@@ -69,6 +69,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             _quoteProviderService.Subscribe(OnQuote);
 
+            //Update algo statistics
+            _statisticsService.OnAlgoStarted();
+
             return Task.WhenAll(quoteGeneration);
         }
 
