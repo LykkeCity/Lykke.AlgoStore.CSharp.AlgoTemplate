@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entitites;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -11,6 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper
         {
             // To entities
             CreateMap<UserLog, UserLogEntity>();
+            CreateMap<Statistics, StatisticsEntity>();
 
             ForAllMaps((map, cfg) =>
             {
