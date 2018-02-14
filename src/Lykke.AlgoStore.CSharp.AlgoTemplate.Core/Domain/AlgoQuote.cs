@@ -1,7 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
 {
@@ -12,9 +10,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
     {
         public bool IsBuy { get; set; }
 
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
         public DateTime Timestamp { get; set; }
+
+        public DateTime DateReceived { get; set; }
 
         public bool IsOnline { get; set; }
     }

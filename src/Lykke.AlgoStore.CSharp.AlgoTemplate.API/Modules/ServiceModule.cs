@@ -4,6 +4,7 @@ using Common.Log;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -28,7 +29,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
         /// Initializes new instance of the <see cref="ServiceModule"/>
         /// </summary>
         /// <param name="log">The <see cref="ILog"/> implementation to be used</param>
-        /// <param name="settings">The <see cref="IReloadingManager{T}"/> implementation to be used</param>
         public ServiceModule(IReloadingManager<CSharpAlgoTemplateSettings> settings, ILog log)
         {
             _settings = settings;
@@ -56,6 +56,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<ShutdownManager>()
                 .As<IShutdownManager>();
+
+            builder.RegisterInstance<IUserLogRepository>(
+                    AzureRepoFactories.CreateUserLogRepository(_settings.Nested(x => x.Db.LogsConnString), _log)
+                )
+                .SingleInstance();
 
             builder.RegisterInstance<IStatisticsRepository>(
                     AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.Db.LogsConnString), _log))
@@ -89,6 +94,35 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();
+
+            builder.RegisterType<PredefinedDataFeedCandleService>()
+                .As<ICandlesService>();
+
+            builder.RegisterType<HardCodedMovingAverageCrossFunctionInitializationService>()
+                .As<IFunctionInitializationService>();
+
+            builder.RegisterType<PredefinedHistoryDataService>()
+                .As<IHistoryDataService>();
+
+            builder.RegisterType<TaskAsyncExecutor>()
+                .As<IAsyncExecutor>();
+
+
+            builder.RegisterType<UserLogService>()
+                .As<IUserLogService>();
+
+            builder.RegisterType<PredefinedDataFeedCandleService>()
+                .As<ICandlesService>();
+
+            builder.RegisterType<HardCodedMovingAverageCrossFunctionInitializationService>()
+                .As<IFunctionInitializationService>();
+
+            builder.RegisterType<PredefinedHistoryDataService>()
+                .As<IHistoryDataService>();
+
+            builder.RegisterType<TaskAsyncExecutor>()
+                .As<IAsyncExecutor>();
+
 
             builder.Populate(_services);
         }

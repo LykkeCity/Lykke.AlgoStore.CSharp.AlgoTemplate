@@ -1,12 +1,11 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -19,7 +18,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private const int MIN_DELAY_BETWEEN_TICKS_IN_MILIS = 500;
         private const int MAX_DELAY_BETWEEN_TICKS_IN_MILIS = 2000;
 
-        private const decimal INITIAL_PRICE = 100.00M;
+        private const double INITIAL_PRICE = 100.00;
         private const int MAX_PRICE_CHANGE_ABS = 3;
 
         private Random _random = new Random();
@@ -27,7 +26,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IAsyncExecutor asyncExecutor;
 
         private volatile bool _isGenerating;
-        private decimal _lastPrice;
+        private double _lastPrice;
 
         /// <summary>
         /// Initializes new instance of <see cref="RandomDataQuoteProviderService"/>
@@ -54,6 +53,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _random = new Random();
             _lastPrice = INITIAL_PRICE;
             return StartGenerating();
+        }
+
+        public void Subscribe(Func<IAlgoQuote, Task> action)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -89,8 +93,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             foreach (var subscriber in this.subscribers)
             {
-                //asyncExecutor.ExecuteAsync(subscriber, GenerateRandomQuote());
-                subscriber(GenerateRandomQuote());
+                asyncExecutor.ExecuteAsync(subscriber, GenerateRandomQuote());
             }
         }
 
@@ -109,8 +112,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private IAlgoQuote GenerateRandomQuote()
         {
             var result = new AlgoQuote();
-            decimal priceChange = _random.Next(0, MAX_PRICE_CHANGE_ABS - 1);
-            priceChange += (decimal)_random.NextDouble();
+            double priceChange = _random.Next(0, MAX_PRICE_CHANGE_ABS - 1);
+            priceChange += _random.NextDouble();
             if (_random.GenerateRandomBoolean(0.51))
             {
                 result.Price = _lastPrice + priceChange;
@@ -137,5 +140,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return this._random.NextDouble() < probabilityToBeTrue;
         }
 
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Start()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

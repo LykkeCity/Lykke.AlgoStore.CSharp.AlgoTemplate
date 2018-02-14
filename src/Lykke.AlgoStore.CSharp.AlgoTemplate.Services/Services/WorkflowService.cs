@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -18,6 +20,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IFunctionsService _functionsService;
         private readonly IHistoryDataService _historyDataService;
         private readonly ITradingService _tradingService;
+        private readonly ICandlesService _candlesService;
         private readonly IStatisticsService _statisticsService;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
@@ -28,6 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IHistoryDataService historyDataService,
             IFunctionsService functionsService,
             ITradingService tradingService,
+            ICandlesService candlesService,
             IStatisticsService statisticsService,
             IAlgo algo)
         {
@@ -37,6 +41,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _functionsService = functionsService;
             _statisticsService = statisticsService;
             _tradingService = tradingService;
+            _candlesService = candlesService;
             actions = new ActionsService(_tradingService, _statisticsService, this.OnErrorHandler);
             _algo = algo;
         }
@@ -46,17 +51,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // read settings/metadata/env. var
             _algoSettingsService.Initialise();
 
-            // get all function settings from _algoSettingsService
-            // create functions
-            _functionsService.Initialise();
-
-            // This should be putted in a separate class.
-            //var historyRequest = _functionsService.GetRequest();
-            //foreach (CandlesHistoryRequest candlesHistoryRequest in historyRequest)
-            //{
-            //    var candles = _historyDataService.GetHistoryCandles(candlesHistoryRequest);
-            //    _functionsService.WarmUp(candles);
-            //}
+            // Function service initialization.
+            _functionsService.Initialize();
+            var candleServiceCandleRequests = _functionsService.GetCandleRequests().ToList();
+            _candlesService.Subscribe(candleServiceCandleRequests, OnInitialFunctionServiceData, OnFunctionServiceUpdate);
 
             // Gets not finished limited orders?!?
             // can we get it for algo ?!?
@@ -66,8 +64,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // throws if fail
             // pass _algoSettingsService in constructor
             var quoteGeneration = _quoteProviderService.Initialize();
-
             _quoteProviderService.Subscribe(OnQuote);
+            _candlesService.StartProducing();
 
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
@@ -75,7 +73,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return Task.WhenAll(quoteGeneration);
         }
 
-        private void OnQuote(IAlgoQuote quote)
+        private void OnInitialFunctionServiceData(IList<MultipleCandlesResponse> warmupData)
+        {
+            _functionsService.WarmUp(warmupData);
+        }
+
+        private void OnFunctionServiceUpdate(IList<SingleCandleResponse> candleUpdates)
+        {
+            _functionsService.Recalculate(candleUpdates);
+        }
+
+        private Task OnQuote(IAlgoQuote quote)
         {
             // Handling of the synchronization could extract it in a separate class
             IContext ctx = CreateContext(quote);
@@ -88,11 +96,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 OnErrorHandler(e);
             }
+
+            return Task.CompletedTask;
         }
 
         private void OnErrorHandler(TradingServiceException e)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(e);
         }
 
         private IContext CreateContext(IAlgoQuote quote)
@@ -101,8 +111,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             context.Data = new ContextData(quote);
 
-            _functionsService.Calculate(quote);
-            context.Functions = _functionsService;
+            //_functionsService.Calculate(quote);
+           context.Functions = _functionsService.GetFunctionResults();
 
             _statisticsService.OnQuote(quote);
             context.Data = new AlgoData(quote);
