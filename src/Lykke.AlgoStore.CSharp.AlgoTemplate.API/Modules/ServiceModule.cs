@@ -83,7 +83,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IHistoryDataService>();
 
             builder.RegisterType<StatisticsService>()
-                .WithParameter("instanceId", _settings.Nested(x => x.InstanceId))
+                .WithParameter("instanceId", _settings.CurrentValue.InstanceId)
                 .As<IStatisticsService>();
 
             builder.RegisterType<ActionsService>()

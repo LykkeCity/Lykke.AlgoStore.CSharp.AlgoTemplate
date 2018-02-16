@@ -20,6 +20,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async
         /// <typeparam name="T">The type of the action parameter</typeparam>
         /// <param name="a"><see cref="Action"/> to be executed</param>
         /// <param name="param">The action param</param>
-        Task ExecuteAsync<T>(Action<T> a, T param);
+        Task ExecuteAsync<T>(Func<T, Task> a, T param);
     }
 }
