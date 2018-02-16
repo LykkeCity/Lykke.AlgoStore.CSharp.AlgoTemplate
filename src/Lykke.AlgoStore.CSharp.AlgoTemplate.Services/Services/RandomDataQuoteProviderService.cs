@@ -22,7 +22,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private const int MAX_PRICE_CHANGE_ABS = 3;
 
         private Random _random = new Random();
-        private readonly IList<Action<IAlgoQuote>> subscribers = new List<Action<IAlgoQuote>>();
+        private readonly IList<Func<IAlgoQuote, Task>> subscribers = new List<Func<IAlgoQuote, Task>>();
         private readonly IAsyncExecutor asyncExecutor;
 
         private volatile bool _isGenerating;
@@ -55,16 +55,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return StartGenerating();
         }
 
-        public void Subscribe(Func<IAlgoQuote, Task> action)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Add a subscriber for a quote
         /// </summary>
         /// <param name="action"></param>
-        public void Subscribe(Action<IAlgoQuote> action)
+        public void Subscribe(Func<IAlgoQuote, Task> action)
         {
             this.subscribers.Add(action);
         }

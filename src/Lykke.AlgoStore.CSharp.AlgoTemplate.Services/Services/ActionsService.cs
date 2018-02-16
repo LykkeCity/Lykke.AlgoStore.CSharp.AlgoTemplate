@@ -39,7 +39,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 if (price.Result > 0)
                 {
-                    this.statisticsService.OnAction(true, volume);
+                    this.statisticsService.OnAction(true, volume, price);
                 }
 
                 return price.Result;

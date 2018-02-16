@@ -62,6 +62,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 )
                 .SingleInstance();
 
+            builder.RegisterInstance<IStatisticsRepository>(
+                    AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.Db.LogsConnString), _log))
+                .SingleInstance();
+
             // The algo and the algo workflow dependencies
             builder.RegisterType(AlgoType)
                 .As<IAlgo>();
@@ -79,6 +83,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IHistoryDataService>();
 
             builder.RegisterType<StatisticsService>()
+                .WithParameter("instanceId", _settings.CurrentValue.InstanceId)
                 .As<IStatisticsService>();
 
             builder.RegisterType<ActionsService>()

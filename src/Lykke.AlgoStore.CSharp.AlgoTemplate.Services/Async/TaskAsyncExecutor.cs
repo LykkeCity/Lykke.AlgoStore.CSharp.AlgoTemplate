@@ -13,6 +13,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async
     {
         public Task ExecuteAsync(Action a) => Task.Run(a);
 
-        public Task ExecuteAsync<T>(Action<T> a, T param) => Task.Run(() => a(param));
+        public Task ExecuteAsync<T>(Func<T, Task> a, T param) => Task.Run(() => a(param));
     }
 }

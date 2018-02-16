@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         public void GenerateTick_InvokesSubscriber()
         {
             // Create mocks
-            var actionMock = new Mock<Action<IAlgoQuote>>();
+            var actionMock = new Mock<Func<IAlgoQuote, Task>>();
             var asyncExecutorMock = new Mock<IAsyncExecutor>();
             asyncExecutorMock.Setup(e => e.ExecuteAsync(actionMock.Object, It.IsNotNull<IAlgoQuote>()));
 
@@ -33,8 +33,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         public void GenerateTick_InvokesMultipleSubscribers()
         {
             // Create mocks
-            var action1Mock = new Mock<Action<IAlgoQuote>>();
-            var action2Mock = new Mock<Action<IAlgoQuote>>();
+            var action1Mock = new Mock<Func<IAlgoQuote, Task>>();
+            var action2Mock = new Mock<Func<IAlgoQuote, Task>>();
             var asyncExecutorMock = new Mock<IAsyncExecutor>();
             asyncExecutorMock.Setup(e => e.ExecuteAsync(action1Mock.Object, It.IsNotNull<IAlgoQuote>()));
             asyncExecutorMock.Setup(e => e.ExecuteAsync(action2Mock.Object, It.IsNotNull<IAlgoQuote>()));
