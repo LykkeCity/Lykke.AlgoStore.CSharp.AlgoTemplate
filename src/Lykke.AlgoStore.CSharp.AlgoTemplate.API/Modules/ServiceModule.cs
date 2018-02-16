@@ -87,6 +87,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<RandomDataQuoteProviderService>()
                 .As<IQuoteProviderService>();
 
+            builder.BindMeClient(_settings.CurrentValue.MatchingEngineClient.IpEndpoint.GetClientIpEndPoint(), socketLog: null, ignoreErrors: true);
+
+            builder.RegisterType<MatchingEngineAdapter>()
+                .As<IMatchingEngineAdapter>()
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.FeeSettings))
+                .SingleInstance();
+
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();
 

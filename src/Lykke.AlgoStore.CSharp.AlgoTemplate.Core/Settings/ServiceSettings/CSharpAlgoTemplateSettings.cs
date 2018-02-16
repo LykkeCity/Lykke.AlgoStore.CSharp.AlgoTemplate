@@ -5,5 +5,7 @@
         public DbSettings Db { get; set; }
         public string InstanceId { get; set; }
         public QuoteRabbitMqSubscriptionSettings QuoteRabbitMqSettings { get; set; }
+        public MatchingEngineSettings MatchingEngineClient { get; set; }
+        public FeeSettings FeeSettings { get; set; }
     }
 }

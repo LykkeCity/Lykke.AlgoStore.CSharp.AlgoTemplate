@@ -1,6 +1,7 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -34,14 +35,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var price = this.tradingService.BuyReverse(volume);
+                var price = this.tradingService.BuyStraight(volume);
 
-                if (price > 0)
+                if (price.Result > 0)
                 {
                     this.statisticsService.OnAction(true, volume);
                 }
 
-                return price;
+                return price.Result;
             }
             catch (Exception e)
             {

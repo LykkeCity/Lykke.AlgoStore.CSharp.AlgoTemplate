@@ -1,4 +1,6 @@
-﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
+﻿using System.Threading.Tasks;
+
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
     /// <summary>
     /// Service providing trading capabilities
@@ -7,7 +9,7 @@
     {
         void Initialise();
 
-        double BuyStraight(double volume);
+        Task<double> BuyStraight(double volume);
         double BuyReverse(double volume);
 
         double SellStraight(double volume);
