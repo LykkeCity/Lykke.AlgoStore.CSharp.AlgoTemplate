@@ -18,13 +18,13 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         /// </summary>
         /// <param name="values">The initial values to be 
         /// computed by the function</param>
-        double WarmUp(IList<Candle> values);
+        double? WarmUp(IList<Candle> values);
 
         /// <summary>
         /// Re-calculates the function with the new value. The value is
         /// presented as <see cref="Candle"/>
         /// </summary>
         /// <param name="value"></param>
-        double AddNewValue(Candle value);
+        double? AddNewValue(Candle value);
     }
 }
