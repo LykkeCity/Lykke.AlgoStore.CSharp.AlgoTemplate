@@ -12,7 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         Task<double> BuyStraight(double volume);
         double BuyReverse(double volume);
 
-        double SellStraight(double volume);
+        Task<double> SellStraight(double volume);
         double SellReverse(double volume);
     }
 }

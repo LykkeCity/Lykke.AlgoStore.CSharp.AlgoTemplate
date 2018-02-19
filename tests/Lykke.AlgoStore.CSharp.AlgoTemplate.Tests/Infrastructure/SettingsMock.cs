@@ -37,9 +37,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                             LogsConnString = "Mock connectionString"
                         },
                         InstanceId = "Mock InstanceId",
-                        QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings(),
-                        MatchingEngineClient = new MatchingEngineSettings()
-                    }
+                        QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings(),                       
+                    },
+                    MatchingEngineClient = new MatchingEngineSettings(),
+                    AssetsServiceClient = new AssetsServiceClient(),
+                    FeeCalculatorServiceClient = new FeeCalculatorServiceClient(),
+                    FeeSettings = new FeeSettings()
                 }
             );
             return reloadingMock.Object;

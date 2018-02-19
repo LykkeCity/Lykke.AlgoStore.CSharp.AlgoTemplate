@@ -10,7 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
+using Lykke.Service.Assets.Client;
+using Lykke.Service.FeeCalculator.Client;
 using Lykke.SettingsReader;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
@@ -20,7 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
     /// </summary>
     public class ServiceModule : Module
     {
-        private readonly IReloadingManager<CSharpAlgoTemplateSettings> _settings;
+        private readonly IReloadingManager<AppSettings> _settings;
         private readonly ILog _log;
         // NOTE: you can remove it if you don't need to use IServiceCollection extensions to register service specific dependencies
         private readonly IServiceCollection _services;
@@ -29,7 +32,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
         /// Initializes new instance of the <see cref="ServiceModule"/>
         /// </summary>
         /// <param name="log">The <see cref="ILog"/> implementation to be used</param>
-        public ServiceModule(IReloadingManager<CSharpAlgoTemplateSettings> settings, ILog log)
+        public ServiceModule(IReloadingManager<AppSettings> settings, ILog log)
         {
             _settings = settings;
             _log = log;
@@ -58,12 +61,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IShutdownManager>();
 
             builder.RegisterInstance<IUserLogRepository>(
-                    AzureRepoFactories.CreateUserLogRepository(_settings.Nested(x => x.Db.LogsConnString), _log)
+                    AzureRepoFactories.CreateUserLogRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log)
                 )
                 .SingleInstance();
 
             builder.RegisterInstance<IStatisticsRepository>(
-                    AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.Db.LogsConnString), _log))
+                    AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log))
                 .SingleInstance();
 
             // The algo and the algo workflow dependencies
@@ -83,7 +86,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IHistoryDataService>();
 
             builder.RegisterType<StatisticsService>()
-                .WithParameter("instanceId", _settings.CurrentValue.InstanceId)
+                .WithParameter("instanceId", _settings.CurrentValue.CSharpAlgoTemplateService.InstanceId)
                 .As<IStatisticsService>();
 
             builder.RegisterType<ActionsService>()
@@ -91,6 +94,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<RandomDataQuoteProviderService>()
                 .As<IQuoteProviderService>();
+
+            builder.RegisterType<AssetServiceDecorator>()
+                .As<IAssetServiceDecorator>()
+                .SingleInstance();
+
+            builder.RegisterFeeCalculatorClient(_settings.CurrentValue.FeeCalculatorServiceClient.ServiceUrl, _log);
+
+            _services.RegisterAssetsClient(AssetServiceSettings.Create(
+                new Uri(_settings.CurrentValue.AssetsServiceClient.ServiceUrl),
+                _settings.CurrentValue.CSharpAlgoTemplateService.CacheExpirationPeriod));
 
             builder.BindMeClient(_settings.CurrentValue.MatchingEngineClient.IpEndpoint.GetClientIpEndPoint(), socketLog: null, ignoreErrors: true);
 
@@ -114,22 +127,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<TaskAsyncExecutor>()
                 .As<IAsyncExecutor>();
 
-
             builder.RegisterType<UserLogService>()
                 .As<IUserLogService>();
-
-            builder.RegisterType<PredefinedDataFeedCandleService>()
-                .As<ICandlesService>();
-
-            builder.RegisterType<HardCodedMovingAverageCrossFunctionInitializationService>()
-                .As<IFunctionInitializationService>();
-
-            builder.RegisterType<PredefinedHistoryDataService>()
-                .As<IHistoryDataService>();
-
-            builder.RegisterType<TaskAsyncExecutor>()
-                .As<IAsyncExecutor>();
-
 
             builder.Populate(_services);
         }

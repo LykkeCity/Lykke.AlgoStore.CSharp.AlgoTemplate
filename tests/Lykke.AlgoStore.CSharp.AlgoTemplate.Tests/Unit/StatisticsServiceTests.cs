@@ -11,6 +11,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using Moq;
 using NUnit.Framework;
 using Remotion.Linq.Utilities;
+using Mapper = AutoMapper.Mapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
