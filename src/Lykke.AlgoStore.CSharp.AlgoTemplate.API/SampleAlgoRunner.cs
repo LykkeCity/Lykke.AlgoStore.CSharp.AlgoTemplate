@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.Configuration;
+using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -18,6 +19,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
     /// </summary>
     public class AlgoRunner
     {
+        public const string USER_DEFINED_ALGOS_NAMESPACE = "Lykke.AlgoStore.CSharp.Algo.Implemention.ExecutableClass";
+        public static readonly Type DEFAULT_ALGO_CLASS_TO_RUN;
+
+        static AlgoRunner()
+        {
+            // Initialize eagerly the class for the algo assembly so
+            // that the runtime loads the algos assembly prior to
+            // tunning the main
+            DEFAULT_ALGO_CLASS_TO_RUN = typeof(DummyAlgo);
+        }
+
         public static async Task Main(string[] args)
         {
             // Build the inversion of control container
@@ -70,11 +82,37 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
             var builder = new ContainerBuilder();
             var serviceModule = new ServiceModule(appSettings.Nested(x => x.CSharpAlgoTemplateService), new LogToConsole());
-            serviceModule.AlgoType = typeof(DummyAlgo);
+            serviceModule.AlgoType = GetAlgoType();
             builder.RegisterModule(serviceModule);
 
             var ioc = builder.Build();
             return ioc;
+        }
+
+        private static Type GetAlgoType()
+        {
+            var userDefinedAlgos = AppDomain.CurrentDomain.GetAssemblies()
+                   .SelectMany(t => t.GetTypes())
+                   .Where(t => t.IsClass
+                   && t.Namespace == USER_DEFINED_ALGOS_NAMESPACE
+                   && typeof(IAlgo).IsAssignableFrom(t)).ToList();
+
+            // Single user defined algo found
+            if (userDefinedAlgos.Count == 1)
+            {
+                return userDefinedAlgos[0];
+            }
+
+            // More than one user defined algos found. Can not run all of them - single algo is expected
+            if (userDefinedAlgos.Count > 1)
+            {
+                throw new Exception($"Ambiguous request for running algos. " +
+                    $"Found more than one #{typeof(IAlgo).Name} implementation " +
+                    $"in namespace ${USER_DEFINED_ALGOS_NAMESPACE}");
+            }
+
+            // If no user defined algos found run the default one
+            return DEFAULT_ALGO_CLASS_TO_RUN;
         }
     }
 }
