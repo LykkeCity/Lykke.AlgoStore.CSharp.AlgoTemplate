@@ -10,7 +10,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
     public class DummyAlgo : IAlgo
     {
         public void OnQuoteReceived(IContext context)
-        {
+        {       
             var quote = context.Data.GetQuote();
             context.Actions.Log($"Receiving quote at {DateTime.UtcNow} " +
                 $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
@@ -19,9 +19,9 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             var smaShort = context.Functions.GetValue("SMA_Short");
             var smaLong = context.Functions.GetValue("SMA_Long");
             context.Actions.Log($"Function values are: SMA_Short: {smaShort}, SMA_Long: {smaLong}");
-
-            var buyOrder = context.Actions.BuyStraight(0.2);
-            context.Actions.Log($"Buying {buyOrder} at {DateTime.UtcNow}");
+            
+            //var buyOrder = context.Actions.Buy(0.2);
+            //context.Actions.Log($"Buying {buyOrder} at {DateTime.UtcNow}");
         }
     }
 }

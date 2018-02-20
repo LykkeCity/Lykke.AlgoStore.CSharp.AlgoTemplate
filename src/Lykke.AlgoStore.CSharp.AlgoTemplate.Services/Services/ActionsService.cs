@@ -31,7 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             this.onErrorHandler = onErrorHandler;
         }
 
-        public double BuyStraight(double volume)
+        public double Buy(double volume)
         {
             try
             {
@@ -46,15 +46,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
             catch (Exception e)
             {
-                onErrorHandler.Invoke(e, "Meaningful message for the user");
+                onErrorHandler.Invoke(e, "There was a problem placing a buy order.");
                 // If we can not return. re-throw.
                 throw;
             }
-        }
-
-        public double BuyReverse(double volume)
-        {
-            throw new NotImplementedException();
         }
 
         public void Log(string message)
@@ -62,14 +57,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             Console.WriteLine(message);
         }
 
-        public double SellReverse(double volume)
+        public double Sell(double volume)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                var price = this.tradingService.SellStraight(volume);
 
-        public double SellStraight(double volume)
-        {
-            throw new NotImplementedException();
+                if (price.Result > 0)
+                {
+                    this.statisticsService.OnAction(true, volume, price.Result);
+                }
+
+                return price.Result;
+            }
+            catch (Exception e)
+            {
+                onErrorHandler.Invoke(e, "There was a problem placing a sell order.");
+                // If we can not return. re-throw.
+                throw;
+            }
         }
     }
 }
