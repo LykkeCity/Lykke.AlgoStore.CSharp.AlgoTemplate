@@ -29,7 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         /// Warm up function with data
         /// </summary>
         /// <param name="values">Values that will be used to warm up data</param>
-        public override double WarmUp(double[] values)
+        public override double? WarmUp(double[] values)
         {
             if (values == null)
                 throw new ArgumentException();
@@ -58,7 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         /// Add new value to SMA function
         /// </summary>
         /// <param name="value">New value that will be used in future calculus</param>
-        public override double AddNewValue(double value)
+        public override double? AddNewValue(double value)
         {
             if (_storageQueue.Count >= _functionParams.Capacity && _functionParams.Capacity > 0)
                 _storageQueue.Dequeue();

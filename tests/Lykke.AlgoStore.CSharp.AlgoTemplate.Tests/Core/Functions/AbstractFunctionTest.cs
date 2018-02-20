@@ -30,7 +30,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
                 _functionParams.CandleOperationMode = candleValue;
             }
 
-            public override double AddNewValue(double value)
+            public override double? AddNewValue(double value)
             {
                 _latestAddNewValue = value;
 
@@ -39,7 +39,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
                 return value;
             }
 
-            public override double WarmUp(double[] values)
+            public override double? WarmUp(double[] values)
             {
                 _latestWarmUp = values;
 
