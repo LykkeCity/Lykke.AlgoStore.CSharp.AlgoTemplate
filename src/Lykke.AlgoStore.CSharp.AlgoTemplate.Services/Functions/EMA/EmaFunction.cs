@@ -47,7 +47,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
             _storageQueue = _functionParams.EmaPeriod == 0 ? new Queue<double>() : new Queue<double>(_functionParams.EmaPeriod);
 
             foreach (var value in values)
-                _emaPreviousPeriod = GetInitialValues(value);
+                _emaPreviousPeriod = GetInitialValue(value);
 
             return _emaPreviousPeriod;
         }
@@ -60,7 +60,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
         {
             if (!isReady)
             {
-                _emaPreviousPeriod = GetInitialValues(value);
+                _emaPreviousPeriod = GetInitialValue(value);
                 return _emaPreviousPeriod;
             }
 
@@ -80,7 +80,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
             return isReady;
         }
 
-        private double? GetInitialValues(double value)
+        private double? GetInitialValue(double value)
         {
             if (_storageQueue.Count >= _period && _period > 0)
                 _storageQueue.Dequeue();
