@@ -1,4 +1,4 @@
-﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.AlgoMetaDataModels
+﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels
 {
     public class AlgoMetaDataParameter
     {

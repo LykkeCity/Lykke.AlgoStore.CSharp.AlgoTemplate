@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
 using Lykke.SettingsReader;
@@ -34,9 +35,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                     {
                         Db = new DbSettings
                         {
-                            LogsConnString = "Mock connectionString"
+                            LogsConnString = "Mock connectionString",
+                            TableStorageConnectionString = "Mock connectionString"
                         },
                         InstanceId = "Mock InstanceId",
+                        AlgoId = "Mock AlgoId",
+                        ClientId = "Mock ClientId", 
                         QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings(),                       
                     },
                     MatchingEngineClient = new MatchingEngineSettings(),
@@ -55,11 +59,32 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
             return config.ConnectionString(x => x.CSharpAlgoTemplateService.Db.LogsConnString);
         }
 
+        public static IReloadingManager<string> GetTableStorageConnectionString()
+        {
+            var config = InitConfig();
+
+            return config.ConnectionString(x => x.CSharpAlgoTemplateService.Db.TableStorageConnectionString);
+        }
+
         public static IReloadingManager<string> GetInstanceId()
         {
             var config = InitConfig();
 
             return config.Nested(x => x.CSharpAlgoTemplateService.InstanceId);
+        }
+
+        public static IReloadingManager<string> GetAlgoId()
+        {
+            var config = InitConfig();
+
+            return config.Nested(x => x.CSharpAlgoTemplateService.AlgoId);
+        }
+
+        public static IReloadingManager<string> GetClientId()
+        {
+            var config = InitConfig();
+
+            return config.Nested(x => x.CSharpAlgoTemplateService.ClientId);
         }
 
         public static IReloadingManager<QuoteRabbitMqSubscriptionSettings> GetQuoteSettings()
@@ -78,6 +103,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
             else
                 config = InitMockConfiguration();
             return config;
-        }
+        }       
     }
 }

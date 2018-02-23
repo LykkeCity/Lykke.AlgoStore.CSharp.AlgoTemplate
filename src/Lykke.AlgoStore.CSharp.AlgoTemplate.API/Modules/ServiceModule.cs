@@ -11,7 +11,7 @@ using System;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.Service.Assets.Client;
 using Lykke.Service.FeeCalculator.Client;
 using Lykke.SettingsReader;
@@ -69,6 +69,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                     AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log))
                 .SingleInstance();
 
+            builder.RegisterInstance<IAlgoClientInstanceRepository>(
+                    AzureRepoFactories.CreateAlgoClientInstanceRepository(
+                        _settings.Nested(x => x.CSharpAlgoTemplateService.Db.TableStorageConnectionString), _log))
+                .SingleInstance();
+
             // The algo and the algo workflow dependencies
             builder.RegisterType(AlgoType)
                 .As<IAlgo>();
@@ -77,6 +82,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IAlgoWorkflowService>();
 
             builder.RegisterType<AlgoSettingsService>()
+                .WithParameter("instanceId", _settings.CurrentValue.CSharpAlgoTemplateService.InstanceId)
+                .WithParameter("algoId", _settings.CurrentValue.CSharpAlgoTemplateService.AlgoId)
                 .As<IAlgoSettingsService>();
 
             builder.RegisterType<FunctionsService>()

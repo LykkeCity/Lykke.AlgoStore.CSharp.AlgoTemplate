@@ -6,6 +6,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings
     {
         public DbSettings Db { get; set; }
         public string InstanceId { get; set; }
+        public string AlgoId { get; set; }
+        public string ClientId { get; set; }
         public TimeSpan CacheExpirationPeriod { get; set; }
         public QuoteRabbitMqSubscriptionSettings QuoteRabbitMqSettings { get; set; }
     }

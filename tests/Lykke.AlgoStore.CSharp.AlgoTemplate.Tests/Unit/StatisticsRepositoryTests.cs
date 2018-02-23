@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using AzureStorage.Tables;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entitites;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using NUnit.Framework;
 

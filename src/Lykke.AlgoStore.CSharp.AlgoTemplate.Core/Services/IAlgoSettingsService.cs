@@ -3,6 +3,9 @@
     public interface IAlgoSettingsService
     {
         void Initialise();
-        string GetSetting(string key);
+        string GetMetadataSetting(string key);
+        string GetAlgoInstanceClientId();
+        string GetAlgoInstanceAssetPair();
+        string GetAlgoInstanceTradedAsset();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entitites
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities
 {
     public class StatisticsEntity : TableEntity
     {

@@ -4,6 +4,7 @@ using AutoFixture;
 using AutoMapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
