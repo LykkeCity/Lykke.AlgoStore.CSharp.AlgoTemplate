@@ -65,9 +65,9 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         /// </summary>
         /// <param name="values">The initial values to be 
         /// computed by the function</param>
-        abstract public double WarmUp(double[] values);
+        abstract public double? WarmUp(double[] values);
 
-        public double WarmUp(IList<Candle> values)
+        public double? WarmUp(IList<Candle> values)
         {
             try
             {
@@ -88,9 +88,9 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         /// Re-calculate the function with the new value
         /// </summary>
         /// <param name="value"></param>
-        abstract public double AddNewValue(double value);
+        abstract public double? AddNewValue(double value);
 
-        public double AddNewValue(Candle value)
+        public double? AddNewValue(Candle value)
         {
             if (value == null)
             {
