@@ -1,0 +1,163 @@
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
+using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
+{
+    public class DirectionalMovemnetIndexMinusFunction : IFunction
+    {
+        private readonly int _period;
+        private DMIParameters _functionParams = new DMIParameters();
+        public FunctionParamsBase FunctionParameters => _functionParams;
+
+        private double? DirectionalMovemnetIndexMinus { get; set; }
+        private double? SmoothedDirectionalMovementMinus { get; set; }
+        private double? PreviousSmoothedDirectionalMovementMinus { get; set; }
+
+        private Queue<double> DirectionalMovementMinuses { get; set; }
+        private double DirectionalMovementMinus { get; set; }
+
+        /// <summary>
+        /// ATR
+        /// </summary>
+        public double? AverageTrueRange { get; set; }
+        private double? PreviousAverageTrueRange { get; set; }
+
+        private readonly bool _isAverageTrueRangeSet = false;
+
+        private Candle _previousInput;
+        private ATRFunction ATRFunction { get; set; }
+
+        public DirectionalMovemnetIndexMinusFunction(DMIParameters dmiParameters)
+        {
+            _period = dmiParameters.Priod;
+            _functionParams = dmiParameters;
+            DirectionalMovementMinuses = _functionParams.Priod == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Priod);
+            _isAverageTrueRangeSet = _functionParams.IsAverageTrueRangeSet;
+            AverageTrueRange = 0.0d;
+            ATRFunction = new ATRFunction(new AdxParameters() { AdxPriod = _period });
+        }
+
+        public double? WarmUp(IList<Candle> values)
+        {
+            if (values == null)
+                throw new ArgumentException();
+
+            foreach (var value in values)
+            {
+                _functionParams.Samples++;
+
+                if (!_isAverageTrueRangeSet)
+                {
+                    AverageTrueRange = ATRFunction.AddNewValue(value);
+                }
+
+                DirectionalMovementMinus = ComputeNegativeDirectionalMovement(value);
+
+                if (values.IndexOf(value) > 0 && !IsReady)
+                {
+                    DirectionalMovementMinuses.Enqueue(DirectionalMovementMinus);
+                }
+
+                SmoothedDirectionalMovementMinus = ComputeSmoothedDirectionalMovementMinus();
+                DirectionalMovemnetIndexMinus = ComputeNegativeDirectionalIndex();
+
+                _previousInput = value;
+            }
+
+            return DirectionalMovemnetIndexMinus;
+        }
+
+        public bool IsReady
+        {
+            get { return _functionParams.Samples > _period + 1; }
+        }
+
+        public double? AddNewValue(Candle value)
+        {
+            if (value == null)
+                throw new ArgumentException();
+
+            _functionParams.Samples++;
+
+            if (!_isAverageTrueRangeSet)
+            {
+                AverageTrueRange = ATRFunction.AddNewValue(value);
+            }
+
+            DirectionalMovementMinus = ComputeNegativeDirectionalMovement(value);
+
+            if (!IsReady)
+            {
+                if (_functionParams.Samples > 1)
+                {
+                    DirectionalMovementMinuses.Enqueue(DirectionalMovementMinus);
+                }
+            }
+
+            SmoothedDirectionalMovementMinus = ComputeSmoothedDirectionalMovementMinus();
+            DirectionalMovemnetIndexMinus = ComputeNegativeDirectionalIndex();
+
+            _previousInput = value;
+
+            return DirectionalMovemnetIndexMinus;
+        }
+
+        /// <summary>
+        /// Computes the negative directional movement.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        private double ComputeNegativeDirectionalMovement(Candle input)
+        {
+            var negativeDirectionalMovement = 0.0d;
+
+            if (_previousInput == null) return negativeDirectionalMovement;
+
+            if ((_previousInput.Low - input.Low) > (input.High - _previousInput.High))
+            {
+                if ((_previousInput.Low - input.Low) > 0)
+                {
+                    negativeDirectionalMovement = _previousInput.Low - input.Low;
+                }
+            }
+            return negativeDirectionalMovement;
+        }
+
+        /// <summary>
+        /// Computes the Minus Directional Movment Indicator (-DMI period).
+        /// </summary>
+        /// <returns></returns>
+        private double? ComputeNegativeDirectionalIndex()
+        {
+            if (AverageTrueRange == null || AverageTrueRange == 0) return null;
+
+            var negativeDirectionalIndex = (SmoothedDirectionalMovementMinus.Value / AverageTrueRange.Value) * 100;
+
+            return negativeDirectionalIndex;
+        }
+
+        /// <summary>
+        /// Calculates the Smoothed -DX
+        /// </summary>
+        private double? ComputeSmoothedDirectionalMovementMinus()
+        {
+            double? value = null;
+
+            if (_functionParams.Samples == _period + 1)
+            {
+                value = DirectionalMovementMinuses.Average();
+                PreviousSmoothedDirectionalMovementMinus = value.Value;
+            }
+            else if (_functionParams.Samples > _period + 1)
+            {
+                value = ((PreviousSmoothedDirectionalMovementMinus * (_period - 1)) + DirectionalMovementMinus) / _period;
+                PreviousSmoothedDirectionalMovementMinus = value;
+            }
+
+            return value;
+        }
+    }
+}
