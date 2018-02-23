@@ -24,7 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
 
         public static string GeneratePartitionKey(string key) => key;
 
-        public static string GenerateRowKey() => String.Format("{0:D19}_{1}", DateTime.MaxValue.Ticks - DateTime.Now.Ticks, Guid.NewGuid());
+        public static string GenerateRowKey() => String.Format("{0:D19}_{1}", DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks, Guid.NewGuid());
 
         public async Task WriteAsync(UserLog userLog)
         {
