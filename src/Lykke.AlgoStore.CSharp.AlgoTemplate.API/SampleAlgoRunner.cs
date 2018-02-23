@@ -75,9 +75,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .Build();
 
-            config.Providers.First().Set("SettingsUrl", "appsettings.Development.json");
-            config.Providers.First().Set("ASPNETCORE_ENVIRONMENT", "Development");
-
             var appSettings = config.LoadSettings<AppSettings>();
 
             var builder = new ContainerBuilder();
