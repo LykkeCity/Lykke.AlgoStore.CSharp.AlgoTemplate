@@ -9,6 +9,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
     public class DirectionalMovemnetIndexMinusFunction : IFunction
     {
         private readonly int _period;
+        private readonly bool _isAverageTrueRangeSet = false;
+
+        private int _samples { get; set; }
+
         private DMIParameters _functionParams = new DMIParameters();
         public FunctionParamsBase FunctionParameters => _functionParams;
 
@@ -23,9 +27,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         /// ATR
         /// </summary>
         public double? AverageTrueRange { get; set; }
-        private double? PreviousAverageTrueRange { get; set; }
-
-        private readonly bool _isAverageTrueRangeSet = false;
+        public double? PreviousAverageTrueRange { get; set; }
 
         private Candle _previousInput;
         private ATRFunction ATRFunction { get; set; }
@@ -37,7 +39,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             DirectionalMovementMinuses = _functionParams.Priod == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Priod);
             _isAverageTrueRangeSet = _functionParams.IsAverageTrueRangeSet;
             AverageTrueRange = 0.0d;
-            ATRFunction = new ATRFunction(new AdxParameters() { AdxPriod = _period });
+            ATRFunction = new ATRFunction(new AtrParameters() { Period = _period });
+            _samples = 0;
         }
 
         public double? WarmUp(IList<Candle> values)
@@ -47,7 +50,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
             foreach (var value in values)
             {
-                _functionParams.Samples++;
+                _samples++;
 
                 if (!_isAverageTrueRangeSet)
                 {
@@ -72,7 +75,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
         public bool IsReady
         {
-            get { return _functionParams.Samples > _period + 1; }
+            get { return _samples > _period + 1; }
         }
 
         public double? AddNewValue(Candle value)
@@ -80,7 +83,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             if (value == null)
                 throw new ArgumentException();
 
-            _functionParams.Samples++;
+            if (!IsReady)
+                _samples++;
 
             if (!_isAverageTrueRangeSet)
             {
@@ -91,7 +95,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
             if (!IsReady)
             {
-                if (_functionParams.Samples > 1)
+                if (_samples > 1)
                 {
                     DirectionalMovementMinuses.Enqueue(DirectionalMovementMinus);
                 }
@@ -146,12 +150,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         {
             double? value = null;
 
-            if (_functionParams.Samples == _period + 1)
+            if (_samples == _period + 1)
             {
                 value = DirectionalMovementMinuses.Average();
                 PreviousSmoothedDirectionalMovementMinus = value.Value;
             }
-            else if (_functionParams.Samples > _period + 1)
+            else if (_samples > _period + 1)
             {
                 value = ((PreviousSmoothedDirectionalMovementMinus * (_period - 1)) + DirectionalMovementMinus) / _period;
                 PreviousSmoothedDirectionalMovementMinus = value;

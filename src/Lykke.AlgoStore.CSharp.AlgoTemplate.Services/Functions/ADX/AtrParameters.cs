@@ -2,8 +2,8 @@
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 {
-    public class AdxParameters : FunctionParamsBase
+    public class AtrParameters : FunctionParamsBase
     {
-        public int AdxPeriod { get; set; }
+        public int Period { get; set; }
     }
 }

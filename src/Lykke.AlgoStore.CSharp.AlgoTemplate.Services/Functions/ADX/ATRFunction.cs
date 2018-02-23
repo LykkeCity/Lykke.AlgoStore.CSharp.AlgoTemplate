@@ -10,7 +10,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
     {
         private readonly int _period;
         private Candle _previousInput;
-        private AdxParameters _functionParams = new AdxParameters();
+        private int _samples { get; set; }
+
+        private AtrParameters _functionParams = new AtrParameters();
         public FunctionParamsBase FunctionParameters => _functionParams;
 
         /// <summary>
@@ -34,11 +36,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private double? PreviousAverageTrueRange { get; set; }
 
 
-        public ATRFunction(AdxParameters adxParameters)
+        public ATRFunction(AtrParameters adxParameters)
         {
-            _period = adxParameters.AdxPriod;
+            _period = adxParameters.Period;
             _functionParams = adxParameters;
-            TrueRanges = _functionParams.AdxPriod == 0 ? new Queue<double>() : new Queue<double>(_functionParams.AdxPriod);
+            TrueRanges = _functionParams.Period == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Period);
             AverageTrueRange = 0.0d;
         }
 
@@ -49,7 +51,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
             foreach (var value in values)
             {
-                _functionParams.Samples++;
+                _samples++;
 
                 TrueRange = ComputeTrueRange(value);
                 if (values.IndexOf(value) > 0)
@@ -65,7 +67,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
         public bool IsReady
         {
-            get { return _functionParams.Samples > _period + 1; }
+            get { return _samples > _period + 1; }
         }
 
         public double? AddNewValue(Candle value)
@@ -73,13 +75,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             if (value == null)
                 throw new ArgumentException();
 
-            _functionParams.Samples++;
+            if (!IsReady)
+                _samples++;
 
             TrueRange = ComputeTrueRange(value);
 
             if (!IsReady)
             {
-                if (_functionParams.Samples > 1)
+                if (_samples > 1)
                 {
                     TrueRanges.Enqueue(TrueRange);
                 }
@@ -119,11 +122,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         {
             double? value = null;
 
-            if (_functionParams.Samples == _period + 1)
+            if (_samples == _period + 1)
             {
                 value = TrueRanges.Average();
             }
-            else if (_functionParams.Samples > _period + 1)
+            else if (_samples > _period + 1)
             {
                 value = ((PreviousAverageTrueRange * (_period - 1)) + TrueRange) / _period;
             }

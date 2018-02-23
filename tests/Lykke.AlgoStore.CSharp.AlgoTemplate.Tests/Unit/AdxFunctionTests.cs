@@ -58,7 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxWarmUp()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPriod = DEFAULT_PERCISION });
+            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
             var values = GetTestCandles("Adx_Examples2.txt");
 
             double? adxValue = 0.0d;
@@ -73,7 +73,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxWarmUpBiggerData()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPriod = DEFAULT_PERCISION });
+            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
             var values = GetTestCandles("Adx_Examples3.txt");
 
             double? adxValue = 0.0d;
@@ -88,7 +88,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxWarmUpAndAddTheRest()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPriod = DEFAULT_PERCISION });
+            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
             var values = GetTestCandles("Adx_Examples2.txt").ToList();
 
             var valuesToWarmUp = values.GetRange(0, 28);
@@ -115,7 +115,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxWarmUpReturnNull()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPriod = DEFAULT_PERCISION });
+            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameNotFullData);
 
             double? adxValue = 0.0d;
@@ -127,7 +127,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxAddNew()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPriod = DEFAULT_PERCISION });
+            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameCorrectData);
 
             double? adxValue = 0.0d;
@@ -144,7 +144,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateATRFunction()
         {
-            var function = new ATRFunction(new AdxParameters() { AdxPriod = DEFAULT_PERCISION });
+            var function = new ATRFunction(new AtrParameters() { Period = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameCorrectData);
 
             var atrValue = function.WarmUp(values);
@@ -157,7 +157,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateATRFunctionAddNew()
         {
-            var function = new ATRFunction(new AdxParameters() { AdxPriod = DEFAULT_PERCISION });
+            var function = new ATRFunction(new AtrParameters() { Period = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameCorrectData);
 
             double? atrValue = 0.0d;
