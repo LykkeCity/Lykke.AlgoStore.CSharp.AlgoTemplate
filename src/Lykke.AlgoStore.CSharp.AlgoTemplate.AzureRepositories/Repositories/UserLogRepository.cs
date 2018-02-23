@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities;
@@ -23,16 +24,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
 
         public static string GeneratePartitionKey(string key) => key;
 
-        public static string GenerateRowKey(DateTime date) => date.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+        public static string GenerateRowKey() => String.Format("{0:D19}_{1}", DateTime.MaxValue.Ticks - DateTime.Now.Ticks, Guid.NewGuid());
 
         public async Task WriteAsync(UserLog userLog)
         {
             var entity = AutoMapper.Mapper.Map<UserLogEntity>(userLog);
 
             entity.PartitionKey = GeneratePartitionKey(userLog.InstanceId);
-            entity.RowKey = GenerateRowKey(userLog.Date);
+            entity.RowKey = GenerateRowKey();
 
             await _table.InsertOrMergeAsync(entity);
+        }
+
+        public async Task<List<UserLog>> GetEntries(int limit, string instanceId)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId);
+            var data = await _table.GetDataAsync(new List<string> { partitionKey }, limit);
+
+            var result = AutoMapper.Mapper.Map<List<UserLog>>(data);
+
+            return result;
         }
     }
 }
