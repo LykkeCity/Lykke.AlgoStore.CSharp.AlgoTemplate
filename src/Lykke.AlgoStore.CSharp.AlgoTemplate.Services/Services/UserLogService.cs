@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
@@ -20,6 +21,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public async Task Write(UserLog userLog)
         {
             await _userLogRepository.WriteAsync(userLog);
+        }
+
+        public async Task Write(string instanceId, Exception exception)
+        {
+            await _userLogRepository.WriteAsync(instanceId, exception);
+        }
+
+        public async Task Write(string instanceId, string message)
+        {
+            await _userLogRepository.WriteAsync(instanceId, message);
         }
     }
 }
