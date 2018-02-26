@@ -86,6 +86,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return ConvertToApiModel<double>(response.Status);
         }
 
+
+        //This method is to be used in the future when implementing Limit orders.
         //public async Task<ResponseModel<Guid>> PlaceLimitOrderAsync(string clientId, string assetPairId, Core.Domain.OrderAction orderAction, double volume,
         //    double price, bool cancelPreviousOrders = false)
         //{
@@ -160,6 +162,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             };
         }
 
+        //To be used in future when implementing Limit orders
         //private async Task<LimitOrderFeeModel> GetLimitOrderFee(string clientId, string assetPairId, Core.Domain.OrderAction orderAction)
         //{
         //    var assetPair = await _assetsService.AssetPairGetAsync(assetPairId);

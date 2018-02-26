@@ -34,17 +34,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algoSettingsService = algoSettingsService;
         }
 
-
         public void Initialise()
         {
             _assetPairId = _algoSettingsService.GetAlgoInstanceAssetPair();
             _asset = _algoSettingsService.GetAlgoInstanceTradedAsset();
             _clientId = _algoSettingsService.GetAlgoInstanceClientId();
-        }
-
-        public virtual double SellReverse(double volume)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<double> SellStraight(double volume)
@@ -112,11 +106,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 reservedLimitVolume: null);
 
             return response.Result;
-        }
-
-        public double BuyReverse(double volume)
-        {
-            throw new NotImplementedException();
         }
     }
 }
