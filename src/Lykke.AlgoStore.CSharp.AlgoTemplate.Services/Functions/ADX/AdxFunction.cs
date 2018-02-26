@@ -39,8 +39,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             DirectionalMovementIndexes = _functionParams.AdxPeriod == 0 ? new Queue<double>() : new Queue<double>(_functionParams.AdxPeriod);
             AverageTrueRange = 0.0d;
 
-            DMIPlusFucn = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Priod = _period, IsAverageTrueRangeSet = true });
-            DMIMinusFucn = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Priod = _period, IsAverageTrueRangeSet = true });
+            DMIPlusFucn = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Period = _period, IsAverageTrueRangeSet = true });
+            DMIMinusFucn = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Period = _period, IsAverageTrueRangeSet = true });
             ATRFunction = new ATRFunction(new AtrParameters() { Period = _period });
         }
 

@@ -4,7 +4,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 {
     public class DMIParameters : FunctionParamsBase
     {
-        public int Priod { get; set; }
+        public int Period { get; set; }
         public bool IsAverageTrueRangeSet { get; set; }
     }
 }

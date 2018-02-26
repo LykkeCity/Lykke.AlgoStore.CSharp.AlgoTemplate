@@ -32,9 +32,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
         public DirectionalMovementIndexPlusFunction(DMIParameters dmiParameters)
         {
-            _period = dmiParameters.Priod;
+            _period = dmiParameters.Period;
             _functionParams = dmiParameters;
-            DirectionalMovementPluses = _functionParams.Priod == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Priod);
+            DirectionalMovementPluses = _functionParams.Period == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Period);
             _isAverageTrueRangeSet = _functionParams.IsAverageTrueRangeSet;
             AverageTrueRange = 0.0d;
             ATRFunction = new ATRFunction(new AtrParameters() { Period = _period });
