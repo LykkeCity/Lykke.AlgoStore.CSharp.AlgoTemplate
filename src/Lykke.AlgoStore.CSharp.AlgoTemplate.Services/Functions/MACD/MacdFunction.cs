@@ -70,6 +70,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD
 
             double? result = null;
 
+            // Needed to properly initialize the EMA functions
+            var emptyWarmup = new double[0];
+            _fastEma.WarmUp(emptyWarmup);
+            _slowEma.WarmUp(emptyWarmup);
+            _signalLine.WarmUp(emptyWarmup);
+
             foreach (var value in values)
                 result = AddNewValue(value);
 
