@@ -15,6 +15,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private AtrParameters _functionParams = new AtrParameters();
         public FunctionParamsBase FunctionParameters => _functionParams;
 
+        public bool IsReady => _samples > _period + 1;
+
         /// <summary>
         /// TR - True range
         /// </summary>
@@ -65,11 +67,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             return AverageTrueRange;
         }
 
-        public bool IsReady
-        {
-            get { return _samples > _period + 1; }
-        }
-
         public double? AddNewValue(Candle value)
         {
             if (value == null)
@@ -105,9 +102,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
             if (_previousInput == null) return trueRange;
 
-            trueRange = (Math.Max(Math.Abs(input.High - input.Low),
+            trueRange = Math.Max(Math.Abs(input.High - input.Low),
                             Math.Max(Math.Abs(input.High - _previousInput.Close),
-                                        Math.Abs(input.Low - _previousInput.Close))));
+                                        Math.Abs(input.Low - _previousInput.Close)));
 
             return trueRange;
         }

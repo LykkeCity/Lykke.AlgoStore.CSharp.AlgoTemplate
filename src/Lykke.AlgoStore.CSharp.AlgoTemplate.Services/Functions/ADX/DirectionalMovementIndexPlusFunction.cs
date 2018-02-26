@@ -22,6 +22,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private Queue<double> DirectionalMovementPluses { get; set; }
         private double DirectionalMovementPlus { get; set; }
 
+        public bool IsReady => _samples > _period + 1;
+
         /// <summary>
         /// ATR
         /// </summary>
@@ -69,11 +71,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             }
 
             return DirectionalMovementIndexPlus;
-        }
-
-        public bool IsReady
-        {
-            get { return _samples > _period + 1; }
         }
 
         public double? AddNewValue(Candle value)

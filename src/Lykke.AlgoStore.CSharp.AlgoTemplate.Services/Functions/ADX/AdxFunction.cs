@@ -3,7 +3,6 @@ using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 {
@@ -16,6 +15,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         public FunctionParamsBase FunctionParameters => _functionParams;
 
         #region Additional Parameters
+
+        public bool IsReady => _samples > _period * 2;
 
         private double? DirectionalMovementIndexMinus { get; set; }
         private double? DirectionalMovementIndexPlus { get; set; }
@@ -124,10 +125,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                 return null;
         }
 
-        public bool IsReady
-        {
-            get { return _samples > _period * 2; }
-        }
     }
 }
 
