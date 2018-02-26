@@ -36,6 +36,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
             await _table.InsertOrMergeAsync(entity);
         }
 
+        public async Task WriteAsync(string instanceId, string message)
+        {
+            var entity = new UserLogEntity
+            {
+                Message = message,
+                Date = DateTime.UtcNow,
+
+                PartitionKey = GeneratePartitionKey(instanceId),
+                RowKey = GenerateRowKey()
+            };
+
+            await _table.InsertOrMergeAsync(entity);
+        }
+
+        public async Task WriteAsync(string instanceId, Exception exception)
+        {
+            await WriteAsync(instanceId, exception.ToString());
+        }
+
         public async Task<List<UserLog>> GetEntries(int limit, string instanceId)
         {
             var partitionKey = GeneratePartitionKey(instanceId);
