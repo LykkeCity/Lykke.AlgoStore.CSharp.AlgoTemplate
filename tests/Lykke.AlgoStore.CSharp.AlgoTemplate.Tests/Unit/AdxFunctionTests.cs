@@ -175,7 +175,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIPlusFunction()
         {
-            var function = new DirectionalMovemnetIndexPlusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
+            var function = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameCorrectData);
 
             var dmiPlusValue = function.WarmUp(values);
@@ -189,7 +189,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIPlusFunctionReturnNull()
         {
-            var function = new DirectionalMovemnetIndexPlusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
+            var function = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameNotFullData);
 
             double? dmiPlues = 0.0d;
@@ -201,7 +201,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIPlusFunctionAddNew()
         {
-            var function = new DirectionalMovemnetIndexPlusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
+            var function = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameCorrectData);
 
             double? dmiPlusValue = 0.0d;
@@ -220,7 +220,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIPlusFunctionWarmUpAndAddTheRest()
         {
-            var function = new DirectionalMovemnetIndexPlusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
+            var function = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
             var values = GetTestCandles("Adx_Examples2.txt").ToList();
 
             var valuesToWarmUp = values.GetRange(0, 15);
@@ -247,7 +247,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIMinusFunction()
         {
-            var function = new DirectionalMovemnetIndexMinusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
+            var function = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameCorrectData);
 
             var dmiMinusValue = function.WarmUp(values);
@@ -261,7 +261,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIMinusFunctionAddNew()
         {
-            var function = new DirectionalMovemnetIndexMinusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
+            var function = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameCorrectData);
 
             double? dmiMinusValue = 0.0d;
@@ -280,7 +280,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIMinusFunctionReturnNull()
         {
-            var function = new DirectionalMovemnetIndexMinusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
+            var function = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
             var values = GetTestCandles(_fileNameNotFullData);
 
             double? dmiMinus = 0.0d;
@@ -292,7 +292,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIMinusFunctionWarmUpAndAddTheRest()
         {
-            var function = new DirectionalMovemnetIndexMinusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
+            var function = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Priod = DEFAULT_PERCISION });
             var values = GetTestCandles("Adx_Examples2.txt").ToList();
 
             var valuesToWarmUp = values.GetRange(0, 15);

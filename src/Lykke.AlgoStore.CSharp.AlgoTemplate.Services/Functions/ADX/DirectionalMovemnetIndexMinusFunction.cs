@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 {
-    public class DirectionalMovemnetIndexMinusFunction : IFunction
+    public class DirectionalMovementIndexMinusFunction : IFunction
     {
         private readonly int _period;
         private readonly bool _isAverageTrueRangeSet = false;
@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private DMIParameters _functionParams = new DMIParameters();
         public FunctionParamsBase FunctionParameters => _functionParams;
 
-        private double? DirectionalMovemnetIndexMinus { get; set; }
+        private double? DirectionalMovementIndexMinus { get; set; }
         private double? SmoothedDirectionalMovementMinus { get; set; }
         private double? PreviousSmoothedDirectionalMovementMinus { get; set; }
 
@@ -32,7 +32,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private Candle _previousInput;
         private ATRFunction ATRFunction { get; set; }
 
-        public DirectionalMovemnetIndexMinusFunction(DMIParameters dmiParameters)
+        public DirectionalMovementIndexMinusFunction(DMIParameters dmiParameters)
         {
             _period = dmiParameters.Priod;
             _functionParams = dmiParameters;
@@ -65,12 +65,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                 }
 
                 SmoothedDirectionalMovementMinus = ComputeSmoothedDirectionalMovementMinus();
-                DirectionalMovemnetIndexMinus = ComputeNegativeDirectionalIndex();
+                DirectionalMovementIndexMinus = ComputeNegativeDirectionalIndex();
 
                 _previousInput = value;
             }
 
-            return DirectionalMovemnetIndexMinus;
+            return DirectionalMovementIndexMinus;
         }
 
         public bool IsReady
@@ -102,11 +102,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             }
 
             SmoothedDirectionalMovementMinus = ComputeSmoothedDirectionalMovementMinus();
-            DirectionalMovemnetIndexMinus = ComputeNegativeDirectionalIndex();
+            DirectionalMovementIndexMinus = ComputeNegativeDirectionalIndex();
 
             _previousInput = value;
 
-            return DirectionalMovemnetIndexMinus;
+            return DirectionalMovementIndexMinus;
         }
 
         /// <summary>

@@ -17,8 +17,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
         #region Additional Parameters
 
-        private double? DirectionalMovemnetIndexMinus { get; set; }
-        private double? DirectionalMovemnetIndexPlus { get; set; }
+        private double? DirectionalMovementIndexMinus { get; set; }
+        private double? DirectionalMovementIndexPlus { get; set; }
 
         private double DirectionalMovementIndex { get; set; }
         private Queue<double> DirectionalMovementIndexes { get; set; }
@@ -26,8 +26,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private double? PreviousADX { get; set; }
         public double? AverageTrueRange { get; set; }
 
-        private DirectionalMovemnetIndexPlusFunction DMIPlusFucn { get; set; }
-        private DirectionalMovemnetIndexMinusFunction DMIMinusFucn { get; set; }
+        private DirectionalMovementIndexPlusFunction DMIPlusFucn { get; set; }
+        private DirectionalMovementIndexMinusFunction DMIMinusFucn { get; set; }
         private ATRFunction ATRFunction { get; set; }
         #endregion
 
@@ -39,8 +39,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             DirectionalMovementIndexes = _functionParams.AdxPeriod == 0 ? new Queue<double>() : new Queue<double>(_functionParams.AdxPeriod);
             AverageTrueRange = 0.0d;
 
-            DMIPlusFucn = new DirectionalMovemnetIndexPlusFunction(new DMIParameters() { Priod = _period, IsAverageTrueRangeSet = true });
-            DMIMinusFucn = new DirectionalMovemnetIndexMinusFunction(new DMIParameters() { Priod = _period, IsAverageTrueRangeSet = true });
+            DMIPlusFucn = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Priod = _period, IsAverageTrueRangeSet = true });
+            DMIMinusFucn = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Priod = _period, IsAverageTrueRangeSet = true });
             ATRFunction = new ATRFunction(new AtrParameters() { Period = _period });
         }
 
@@ -58,13 +58,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                 DMIPlusFucn.AverageTrueRange = AverageTrueRange;
                 DMIMinusFucn.AverageTrueRange = AverageTrueRange;
 
-                DirectionalMovemnetIndexPlus = DMIPlusFucn.AddNewValue(value);
-                DirectionalMovemnetIndexMinus = DMIMinusFucn.AddNewValue(value);
+                DirectionalMovementIndexPlus = DMIPlusFucn.AddNewValue(value);
+                DirectionalMovementIndexMinus = DMIMinusFucn.AddNewValue(value);
 
                 if (_samples >= _period + 1)
                 {
-                    DirectionalMovementIndex = (Math.Abs(DirectionalMovemnetIndexPlus.Value - DirectionalMovemnetIndexMinus.Value)
-                                                        / (DirectionalMovemnetIndexPlus.Value + DirectionalMovemnetIndexMinus.Value)) * 100;
+                    DirectionalMovementIndex = (Math.Abs(DirectionalMovementIndexPlus.Value - DirectionalMovementIndexMinus.Value)
+                                                        / (DirectionalMovementIndexPlus.Value + DirectionalMovementIndexMinus.Value)) * 100;
                     DirectionalMovementIndexes.Enqueue(DirectionalMovementIndex);
                 }
 
@@ -98,13 +98,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             DMIPlusFucn.AverageTrueRange = AverageTrueRange;
             DMIMinusFucn.AverageTrueRange = AverageTrueRange;
 
-            DirectionalMovemnetIndexPlus = DMIPlusFucn.AddNewValue(value);
-            DirectionalMovemnetIndexMinus = DMIMinusFucn.AddNewValue(value);
+            DirectionalMovementIndexPlus = DMIPlusFucn.AddNewValue(value);
+            DirectionalMovementIndexMinus = DMIMinusFucn.AddNewValue(value);
 
             if (_samples >= _period + 1)
             {
-                DirectionalMovementIndex = (Math.Abs(DirectionalMovemnetIndexPlus.Value - DirectionalMovemnetIndexMinus.Value)
-                                                        / (DirectionalMovemnetIndexPlus.Value + DirectionalMovemnetIndexMinus.Value)) * 100;
+                DirectionalMovementIndex = (Math.Abs(DirectionalMovementIndexPlus.Value - DirectionalMovementIndexMinus.Value)
+                                                        / (DirectionalMovementIndexPlus.Value + DirectionalMovementIndexMinus.Value)) * 100;
                 DirectionalMovementIndexes.Enqueue(DirectionalMovementIndex);
             }
 

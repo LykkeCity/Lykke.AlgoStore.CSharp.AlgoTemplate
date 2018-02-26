@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 {
-    public class DirectionalMovemnetIndexPlusFunction : IFunction
+    public class DirectionalMovementIndexPlusFunction : IFunction
     {
         private readonly int _period;
         private readonly bool _isAverageTrueRangeSet = false;
@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private DMIParameters _functionParams = new DMIParameters();
         public FunctionParamsBase FunctionParameters => _functionParams;
 
-        private double? DirectionalMovemnetIndexPlus { get; set; }
+        private double? DirectionalMovementIndexPlus { get; set; }
         private double? SmoothedDirectionalMovementPlus { get; set; }
         private double? PreviousSmoothedDirectionalMovementPlus { get; set; }
 
@@ -31,7 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private Candle _previousInput;
         private ATRFunction ATRFunction { get; set; }
 
-        public DirectionalMovemnetIndexPlusFunction(DMIParameters dmiParameters)
+        public DirectionalMovementIndexPlusFunction(DMIParameters dmiParameters)
         {
             _period = dmiParameters.Priod;
             _functionParams = dmiParameters;
@@ -64,12 +64,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                 }
 
                 SmoothedDirectionalMovementPlus = ComputeSmoothedDirectionalMovementPlus();
-                DirectionalMovemnetIndexPlus = ComputePositiveDirectionalIndex();
+                DirectionalMovementIndexPlus = ComputePositiveDirectionalIndex();
 
                 _previousInput = value;
             }
 
-            return DirectionalMovemnetIndexPlus;
+            return DirectionalMovementIndexPlus;
         }
 
         public bool IsReady
@@ -101,11 +101,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             }
 
             SmoothedDirectionalMovementPlus = ComputeSmoothedDirectionalMovementPlus();
-            DirectionalMovemnetIndexPlus = ComputePositiveDirectionalIndex();
+            DirectionalMovementIndexPlus = ComputePositiveDirectionalIndex();
 
             _previousInput = value;
 
-            return DirectionalMovemnetIndexPlus;
+            return DirectionalMovementIndexPlus;
         }
 
         /// <summary>
