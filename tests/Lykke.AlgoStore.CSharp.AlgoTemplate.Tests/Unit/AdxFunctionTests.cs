@@ -16,24 +16,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private const int DEFAULT_PERCISION = 14;
         public IList<Candle> GetTestCandles(string externalDataFilename)
         {
-
             List<Candle> candles = new List<Candle>();
 
             bool first = true;
-            int targetIndex = -1;
-            bool fileHasVolume = false;
             foreach (var line in File.ReadLines(Path.Combine("TestData", externalDataFilename)))
             {
                 var parts = line.Split(',');
                 if (first)
                 {
-                    fileHasVolume = parts[2].Trim() == "Volume";
                     first = false;
                     for (int i = 0; i < parts.Length; i++)
                     {
                         if (parts[i].Trim() == "ADX 14")
                         {
-                            targetIndex = i;
                             break;
                         }
                     }
