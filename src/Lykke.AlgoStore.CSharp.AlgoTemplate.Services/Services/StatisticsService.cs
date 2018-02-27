@@ -29,6 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnQuote(IAlgoQuote quote)
         {
+            //REMARK: No need to save any statistics here (for now)
         }
 
         public void OnAction(bool isBuy, double volume, double price)
@@ -46,9 +47,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnAlgoStarted()
         {
-            var data = new Statistics { IsStarted = true };
-
-            _statisticsRepository.CreateAsync(data).Wait();
+            //REMARK: No need to save any statistics here (for now)
         }
 
         public double GetBoughtAmount()
