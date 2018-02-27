@@ -10,7 +10,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// </summary>
     public class AlgoSettingsService : IAlgoSettingsService
     {
-        public void Initialise()
+        public void Initialize()
         {
 
         }
