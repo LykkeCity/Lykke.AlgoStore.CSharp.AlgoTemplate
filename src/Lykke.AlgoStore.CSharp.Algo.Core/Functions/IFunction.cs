@@ -12,6 +12,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
     public interface IFunction
     {
         FunctionParamsBase FunctionParameters { get; }
+        double? Value { get; }
 
         /// <summary>
         /// Initialize the function with the initial values.

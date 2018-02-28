@@ -5,7 +5,7 @@ using System;
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD
 {
     /// <summary>
-    /// An implementation of the Moving Average Convergence/Divergence (MACD) indicator using Exponential Moving Averages (EMA)
+    /// An implementation of the Moving Average Convergence/Divergence (MACD) function using Exponential Moving Averages (EMA)
     /// </summary>
     public class MacdFunction : AbstractFunction
     {
@@ -14,6 +14,33 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD
         private readonly EmaFunction _fastEma;
         private readonly EmaFunction _slowEma;
         private readonly EmaFunction _signalLine;
+
+        private double? _currentValue;
+
+        /// <summary>
+        /// Gets the latest value of the function
+        /// </summary>
+        public override double? Value => _currentValue;
+
+        /// <summary>
+        /// Returns the histogram component of the MACD function (MACD line - Signal line)
+        /// </summary>
+        public double? Histogram => _currentValue - _signalLine.Value;
+
+        /// <summary>
+        /// Returns the fast EMA component of the MACD function
+        /// </summary>
+        public EmaFunction Fast => _fastEma;
+
+        /// <summary>
+        /// Returns the slow EMA component of the MACD function
+        /// </summary>
+        public EmaFunction Slow => _slowEma;
+
+        /// <summary>
+        /// Returns the signal line component of the MACD function
+        /// </summary>
+        public EmaFunction Signal => _signalLine;
 
         /// <summary>
         /// The function parameters used to initialize this function
@@ -54,7 +81,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD
             if (signalLineValue == null)
                 return null;
 
-            return macdLine - signalLineValue;
+            _currentValue = macdLine;
+
+            return _currentValue;
         }
 
         /// <summary>

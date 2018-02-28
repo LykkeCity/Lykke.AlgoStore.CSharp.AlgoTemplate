@@ -22,45 +22,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var function1 = CreateStrictFunctionMock("Function1");
             var function2 = CreateStrictFunctionMock("Function2");
 
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns((double?)null);
+            function2.SetupGet(f2 => f2.Value)
+                     .Returns((double?)null);
+
             var functionService = CreateFunctionService(function1.Object, function2.Object);
 
             functionService.Initialize();
             var results = functionService.GetFunctionResults();
             Assert.AreEqual(null, results.GetValue(function1.Object.FunctionParameters.FunctionInstanceIdentifier));
             Assert.AreEqual(null, results.GetValue(function2.Object.FunctionParameters.FunctionInstanceIdentifier));
-
-            function1.Verify();
-            function2.Verify();
-        }
-
-        [Test]
-        public void Initialize_Reinitialization_ClearsFunctionResults()
-        {
-            var function1 = CreateStrictFunctionMock("Function1");
-            function1.Setup(f1 => f1.WarmUp(It.IsNotNull<IList<Candle>>()))
-                     .Returns(1);
-            var function2 = CreateStrictFunctionMock("Function2");
-            function2.Setup(f2 => f2.WarmUp(It.IsNotNull<IList<Candle>>()))
-                     .Returns(2);
-
-            var functionService = CreateFunctionService(function1.Object, function2.Object);
-
-            functionService.Initialize();
-
-            // Generate some function results.
-            functionService.WarmUp(CreateMultiCandlesResponse(
-                function1.Object.FunctionParameters.FunctionInstanceIdentifier,
-                function2.Object.FunctionParameters.FunctionInstanceIdentifier));
-
-            var results = functionService.GetFunctionResults();
-            Assert.AreEqual(1, results.GetValue(function1.Object.FunctionParameters.FunctionInstanceIdentifier));
-            Assert.AreEqual(2, results.GetValue(function2.Object.FunctionParameters.FunctionInstanceIdentifier));
-
-            functionService.Initialize();
-
-            var resultsAfterReinitialization = functionService.GetFunctionResults();
-            Assert.IsNull(resultsAfterReinitialization.GetValue(function1.Object.FunctionParameters.FunctionInstanceIdentifier));
-            Assert.IsNull(resultsAfterReinitialization.GetValue(function2.Object.FunctionParameters.FunctionInstanceIdentifier));
 
             function1.Verify();
             function2.Verify();
@@ -148,11 +120,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         public void GetFunctionResults_ReturnsResultsForAllFunctionResults()
         {
             var function1 = CreateStrictFunctionMock("Function1");
+            function1.SetupSequence(f1 => f1.Value)
+                     .Returns(1)
+                     .Returns(3);
             function1.Setup(f1 => f1.WarmUp(It.IsNotNull<IList<Candle>>()))
                      .Returns(1);
             function1.Setup(f1 => f1.AddNewValue(It.IsNotNull<Candle>()))
                      .Returns(3);
             var function2 = CreateStrictFunctionMock("Function2");
+            function2.SetupSequence(f2 => f2.Value)
+                     .Returns(2)
+                     .Returns(4);
             function2.Setup(f2 => f2.WarmUp(It.IsNotNull<IList<Candle>>()))
                      .Returns(2);
             function2.Setup(f2 => f2.AddNewValue(It.IsNotNull<Candle>()))
@@ -187,54 +165,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             function2.Verify();
         }
 
-        [Test]
-        public void GetFunctionResults_CreatesAShallowCopyOfAllFunctionResults()
-        {
-            var function1 = CreateStrictFunctionMock("Function1");
-            function1.Setup(f1 => f1.WarmUp(It.IsNotNull<IList<Candle>>()))
-                     .Returns(1);
-            function1.Setup(f1 => f1.AddNewValue(It.IsNotNull<Candle>()))
-                     .Returns(3);
-            var function2 = CreateStrictFunctionMock("Function2");
-            function2.Setup(f2 => f2.WarmUp(It.IsNotNull<IList<Candle>>()))
-                     .Returns(2);
-            function2.Setup(f2 => f2.AddNewValue(It.IsNotNull<Candle>()))
-                     .Returns(4);
-
-            var functionService = CreateFunctionService(function1.Object, function2.Object);
-            functionService.Initialize();
-
-            // Generate some function results.
-            functionService.WarmUp(CreateMultiCandlesResponse(
-                function1.Object.FunctionParameters.FunctionInstanceIdentifier,
-                function2.Object.FunctionParameters.FunctionInstanceIdentifier));
-
-            // Verify the warm-up results
-            var resultsAfterWarmup = functionService.GetFunctionResults();
-            Assert.AreEqual(1, resultsAfterWarmup.GetValue(function1.Object.FunctionParameters.FunctionInstanceIdentifier));
-            Assert.AreEqual(2, resultsAfterWarmup.GetValue(function2.Object.FunctionParameters.FunctionInstanceIdentifier));
-
-            // Recalculate
-            var candleRequests = CreateSingleCandlesResponse(
-                function1.Object.FunctionParameters.FunctionInstanceIdentifier,
-                function2.Object.FunctionParameters.FunctionInstanceIdentifier);
-            functionService.Recalculate(candleRequests);
-
-            // Verify there is change in function values to guarantee the test validity
-            var resultsAfterRecalculation = functionService.GetFunctionResults();
-            Assert.AreEqual(3, resultsAfterRecalculation.GetValue(function1.Object.FunctionParameters.FunctionInstanceIdentifier));
-            Assert.AreEqual(4, resultsAfterRecalculation.GetValue(function2.Object.FunctionParameters.FunctionInstanceIdentifier));
-
-            // Verify the reference to results for the function prior to recalculation
-            // is unchanged
-            Assert.AreEqual(1, resultsAfterWarmup.GetValue(function1.Object.FunctionParameters.FunctionInstanceIdentifier));
-            Assert.AreEqual(2, resultsAfterWarmup.GetValue(function2.Object.FunctionParameters.FunctionInstanceIdentifier));
-
-            // Verify function invocations
-            function1.Verify();
-            function2.Verify();
-        }
-
         #endregion
 
         #region FunctionService.WarmUp
@@ -244,10 +174,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function1 = CreateStrictFunctionMock("Function1");
             var function1WarmUpParam = new List<Candle>() { new Candle() { } };
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns(1);
             function1.Setup(f1 => f1.WarmUp(function1WarmUpParam))
                      .Returns(1);
             var function2 = CreateStrictFunctionMock("Function2");
             var function2WarmUpParam = new List<Candle>() { };
+            function2.SetupGet(f2 => f2.Value)
+                     .Returns(2);
             function2.Setup(f2 => f2.WarmUp(function2WarmUpParam))
                      .Returns(2);
 
@@ -280,6 +214,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function = CreateStrictFunctionMock("Function1");
             var functionWarmUpParam = new List<Candle>() { new Candle() { } };
+            function.SetupGet(f1 => f1.Value)
+                     .Returns(1);
             function.Setup(f1 => f1.WarmUp(functionWarmUpParam))
                      .Returns(1);
 
@@ -321,6 +257,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function = CreateStrictFunctionMock("Function1");
 
+            function.SetupGet(f => f.Value)
+                     .Returns((double?)null);
+
             var functionService = CreateFunctionService(function.Object);
             functionService.Initialize();
 
@@ -339,6 +278,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         public void Warmup_Trigered_WithNullValue()
         {
             var function = CreateStrictFunctionMock("Function1");
+            function.SetupGet(f => f.Value)
+                     .Returns((double?)null);
 
             var functionService = CreateFunctionService(function.Object);
             functionService.Initialize();
@@ -360,6 +301,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var function1 = CreateStrictFunctionMock("Function1");
             var function2 = CreateStrictFunctionMock("Function2");
             var function2WarmUpParam = new List<Candle>() { };
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns((double?)null);
+            function2.SetupGet(f2 => f2.Value)
+                     .Returns(2);
             function2.Setup(f2 => f2.WarmUp(function2WarmUpParam))
                      .Returns(2);
 
@@ -391,10 +336,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function1 = CreateStrictFunctionMock("Function1");
             var function1WarmUpParam = new List<Candle>() { new Candle() { } };
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns(1);
             function1.Setup(f1 => f1.WarmUp(function1WarmUpParam))
                      .Returns(1);
             var function2 = CreateStrictFunctionMock("Function2");
             var function2WarmUpParam = new List<Candle>() { };
+            function2.SetupGet(f2 => f2.Value)
+                     .Returns(2);
             function2.Setup(f2 => f2.WarmUp(function2WarmUpParam))
                      .Returns(2);
 
@@ -454,10 +403,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function1 = CreateStrictFunctionMock("Function1");
             var function1RecalculateParam = new Candle() { };
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns(1);
             function1.Setup(f1 => f1.AddNewValue(function1RecalculateParam))
                      .Returns(1);
             var function2 = CreateStrictFunctionMock("Function2");
             var function2RecalculateParam = new Candle() { };
+            function2.SetupGet(f2 => f2.Value)
+                     .Returns(2);
             function2.Setup(f2 => f2.AddNewValue(function2RecalculateParam))
                      .Returns(2);
 
@@ -490,6 +443,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function1 = CreateStrictFunctionMock("Function1");
             var function1RecalculateParam = new Candle() { };
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns(1);
             function1.Setup(f1 => f1.AddNewValue(function1RecalculateParam))
                      .Returns(1);
 
@@ -530,6 +485,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function = CreateStrictFunctionMock("Function1");
             var functionWarmUpParam = new List<Candle>() { new Candle() { } };
+            function.SetupGet(f1 => f1.Value)
+                     .Returns(1);
             function.Setup(f1 => f1.WarmUp(functionWarmUpParam))
                      .Returns(1);
 
@@ -563,6 +520,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function = CreateStrictFunctionMock("Function1");
 
+            function.SetupGet(f => f.Value)
+                    .Returns((double?)null);
+
             var functionService = CreateFunctionService(function.Object);
             functionService.Initialize();
 
@@ -582,10 +542,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function1 = CreateStrictFunctionMock("Function1");
             var function1WarmUpParam = new List<Candle>() { new Candle() { } };
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns(1);
             function1.Setup(f1 => f1.WarmUp(function1WarmUpParam))
                      .Returns(1);
             var function2 = CreateStrictFunctionMock("Function2");
             var function2WarmUpParam = new List<Candle>() { };
+            function2.SetupGet(f2 => f2.Value)
+                     .Returns(2);
             function2.Setup(f2 => f2.WarmUp(function2WarmUpParam))
                      .Returns(2);
 
@@ -624,6 +588,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function = CreateStrictFunctionMock("Function1");
 
+            function.SetupGet(f1 => f1.Value)
+                     .Returns((double?)null);
+
             var functionService = CreateFunctionService(function.Object);
             functionService.Initialize();
 
@@ -644,7 +611,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var function1 = CreateStrictFunctionMock("Function1");
             var function2 = CreateStrictFunctionMock("Function2");
             var function2RecalculateParam = new Candle() { };
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns((double?)null);
             function2.Setup(f2 => f2.AddNewValue(function2RecalculateParam))
+                     .Returns(2);
+            function2.SetupGet(f2 => f2.Value)
                      .Returns(2);
 
             var functionService = CreateFunctionService(function1.Object, function2.Object);
@@ -675,10 +646,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var function1 = CreateStrictFunctionMock("Function1");
             var function1RecalculateParam = new Candle();
+            function1.SetupGet(f1 => f1.Value)
+                     .Returns(1);
             function1.Setup(f1 => f1.AddNewValue(function1RecalculateParam))
                      .Returns(1);
             var function2 = CreateStrictFunctionMock("Function2");
             var function2RecalculateParam = new Candle();
+            function2.SetupGet(f2 => f2.Value)
+                     .Returns(2);
             function2.Setup(f2 => f2.AddNewValue(function2RecalculateParam))
                      .Returns(2);
 

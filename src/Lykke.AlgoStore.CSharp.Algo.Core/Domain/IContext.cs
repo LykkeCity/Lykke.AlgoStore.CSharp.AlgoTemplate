@@ -6,16 +6,10 @@
     public interface IContext
     {
         /// <summary>
-        /// Access to the data needed by an algo to run
-        /// <see cref="IData"/>
-        /// </summary>
-        IData Data { get; }
-
-        /// <summary>
         /// Access point to functions and function results for an
-        /// algo <see cref="IFunctionsResultsProvider"/>
+        /// algo <see cref="IFunctionProvider"/>
         /// </summary>
-        IFunctionsResultsProvider Functions { get; }
+        IFunctionProvider Functions { get; }
 
         /// <summary>
         /// Access point for the user action, which can be performed 
