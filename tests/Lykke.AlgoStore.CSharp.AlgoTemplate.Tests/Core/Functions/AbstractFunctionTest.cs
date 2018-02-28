@@ -17,6 +17,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
             private FunctionParamsBase _functionParams = new FunctionParamsBase();
             private double? _latestAddNewValue;
             private double[] _latestWarmUp;
+            private double? _latestValue;
 
             public Action<double[]> WarmupAction { get; set; }
             public Action<double> AddNewValueAction { get; set; }
@@ -24,6 +25,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
             public override FunctionParamsBase FunctionParameters => _functionParams;
             public double? LatestAddNewValue => _latestAddNewValue;
             public double[] LatestWarmUp => _latestWarmUp;
+            public override double? Value => _latestValue;
 
             public AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue candleValue)
             {
@@ -33,6 +35,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
             public override double? AddNewValue(double value)
             {
                 _latestAddNewValue = value;
+                _latestValue = value;
 
                 AddNewValueAction?.Invoke(value);
 
@@ -42,6 +45,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
             public override double? WarmUp(double[] values)
             {
                 _latestWarmUp = values;
+                _latestValue = Value;
 
                 WarmupAction?.Invoke(values);
 

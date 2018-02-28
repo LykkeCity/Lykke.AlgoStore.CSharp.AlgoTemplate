@@ -8,16 +8,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
     public class Context : IContext
     {
         /// <summary>
-        /// Access to the data needed by an algo to run
-        /// <see cref="IData"/>
-        /// </summary>
-        public IData Data { get; set; }
-
-        /// <summary>
         /// Access point to functions and function results for an
-        /// algo <see cref="IFunctionsResultsProvider"/>
+        /// algo <see cref="IFunctionProvider"/>
         /// </summary>
-        public IFunctionsResultsProvider Functions { get; set; }
+        public IFunctionProvider Functions { get; set; }
 
         /// <summary>
         /// Access point for the user action, which can be performed 
