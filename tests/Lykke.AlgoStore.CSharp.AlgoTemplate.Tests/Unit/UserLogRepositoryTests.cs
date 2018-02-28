@@ -14,7 +14,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     [TestFixture]
     public class UserLogRepositoryTests
     {
-        private string _insatanceId;
+        private string _instanceId;
         private UserLog _entity;
         private static bool _entitySaved, _entitiesSaved;
         private List<UserLog> _entities;
@@ -22,11 +22,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [SetUp]
         public void SetUp()
         {
-            _insatanceId = SettingsMock.GetInstanceId().CurrentValue;
+            _instanceId = SettingsMock.GetInstanceId().CurrentValue;
 
             _entity = new UserLog
             {
-                InstanceId = _insatanceId,
+                InstanceId = _instanceId,
                 Date = DateTime.UtcNow,
                 Message = "User log message TEST!!!"
             };
@@ -35,31 +35,31 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             {
                 new UserLog
                 {
-                    InstanceId = _insatanceId,
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 1"
                 },
                 new UserLog
                 {
-                    InstanceId = _insatanceId,
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 2"
                 }
                 ,new UserLog
                 {
-                    InstanceId = _insatanceId,
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 3"
                 },
                 new UserLog
                 {
-                    InstanceId = _insatanceId,
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 4"
                 },
                 new UserLog
                 {
-                    InstanceId = _insatanceId,
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 5"
                 }
@@ -133,12 +133,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
         private void When_Invoke_Write(UserLogRepository repository, Exception exception)
         {
-            repository.WriteAsync(_insatanceId, exception).Wait();
+            repository.WriteAsync(_instanceId, exception).Wait();
         }
 
         private void When_Invoke_Write(UserLogRepository repository, string message)
         {
-            repository.WriteAsync(_insatanceId, message).Wait();
+            repository.WriteAsync(_instanceId, message).Wait();
         }
 
         private static void Then_Data_ShouldBe_Saved(UserLogRepository repo, UserLog entity)
