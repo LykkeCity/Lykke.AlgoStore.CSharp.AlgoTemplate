@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
@@ -14,12 +12,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     public class StatisticsService : IStatisticsService
     {
         private readonly IStatisticsRepository _statisticsRepository;
-        private readonly string _instanceId;
+        private readonly IAlgoSettingsService _algoSettings;
+        private string _instanceId;
 
-        public StatisticsService(IStatisticsRepository statisticsRepository, string instanceId)
+        public StatisticsService(IStatisticsRepository statisticsRepository, IAlgoSettingsService algoSettings)
         {
             _statisticsRepository = statisticsRepository;
-            _instanceId = instanceId;
+            _algoSettings = algoSettings;
         }
 
         public IAlgoQuote GetQuote()
@@ -48,6 +47,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public void OnAlgoStarted()
         {
             //REMARK: No need to save any statistics here (for now)
+
+            _instanceId = _algoSettings.GetSetting("InstanceId");
         }
 
         public double GetBoughtAmount()

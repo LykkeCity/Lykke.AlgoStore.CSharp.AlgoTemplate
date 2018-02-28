@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Text;
 using Newtonsoft.Json;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -14,16 +13,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         private string _settingsJson;
         private IDictionary<string, object> _settings;
+        private bool _isAlive;
+
+        public bool IsAlive() => _isAlive;
 
         public void Initialize()
         {
             _settingsJson = Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS");
+
+            Console.WriteLine($"ALGO_INSTANCE_PARAMS: {_settingsJson}");
 
             if (String.IsNullOrEmpty(_settingsJson))
                 throw new ArgumentException("Environment variable 'ALGO_INSTANCE_PARAMS' does not contain settings");
 
             dynamic dynamicSettings = JsonConvert.DeserializeObject<ExpandoObject>(_settingsJson);
             _settings = (IDictionary<string, object>) dynamicSettings;
+
+            _isAlive = true;
         }
 
         public string GetSetting(string key)
@@ -33,6 +39,5 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             return _settings[key] as string;
         }
-
     }
 }

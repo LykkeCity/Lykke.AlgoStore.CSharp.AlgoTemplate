@@ -23,7 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             _entity = new UserLog
             {
-                InstanceId = SettingsMock.GetInstanceId().CurrentValue,
+                InstanceId = SettingsMock.GetInstanceId(),
                 Date = DateTime.UtcNow,
                 Message = "User log message TEST!!!"
             };
@@ -32,31 +32,31 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             {
                 new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId().CurrentValue,
+                    InstanceId = SettingsMock.GetInstanceId(),
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 1"
                 },
                 new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId().CurrentValue,
+                    InstanceId = SettingsMock.GetInstanceId(),
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 2"
                 }
                 ,new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId().CurrentValue,
+                    InstanceId = SettingsMock.GetInstanceId(),
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 3"
                 },
                 new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId().CurrentValue,
+                    InstanceId = SettingsMock.GetInstanceId(),
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 4"
                 },
                 new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId().CurrentValue,
+                    InstanceId = SettingsMock.GetInstanceId(),
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 5"
                 }
@@ -115,7 +115,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             Assert.NotNull(entities);
 
-            var instanceId = SettingsMock.GetInstanceId().CurrentValue;
+            var instanceId = SettingsMock.GetInstanceId();
             entities.Reverse();
 
             var task = repo.GetEntries(5, instanceId);

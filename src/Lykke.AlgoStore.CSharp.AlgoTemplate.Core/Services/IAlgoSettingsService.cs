@@ -4,5 +4,6 @@
     {
         void Initialize();
         string GetSetting(string key);
+        bool IsAlive();
     }
 }

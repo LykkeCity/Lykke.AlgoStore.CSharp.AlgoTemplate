@@ -56,5 +56,30 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             Assert.AreEqual(result, "123456");
         }
+
+        [Test]
+        public void IsAlive_ForNonInitializedService_ShouldReturnFalse()
+        {
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
+
+            var settingsService = new AlgoSettingsService();
+
+            var result = settingsService.IsAlive();
+
+            Assert.AreEqual(result, false);
+        }
+
+        [Test]
+        public void IsAlive_ForInitializedService_ShouldReturnTrue()
+        {
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
+
+            var settingsService = new AlgoSettingsService();
+            settingsService.Initialize();
+
+            var result = settingsService.IsAlive();
+
+            Assert.AreEqual(result, true);
+        }
     }
 }

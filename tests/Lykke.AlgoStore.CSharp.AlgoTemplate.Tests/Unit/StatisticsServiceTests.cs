@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoFixture;
 using AutoMapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
@@ -10,7 +9,6 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using Moq;
 using NUnit.Framework;
-using Remotion.Linq.Utilities;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -29,7 +27,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile>());
             Mapper.AssertConfigurationIsValid();
 
-            _instanceId = SettingsMock.GetInstanceId().CurrentValue;
+            _instanceId = SettingsMock.GetInstanceId();
         }
 
         [Test]
@@ -252,14 +250,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             }
         }
 
-        private IStatisticsService Given_StatisticsService(IStatisticsRepository repo)
+        private static IStatisticsService Given_StatisticsService(IStatisticsRepository repo)
         {
-            return new StatisticsService(repo, _instanceId);
+            var statisticsService = new StatisticsService(repo, SettingsMock.InitSettingsService());
+
+            statisticsService.OnAlgoStarted();
+
+            return statisticsService;
         }
 
         private IStatisticsRepository Given_Correct_StatisticsRepositoryMock()
         {
-            var fixture = new Fixture();
             var result = new Mock<IStatisticsRepository>();
 
             result.Setup(repo => repo.GetSoldQuantityAsync(_instanceId)).Returns(() => Task.FromResult<double>(5));
@@ -274,7 +275,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
         private IStatisticsRepository Given_Error_StatisticsRepositoryMock()
         {
-            var fixture = new Fixture();
             var result = new Mock<IStatisticsRepository>();
 
             result.Setup(repo => repo.GetSoldQuantityAsync(_instanceId)).ThrowsAsync(new Exception("GetSoldQuantity"));
