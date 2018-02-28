@@ -49,7 +49,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public Task StartAsync()
         {
             // read settings/metadata/env. var
-            _algoSettingsService.Initialise();
+            _algoSettingsService.Initialize();
 
             // Function service initialization.
             _functionsService.Initialize();

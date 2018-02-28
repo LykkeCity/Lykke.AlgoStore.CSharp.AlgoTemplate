@@ -2,7 +2,8 @@
 {
     public interface IAlgoSettingsService
     {
-        void Initialise();
+        void Initialize();
         string GetSetting(string key);
+        bool IsAlive();
     }
 }
