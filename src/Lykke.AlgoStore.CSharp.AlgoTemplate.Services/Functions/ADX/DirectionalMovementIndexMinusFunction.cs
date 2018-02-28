@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private DMIParameters _functionParams = new DMIParameters();
         public FunctionParamsBase FunctionParameters => _functionParams;
 
-        private double? DirectionalMovementIndexMinus { get; set; }
+        private double? _currentDMIMinusValue { get; set; }
         private double? SmoothedDirectionalMovementMinus { get; set; }
         private double? PreviousSmoothedDirectionalMovementMinus { get; set; }
 
@@ -24,6 +24,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private double DirectionalMovementMinus { get; set; }
 
         public bool IsReady => _samples > _period + 1;
+
+        public double? Value => _currentDMIMinusValue;
 
         /// <summary>
         /// ATR
@@ -67,12 +69,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                 }
 
                 SmoothedDirectionalMovementMinus = ComputeSmoothedDirectionalMovementMinus();
-                DirectionalMovementIndexMinus = ComputeNegativeDirectionalIndex();
+                _currentDMIMinusValue = ComputeNegativeDirectionalIndex();
 
                 _previousInput = value;
             }
 
-            return DirectionalMovementIndexMinus;
+            return _currentDMIMinusValue;
         }
 
         public double? AddNewValue(Candle value)
@@ -99,11 +101,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             }
 
             SmoothedDirectionalMovementMinus = ComputeSmoothedDirectionalMovementMinus();
-            DirectionalMovementIndexMinus = ComputeNegativeDirectionalIndex();
+            _currentDMIMinusValue = ComputeNegativeDirectionalIndex();
 
             _previousInput = value;
 
-            return DirectionalMovementIndexMinus;
+            return _currentDMIMinusValue;
         }
 
         /// <summary>

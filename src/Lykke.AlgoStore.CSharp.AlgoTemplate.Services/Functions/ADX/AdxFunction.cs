@@ -8,11 +8,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 {
     public class AdxFunction : IFunction
     {
+
+        private readonly DirectionalMovementIndexPlusFunction _dmiPlusFucn;
+        private readonly DirectionalMovementIndexMinusFunction _dmiMinusFucn;
+        private readonly ATRFunction _atrFunction;
+
         private readonly int _period;
         private int _samples;
-        private Candle _previousInput;
         private AdxParameters _functionParams = new AdxParameters();
         public FunctionParamsBase FunctionParameters => _functionParams;
+        private double? _currentADX { get; set; }
+
+        public double? Value => _currentADX;
 
         #region Additional Parameters
 
@@ -27,9 +34,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private double? PreviousADX { get; set; }
         public double? AverageTrueRange { get; set; }
 
-        private DirectionalMovementIndexPlusFunction DMIPlusFucn { get; set; }
-        private DirectionalMovementIndexMinusFunction DMIMinusFucn { get; set; }
-        private ATRFunction ATRFunction { get; set; }
+        public DirectionalMovementIndexPlusFunction DMIPlusFucn => _dmiPlusFucn;
+        public DirectionalMovementIndexMinusFunction DMIMinusFucn => _dmiMinusFucn;
+        public ATRFunction ATRFunction => _atrFunction;
         #endregion
 
         public AdxFunction(AdxParameters adxParameters)
@@ -40,9 +47,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             DirectionalMovementIndexes = _functionParams.AdxPeriod == 0 ? new Queue<double>() : new Queue<double>(_functionParams.AdxPeriod);
             AverageTrueRange = 0.0d;
 
-            DMIPlusFucn = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Period = _period, IsAverageTrueRangeSet = true });
-            DMIMinusFucn = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Period = _period, IsAverageTrueRangeSet = true });
-            ATRFunction = new ATRFunction(new AtrParameters() { Period = _period });
+            _dmiPlusFucn = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Period = _period, IsAverageTrueRangeSet = true });
+            _dmiMinusFucn = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Period = _period, IsAverageTrueRangeSet = true });
+            _atrFunction = new ATRFunction(new AtrParameters() { Period = _period });
         }
 
         public double? WarmUp(IList<Candle> values)
@@ -69,21 +76,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                     DirectionalMovementIndexes.Enqueue(DirectionalMovementIndex);
                 }
 
-                _previousInput = value;
-
                 if (_samples == _period * 2)
                 {
-                    PreviousADX = DirectionalMovementIndexes.Average();
+                    _currentADX = DirectionalMovementIndexes.Average();
                 }
                 else if (IsReady)
                 {
-                    PreviousADX = ((_period - 1) * PreviousADX + DirectionalMovementIndex) / _period;
+                    _currentADX = ((_period - 1) * PreviousADX + DirectionalMovementIndex) / _period;
                 }
                 else
-                    PreviousADX = null;
+                    _currentADX = null;
+
+                PreviousADX = _currentADX;
             }
 
-            return PreviousADX;
+            return _currentADX;
         }
 
         public double? AddNewValue(Candle value)
@@ -109,22 +116,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                 DirectionalMovementIndexes.Enqueue(DirectionalMovementIndex);
             }
 
-            _previousInput = value;
-
             if (_samples == _period * 2)
             {
-                PreviousADX = DirectionalMovementIndexes.Average();
-                return PreviousADX;
+                _currentADX = DirectionalMovementIndexes.Average();
+                PreviousADX = _currentADX;
             }
             else if (IsReady)
             {
-                PreviousADX = ((_period - 1) * PreviousADX + DirectionalMovementIndex) / _period;
-                return PreviousADX;
+                _currentADX = ((_period - 1) * PreviousADX + DirectionalMovementIndex) / _period;
             }
             else
-                return null;
-        }
+                _currentADX = null;
 
+            PreviousADX = _currentADX;
+            return _currentADX;
+        }
     }
 }
 

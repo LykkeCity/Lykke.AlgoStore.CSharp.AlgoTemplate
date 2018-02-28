@@ -1,0 +1,84 @@
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Lykke.AlgoStore.CSharp.Algo.Implemention
+{
+    /// <summary>
+    /// Moving Average Cross Algorithm
+    /// </summary>
+    public class MovingAverageCrossAlgo : BaseAlgo
+    {
+        //public MovingAverageCrossParameters Parameters { get; set; }
+        private bool _cross { get; set; }
+
+        private int _adxThreshold = 10;
+
+        private double[] smaShortValues;
+        private double[] smaLongValues;
+
+        private double _lastSMAShort;
+        private double _lastSMALong;
+        private double? _lastADXValue { get; set; }
+
+        private SmaFunction _smaShortPeriod;
+        private SmaFunction _smaLongPeriod;
+        private AdxFunction _adx;
+
+        public override void OnStartUp(IFunctionProvider functions)
+        {
+            //TODO  we should get params
+            //_adxThreshold = Convert.ToInt32(context.Parameters.GetParameterValue("AdxThreshold"));
+
+            _smaShortPeriod = functions.GetFunction<SmaFunction>("SMA_Short");
+            _smaLongPeriod = functions.GetFunction<SmaFunction>("SMA_Long");
+            _adx = functions.GetFunction<AdxFunction>("ADX");
+        }
+
+        public override void OnCandleReceived(ICandleContext contextCandle)
+        {
+            var currentSMAShort = _smaShortPeriod.Value ?? 0;
+            var currentSMALong = _smaLongPeriod.Value ?? 0;
+            double? adx = _adx.Value;
+
+            if (adx.HasValue && adx > _adxThreshold)
+            {
+                if (_lastSMAShort < _lastSMALong && currentSMAShort > currentSMALong)
+                {
+                    //buy
+                    contextCandle.Actions.Log($"Cross occurred Buy => SMA_Short: {currentSMAShort}, SMA_Long: {currentSMALong}");
+                    _cross = true;
+                }
+
+                if (_lastSMAShort > _lastSMALong && currentSMAShort < currentSMALong)
+                {
+                    //Sell
+                    contextCandle.Actions.Log($"Cross occurred Sell => SMA_Short: {currentSMAShort}, SMA_Long: {currentSMALong}");
+                    _cross = true;
+                }
+            }
+
+            _lastSMALong = currentSMALong;
+            _lastSMAShort = currentSMAShort;
+            _lastADXValue = adx;
+        }
+
+        public double GetSMAShortTerm()
+        {
+            return _lastSMAShort;
+        }
+
+        public double GetSMALongTerm()
+        {
+            return _lastSMALong;
+        }
+
+        public double? GetADX()
+        {
+            return _lastADXValue;
+        }
+    }
+}

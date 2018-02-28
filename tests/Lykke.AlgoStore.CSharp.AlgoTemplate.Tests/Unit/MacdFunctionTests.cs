@@ -1,9 +1,7 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {

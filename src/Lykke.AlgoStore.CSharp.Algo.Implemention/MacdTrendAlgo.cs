@@ -14,7 +14,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         public double Holdings => _holdings;
 
-        public override void OnStartup(IFunctionProvider functions)
+        public override void OnStartUp(IFunctionProvider functions)
         {
             _macd = functions.GetFunction<MacdFunction>("MACD");
         }
