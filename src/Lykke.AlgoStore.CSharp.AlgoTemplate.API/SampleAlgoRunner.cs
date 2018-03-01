@@ -12,7 +12,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.Configuration;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
+using Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -29,7 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             // Initialize eagerly the class for the algo assembly so
             // that the runtime loads the algos assembly prior to
             // tunning the main
-            DEFAULT_ALGO_CLASS_TO_RUN = typeof(DummyAlgo);
+            DEFAULT_ALGO_CLASS_TO_RUN = typeof(MovingAverageCrossAlgo);
         }
 
         public static async Task Main(string[] args)

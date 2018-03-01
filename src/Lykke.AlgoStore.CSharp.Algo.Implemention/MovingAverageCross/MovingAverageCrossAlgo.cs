@@ -1,11 +1,8 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Lykke.AlgoStore.CSharp.Algo.Implemention
+namespace Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross
 {
     /// <summary>
     /// Moving Average Cross Algorithm
@@ -16,9 +13,6 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
         private bool _cross { get; set; }
 
         private int _adxThreshold = 10;
-
-        private double[] smaShortValues;
-        private double[] smaLongValues;
 
         private double _lastSMAShort;
         private double _lastSMALong;
@@ -43,6 +37,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             var currentSMAShort = _smaShortPeriod.Value ?? 0;
             var currentSMALong = _smaLongPeriod.Value ?? 0;
             double? adx = _adx.Value;
+
+            contextCandle.Actions.Log($"SMA_Short: {currentSMAShort}, SMA_Long: {currentSMALong}, ADX: {adx}");
 
             if (adx.HasValue && adx > _adxThreshold)
             {

@@ -1,47 +1,35 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using Lykke.AlgoStore.CSharp.Algo.Implemention;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MovingAverageCross;
+using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+using Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
     [TestFixture]
     public class MovingAverageCrossAlgoTest
     {
-        private readonly string _fileNameCorrectData = "Adx_Examples2.txt";
-        public readonly string _fileNameNotFullData = "Adx_Examples.txt";
+        private readonly string _fileNameCorrectData = "MACAlgo_Data.txt";
+
         private const int DEFAULT_PERCISION = 14;
 
         public IList<Candle> GetTestCandles(string externalDataFilename)
         {
-
             List<Candle> candles = new List<Candle>();
 
             bool first = true;
-            int targetIndex = -1;
-            bool fileHasVolume = false;
             foreach (var line in File.ReadLines(Path.Combine("TestData", externalDataFilename)))
             {
                 var parts = line.Split(',');
                 if (first)
                 {
-                    fileHasVolume = parts[2].Trim() == "Volume";
-                    first = false;
-                    for (int i = 0; i < parts.Length; i++)
-                    {
-                        if (parts[i].Trim() == "ADX 14")
-                        {
-                            targetIndex = i;
-                            break;
-                        }
-                    }
                     continue;
                 }
 
@@ -57,49 +45,66 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             return candles;
         }
 
-        public IContext MockContext(Candle candle)
+
+
+        private ICandleContext CreateContextMock()
         {
-            var contextMock = new Mock<IContext>();
-            //contextMock.Setup(c => c.CandleData.GetGetCandle()).Returns
-            //(
-            //    new AlgoCandle
-            //    {
-            //        ClosePrice = candle.Close,
-            //        HighPrice = candle.High,
-            //        LowPrice = candle.Low,
-            //        Timestamp = candle.DateTime
-            //    }
-            //);
+            var candleContextMock = new Mock<ICandleContext>();
 
-            contextMock.Setup(c => c.Functions.GetValue("SMA_Short")).Returns
-                (
-                20
-                );
+            candleContextMock.SetupGet(c => c.Actions)
+                .Returns(Mock.Of<IActions>());
 
-            contextMock.Setup(c => c.Functions.GetValue("SMA_Long")).Returns
-               (
-               30
-               );
+            var smaShort = new SmaFunction(new SmaParameters
+            {
+                Capacity = 100,
+                CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
+                CandleTimeInterval = CandleTimeInterval.Day,
+            });
 
-            contextMock.Setup(c => c.Functions.GetValue("ADX")).Returns
-               (
-               2
-               );
-            return contextMock.Object;
+            var smaLong = new SmaFunction(new SmaParameters
+            {
+                Capacity = 1000,
+                CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
+                CandleTimeInterval = CandleTimeInterval.Day,
+            });
+
+            var adx = new AdxFunction(new AdxParameters
+            {
+                CandleTimeInterval = CandleTimeInterval.Day,
+                AdxPeriod = 14
+            });
+
+            var candles = GetTestCandles(_fileNameCorrectData);
+
+            smaShort.WarmUp(candles.Select(c => c.Close).ToArray());
+            smaLong.WarmUp(candles.Select(c => c.Close).ToArray());
+            adx.WarmUp(candles);
+
+            var functionsMock = new Mock<IFunctionProvider>();
+            functionsMock.Setup(c => c.GetFunction<SmaFunction>("SMA_Short"))
+                .Returns(smaShort);
+
+            functionsMock.Setup(c => c.GetFunction<SmaFunction>("SMA_Long"))
+               .Returns(smaLong);
+
+            functionsMock.Setup(c => c.GetFunction<AdxFunction>("ADX"))
+               .Returns(adx);
+
+            candleContextMock.Setup(c => c.Functions)
+                .Returns(functionsMock.Object);
+
+            return candleContextMock.Object;
         }
 
         [Test]
-        public void MovingAverageTest()
+        public void MovingAverageCrossInitial()
         {
-            var function = new MovingAverageCrossAlgo
-            {
-                //Parameters = new MovingAverageCrossParameters
-                //{
-                //    LongTermPeriod = 14,
-                //    ShortTermPeriod = 10
-                //}
-            };
-            var values = GetTestCandles("Adx_Examples2.txt");
+            var mockedContext = CreateContextMock();
+            var algo = new MovingAverageCrossAlgo();
+
+            algo.OnStartUp(mockedContext.Functions);
+
+            Assert.IsNull(algo.GetADX());
 
             double? adxValue = 0.0d;
             double valueToCheck = 20.39;
