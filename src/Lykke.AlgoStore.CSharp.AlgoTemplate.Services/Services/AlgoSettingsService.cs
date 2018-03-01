@@ -26,11 +26,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algoClientInstanceMetadataRepository = algoClientInstanceMetadataRepository;
         }
 
-        //public AlgoSettingsService()
-        //{
-
-        //}
-
         public void Initialize()
         {
             _settingsJson = Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS");
@@ -65,22 +60,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public string GetAlgoInstanceWalletId()
         {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceWalletId(_algoId, _instanceId).Result ?? string.Empty;
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.WalletId;
         }
 
         public string GetAlgoInstanceTradedAsset()
         {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceTradedAsset(_algoId, _instanceId).Result ?? string.Empty;
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAsset;
         }
 
         public string GetAlgoInstanceAssetPair()
         {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceAssetPair(_algoId, _instanceId).Result ?? string.Empty;
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPair;
         }
 
         public string GetAlgoInstanceClientId()
         {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceClientId(_algoId, _instanceId).Result ?? string.Empty;
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.ClientId;
         }
     }
 }

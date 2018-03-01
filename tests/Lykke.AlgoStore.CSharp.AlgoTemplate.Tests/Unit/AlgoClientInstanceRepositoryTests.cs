@@ -78,10 +78,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var repo = Given_AlgoClientInstance_Repository();
             When_Invoke_Save(repo, _entity);
 
-            string clientIdValue = repo.GetAlgoInstanceClientId(_algoId, _instanceId).Result;
-            string walletIdValue = repo.GetAlgoInstanceWalletId(_algoId, _instanceId).Result;
-            string assetPairValue = repo.GetAlgoInstanceAssetPair(_algoId, _instanceId).Result;
-            string assetValue = repo.GetAlgoInstanceTradedAsset(_algoId, _instanceId).Result;
+            string clientIdValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.ClientId;
+            string walletIdValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.WalletId;
+            string assetPairValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPair;
+            string assetValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAsset;
             string metadataInfo = repo.GetAlgoInstanceMetadataSetting(_algoId, _instanceId, "Stopwatch").Result;
 
             string expectedClientId = _clientId;

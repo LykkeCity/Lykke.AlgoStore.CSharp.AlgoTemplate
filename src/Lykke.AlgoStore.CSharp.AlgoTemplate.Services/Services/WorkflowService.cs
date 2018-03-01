@@ -91,7 +91,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 _functionsService.WarmUp(warmupData);
 
-                _algo.OnStartup(_functionsService.GetFunctionResults());
+                _algo.OnStartUp(_functionsService.GetFunctionResults());
             }
         }
 

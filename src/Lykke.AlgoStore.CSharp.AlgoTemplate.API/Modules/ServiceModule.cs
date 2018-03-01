@@ -134,9 +134,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<TaskAsyncExecutor>()
                 .As<IAsyncExecutor>();
 
-            builder.RegisterType<UserLogService>()
-                .As<IUserLogService>();
-
             builder.Populate(_services);
         }
     }

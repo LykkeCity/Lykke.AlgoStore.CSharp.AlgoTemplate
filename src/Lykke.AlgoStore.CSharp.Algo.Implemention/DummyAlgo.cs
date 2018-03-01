@@ -13,7 +13,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
         private SmaFunction _shortSma;
         private SmaFunction _longSma;
 
-        public override void OnStartup(IFunctionProvider functions)
+        public override void OnStartUp(IFunctionProvider functions)
         {
             _shortSma = functions.GetFunction<SmaFunction>("SMA_Short");
             _longSma = functions.GetFunction<SmaFunction>("SMA_Long");

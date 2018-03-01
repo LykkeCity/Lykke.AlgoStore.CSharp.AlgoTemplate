@@ -103,37 +103,5 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             return settingValue ?? string.Empty;
         }
-
-        public async Task<string> GetAlgoInstanceWalletId(string algoId, string instanceId)
-        {
-            var partitionKey = KeyGenerator.GenerateAlgoIdPartitionKey(algoId);
-            var data = await _table.GetDataAsync(partitionKey, instanceId);
-
-            return data.WalletId;
-        }
-
-        public async Task<string> GetAlgoInstanceClientId(string algoId, string instanceId)
-        {
-            var partitionKey = KeyGenerator.GenerateAlgoIdPartitionKey(algoId);
-            var data = await _table.GetDataAsync(partitionKey, instanceId);
-
-            return data.ClientId;
-        }
-
-        public async Task<string> GetAlgoInstanceAssetPair(string algoId, string instanceId)
-        {
-            var partitionKey = KeyGenerator.GenerateAlgoIdPartitionKey(algoId);
-            var data = await _table.GetDataAsync(partitionKey, instanceId);
-
-            return data.AssetPair;
-        }
-
-        public async Task<string> GetAlgoInstanceTradedAsset(string algoId, string instanceId)
-        {
-            var partitionKey = KeyGenerator.GenerateAlgoIdPartitionKey(algoId);
-            var data = await _table.GetDataAsync(partitionKey, instanceId);
-
-            return data.TradedAsset;
-        }
     }
 }

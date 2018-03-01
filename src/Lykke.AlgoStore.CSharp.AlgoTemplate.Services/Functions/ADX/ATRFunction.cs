@@ -17,6 +17,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
         public bool IsReady => _samples > _period + 1;
 
+        public double? Value => currentATRValue;
+
         /// <summary>
         /// TR - True range
         /// </summary>
@@ -30,7 +32,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         /// <summary>
         /// ATR
         /// </summary>
-        private double? AverageTrueRange { get; set; }
+        private double? currentATRValue { get; set; }
 
         /// <summary>
         /// The Previous Average True Range which will be used for the calculation of the new one
@@ -43,7 +45,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             _period = adxParameters.Period;
             _functionParams = adxParameters;
             TrueRanges = _functionParams.Period == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Period);
-            AverageTrueRange = 0.0d;
+            currentATRValue = 0.0d;
         }
 
         public double? WarmUp(IList<Candle> values)
@@ -61,10 +63,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                     TrueRanges.Enqueue(TrueRange);
                 }
 
-                AverageTrueRange = CalculateAverageTrueRange();
+                currentATRValue = CalculateAverageTrueRange();
                 _previousInput = value;
             }
-            return AverageTrueRange;
+            return currentATRValue;
         }
 
         public double? AddNewValue(Candle value)
@@ -85,10 +87,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
                 }
             }
 
-            AverageTrueRange = CalculateAverageTrueRange();
+            currentATRValue = CalculateAverageTrueRange();
             _previousInput = value;
 
-            return AverageTrueRange;
+            return currentATRValue;
         }
 
         /// <summary>

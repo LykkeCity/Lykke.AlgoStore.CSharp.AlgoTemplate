@@ -3,23 +3,40 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     public class PredefinedHistoryDataService : IHistoryDataService
     {
+        public IList<Candle> GetTestCandles(string externalDataFilename)
+        {
+            List<Candle> candles = new List<Candle>();
+
+            bool first = true;
+            foreach (var line in File.ReadLines(Path.Combine("PredefinedData", externalDataFilename)))
+            {
+                var parts = line.Split(',');
+                if (first)
+                {
+                    first = false;
+                    continue;
+                }
+                candles.Add(new Candle
+                {
+                    Open = Convert.ToDouble(parts[0]),
+                    High = Convert.ToDouble(parts[1]),
+                    Low = Convert.ToDouble(parts[2]),
+                    Close = Convert.ToDouble(parts[3]),
+                    DateTime = Convert.ToDateTime(parts[4]),
+                });
+            }
+            return candles;
+        }
+
         public IList<Candle> GetHistory(CandlesHistoryRequest request)
         {
-            return new List<Candle>()
-            {
-                new Candle() {Open = 100, Close = 101.51, High = 102.14, Low = 99.45, DateTime = DateTime.UtcNow.AddDays(-6)},
-                new Candle() {Open = 101.51, Close = 102.11, High = 102.11, Low = 101.45, DateTime = DateTime.UtcNow.AddDays(-5)},
-                new Candle() {Open = 102.11, Close = 101.10, High = 102.11, Low = 100.55, DateTime = DateTime.UtcNow.AddDays(-4)},
-                new Candle() {Open = 101.10, Close = 104.51, High = 105.6, Low = 101.10, DateTime = DateTime.UtcNow.AddDays(-3)},
-                new Candle() {Open = 104.51, Close = 100.51, High = 104.51, Low = 99.45, DateTime = DateTime.UtcNow.AddDays(-2)},
-                new Candle() {Open = 100.51, Close = 99.54, High = 101.21, Low = 99.45, DateTime = DateTime.UtcNow.AddDays(-1)}
-            };
+            return GetTestCandles("CandlesData.txt");
         }
     }
 }
