@@ -117,7 +117,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(45.85, Math.Round(smaShort.Value.Value, 2));
             Assert.AreEqual(45.60, Math.Round(smaLong.Value.Value, 2));
 
-            Assert.AreEqual(false, algo.GetCross());
+            Assert.AreEqual(false, algo.GetCrossSMAShortBelow());
+            Assert.AreEqual(false, algo.GetCrossSMAShortAbove());
         }
 
         [Test]
@@ -135,7 +136,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(20.96, Math.Round(algo.GetADX().Value, 2));
             Assert.AreEqual(45.85, Math.Round(algo.GetSMAShortTerm(), 2));
             Assert.AreEqual(45.60, Math.Round(algo.GetSMALongTerm(), 2));
-            Assert.AreEqual(false, algo.GetCross());
+            Assert.AreEqual(false, algo.GetCrossSMAShortBelow());
+            Assert.AreEqual(false, algo.GetCrossSMAShortAbove());
 
             adx.AddNewValue(new Candle()
             {
@@ -154,7 +156,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(20.35, Math.Round(adx.Value.Value, 2));
             Assert.AreEqual(45.71, Math.Round(smaShort.Value.Value, 2));
             Assert.AreEqual(45.59, Math.Round(smaLong.Value.Value, 2));
-            Assert.AreEqual(false, algo.GetCross());
+            Assert.AreEqual(false, algo.GetCrossSMAShortBelow());
+            Assert.AreEqual(false, algo.GetCrossSMAShortAbove());
 
             adx.AddNewValue(new Candle()
             {
@@ -178,7 +181,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(45.52, Math.Round(algo.GetSMAShortTerm(), 2));
             Assert.AreEqual(45.56, Math.Round(algo.GetSMALongTerm(), 2));
 
-            Assert.AreEqual(true, algo.GetCross());
+            Assert.AreEqual(false, algo.GetCrossSMAShortAbove());
+            Assert.AreEqual(true, algo.GetCrossSMAShortBelow());
         }
     }
 }

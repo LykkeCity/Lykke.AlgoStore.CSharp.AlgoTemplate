@@ -27,9 +27,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="PredefinedData\CandlesData.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Dockerfile">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
