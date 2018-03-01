@@ -45,7 +45,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var result = function.WarmUp(FixedPriceValues);
 
-            Assert.AreEqual(0, result);
+            Assert.AreEqual(0.5, result);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             function.AddNewValue(FixedPriceValues[1]);
             var result = function.AddNewValue(FixedPriceValues[2]);
 
-            Assert.AreEqual(0, result);
+            Assert.AreEqual(0.5, result);
         }
     }
 }

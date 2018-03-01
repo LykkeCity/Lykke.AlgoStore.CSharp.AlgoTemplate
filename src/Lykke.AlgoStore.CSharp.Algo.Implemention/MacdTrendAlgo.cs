@@ -31,7 +31,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             if(signalDeltaPercent > TOLERANCE)
             {
-                context.Actions.BuyStraight(HOLDINGS_STEP);
+                // TODO: Implement buying/selling when trading logic is finalized
+                //context.Actions.BuyStraight(HOLDINGS_STEP);
                 _holdings += HOLDINGS_STEP;
 
                 context.Actions.Log($"{signalDeltaPercent} is above {TOLERANCE}, buying {HOLDINGS_STEP} more of the asset. " +
@@ -39,7 +40,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             }
             else if(_holdings > 0 && signalDeltaPercent < -TOLERANCE)
             {
-                context.Actions.SellStraight(_holdings);
+                //context.Actions.SellStraight(_holdings);
                 _holdings = 0;
 
                 context.Actions.Log($"{signalDeltaPercent} is below {-TOLERANCE}, selling all holdings.");
