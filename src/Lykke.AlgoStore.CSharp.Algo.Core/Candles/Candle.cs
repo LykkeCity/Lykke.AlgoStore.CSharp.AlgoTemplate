@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using System;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Core.Candles
 {
-    public class Candle
+    public class Candle : IAlgoCandle
     {
         public DateTime DateTime { get; set; }
 

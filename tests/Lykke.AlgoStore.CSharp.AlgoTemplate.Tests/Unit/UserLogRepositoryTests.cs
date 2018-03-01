@@ -14,6 +14,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     [TestFixture]
     public class UserLogRepositoryTests
     {
+        private string _instanceId;
         private UserLog _entity;
         private static bool _entitySaved, _entitiesSaved;
         private List<UserLog> _entities;
@@ -21,9 +22,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [SetUp]
         public void SetUp()
         {
+            _instanceId = SettingsMock.GetInstanceId();
+
             _entity = new UserLog
             {
-                InstanceId = SettingsMock.GetInstanceId(),
+                InstanceId = _instanceId,
                 Date = DateTime.UtcNow,
                 Message = "User log message TEST!!!"
             };
@@ -32,31 +35,31 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             {
                 new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId(),
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 1"
                 },
                 new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId(),
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 2"
                 }
                 ,new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId(),
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 3"
                 },
                 new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId(),
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 4"
                 },
                 new UserLog
                 {
-                    InstanceId = SettingsMock.GetInstanceId(),
+                    InstanceId = _instanceId,
                     Date = DateTime.UtcNow,
                     Message = "Multiple user log messages TEST - 5"
                 }
@@ -104,6 +107,38 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var repo = Given_UserLog_Repository();
             When_Invoke_Write(repo, _entities);
             Then_Data_ShouldBe_Saved(repo, _entities);
+        }
+
+        [Test, Explicit("Should run manually only. Manipulate data in Table Storage")]
+        public void UserLogWithCustomMessage_Write_Test()
+        {
+            var repo = Given_UserLog_Repository();
+            When_Invoke_Write(repo, "Custom message sent as string");
+        }
+
+        [Test, Explicit("Should run manually only. Manipulate data in Table Storage")]
+        public void UserLogWithCustomException_Write_Test()
+        {
+            var repo = Given_UserLog_Repository();
+
+            try
+            {
+                throw new Exception("Custom message sent as exception");
+            }
+            catch (Exception ex)
+            {
+                When_Invoke_Write(repo, ex);
+            }
+        }
+
+        private void When_Invoke_Write(UserLogRepository repository, Exception exception)
+        {
+            repository.WriteAsync(_instanceId, exception).Wait();
+        }
+
+        private void When_Invoke_Write(UserLogRepository repository, string message)
+        {
+            repository.WriteAsync(_instanceId, message).Wait();
         }
 
         private static void Then_Data_ShouldBe_Saved(UserLogRepository repo, UserLog entity)

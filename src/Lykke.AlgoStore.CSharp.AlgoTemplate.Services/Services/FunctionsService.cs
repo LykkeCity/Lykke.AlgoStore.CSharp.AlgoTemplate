@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Common.Log;
-using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
+﻿using System.Collections.Generic;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 
@@ -13,41 +9,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// <summary>
     /// <see cref="IFunctionsService"/>
     /// </summary>
-    public class FunctionsService : IFunctionsService
+    public class FunctionsService : IFunctionsService, IFunctionProvider
     {
-        /// <summary>
-        /// <see cref="IFunctionsResultsProvider"/> implementation for feeding the function
-        /// results. This implementation is creating a shallow copy of the provided values
-        /// </summary>
-        public class ShallowCopyFunctionsResults : IFunctionsResultsProvider
-        {
-            private Dictionary<string, object> _results = new Dictionary<string, object>();
-
-            /// <summary>
-            /// Initializes new instance of <see cref="ShallowCopyFunctionsResults"/> with the
-            /// a given results.
-            /// </summary>
-            /// <param name="results">Dictionary of function instance ids and the corresponding 
-            /// values</param>
-            public ShallowCopyFunctionsResults(Dictionary<string, object> results)
-            {
-                foreach (var latestResult in results)
-                {
-                    _results[latestResult.Key] = latestResult.Value;
-                }
-            }
-
-            public object GetValue(string functionInstanceId)
-            {
-                return _results[functionInstanceId];
-            }
-        }
-
         // Dependencies:
         private IFunctionInitializationService _functionInitializationService;
 
         // Fields:
-        private Dictionary<string, object> _latestFunctionResults;
         private Dictionary<string, IFunction> _allFunctions;
 
         /// <summary>
@@ -64,13 +31,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             // Initialize/Re-initialize the function instances and results
             _allFunctions = new Dictionary<string, IFunction>();
-            _latestFunctionResults = new Dictionary<string, object>();
 
             foreach (var function in _functionInitializationService.GetAllFunctions())
             {
                 // Create a mapping between function instance id and function instance;
                 _allFunctions[function.FunctionParameters.FunctionInstanceIdentifier] = function;
-                _latestFunctionResults[function.FunctionParameters.FunctionInstanceIdentifier] = null;
             }
         }
 
@@ -95,18 +60,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 return;
             }
 
-            lock (_latestFunctionResults)
+            foreach (var functionCandle in functionCandles)
             {
-                foreach (var functionCandle in functionCandles)
-                {
-                    if (_allFunctions.ContainsKey(functionCandle.RequestId))
-                    {
-                        var functionId = functionCandle.RequestId;
+                if (!_allFunctions.ContainsKey(functionCandle.RequestId))
+                    continue;
 
-                        var newFunctionValue = _allFunctions[functionId].WarmUp(functionCandle.Candles);
-                        _latestFunctionResults[functionId] = newFunctionValue;
-                    }
-                }
+                var functionId = functionCandle.RequestId;
+
+                _allFunctions[functionId].WarmUp(functionCandle.Candles);
             }
         }
 
@@ -117,31 +78,41 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 return;
             }
 
-            // Lock the _latestFunctionResults so that if an algo run is scheduled it will wait
-            // for all function to have new values and not some of them
-            lock (_latestFunctionResults)
+            foreach (var candlesResponse in candles)
             {
-                foreach (var candlesResponse in candles)
-                {
-                    if (_allFunctions.ContainsKey(candlesResponse.RequestId))
-                    {
-                        var functionId = candlesResponse.RequestId;
+                if (!_allFunctions.ContainsKey(candlesResponse.RequestId))
+                    continue;
 
-                        var newFunctionValue = _allFunctions[functionId].AddNewValue(candlesResponse.Candle);
-                        _latestFunctionResults[functionId] = newFunctionValue;
-                    }
-                }
+                var functionId = candlesResponse.RequestId;
+
+                _allFunctions[functionId].AddNewValue(candlesResponse.Candle);
             }
-
         }
 
-        public IFunctionsResultsProvider GetFunctionResults()
+        public IFunctionProvider GetFunctionResults()
         {
-            lock (_latestFunctionResults)
-            {
-                return new ShallowCopyFunctionsResults(_latestFunctionResults);
-            }
+            return this;
         }
 
+        public T GetFunction<T>(string functionName) where T : IFunction
+        {
+            if (!_allFunctions.ContainsKey(functionName))
+                return default(T);
+
+            return (T)_allFunctions[functionName];
+        }
+
+        public IFunction GetFunction(string functionName)
+        {
+            if (!_allFunctions.ContainsKey(functionName))
+                return null;
+
+            return _allFunctions[functionName];
+        }
+
+        public double? GetValue(string functionName)
+        {
+            return GetFunction(functionName)?.Value;
+        }
     }
 }

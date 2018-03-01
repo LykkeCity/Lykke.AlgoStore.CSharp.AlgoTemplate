@@ -1,4 +1,5 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
 using System;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention
@@ -7,17 +8,26 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
     /// REMARK: Just a dummy algo implementation for future reference.
     /// We can and will remove this when first algo is implemented :)
     /// </summary>
-    public class DummyAlgo : IAlgo
+    public class DummyAlgo : BaseAlgo
     {
-        public void OnQuoteReceived(IContext context)
-        {       
-            var quote = context.Data.GetQuote();
+        private SmaFunction _shortSma;
+        private SmaFunction _longSma;
+
+        public override void OnStartup(IFunctionProvider functions)
+        {
+            _shortSma = functions.GetFunction<SmaFunction>("SMA_Short");
+            _longSma = functions.GetFunction<SmaFunction>("SMA_Long");
+        }
+
+        public override void OnQuoteReceived(IQuoteContext context)
+        {
+            var quote = context.Data.Quote;
             context.Actions.Log($"Receiving quote at {DateTime.UtcNow} " +
                 $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
                 $"{{quote.IsBuy: {quote.IsBuy}}}, {{quote.IsOnline: {quote.IsOnline}}}");
 
-            var smaShort = context.Functions.GetValue("SMA_Short");
-            var smaLong = context.Functions.GetValue("SMA_Long");
+            var smaShort = _shortSma.GetValue();
+            var smaLong = _longSma.GetValue();
             context.Actions.Log($"Function values are: SMA_Short: {smaShort}, SMA_Long: {smaLong}");
             
             //var buyOrder = context.Actions.Buy(0.2);

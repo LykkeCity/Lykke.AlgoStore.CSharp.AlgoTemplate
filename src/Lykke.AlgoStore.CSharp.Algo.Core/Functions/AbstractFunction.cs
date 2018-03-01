@@ -51,6 +51,11 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         /// </summary>
         public abstract FunctionParamsBase FunctionParameters { get; }
 
+        /// <summary>
+        /// The latest value of a function.
+        /// </summary>
+        public abstract double? Value { get; }
+
         private Dictionary<FunctionParamsBase.CandleValue, Func<Candle, double>> _candleProjections
             = new Dictionary<FunctionParamsBase.CandleValue, Func<Candle, double>>()
             {

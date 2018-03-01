@@ -24,6 +24,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IStatisticsService _statisticsService;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
+        private readonly object _sync = new object();
+        private readonly string _dummyAlgoId = Guid.NewGuid().ToString();
 
         public WorkflowService(
             IAlgoSettingsService algoSettingsService,
@@ -54,6 +56,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // Function service initialization.
             _functionsService.Initialize();
             var candleServiceCandleRequests = _functionsService.GetCandleRequests().ToList();
+
+            // TODO: Replace this with actual algo metadata once it's implemented
+            candleServiceCandleRequests.Add(new CandleServiceRequest
+            {
+                AssetPair = "BTCEUR",
+                CandleInterval = Algo.Core.Candles.CandleTimeInterval.Minute,
+                RequestId = _dummyAlgoId,
+                StartFrom = DateTime.Now
+            });
+
             _candlesService.Subscribe(candleServiceCandleRequests, OnInitialFunctionServiceData, OnFunctionServiceUpdate);
 
             // Gets not finished limited orders?!?
@@ -75,22 +87,42 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnInitialFunctionServiceData(IList<MultipleCandlesResponse> warmupData)
         {
-            _functionsService.WarmUp(warmupData);
+            lock (_sync)
+            {
+                _functionsService.WarmUp(warmupData);
+
+                _algo.OnStartup(_functionsService.GetFunctionResults());
+            }
         }
 
         private void OnFunctionServiceUpdate(IList<SingleCandleResponse> candleUpdates)
         {
-            _functionsService.Recalculate(candleUpdates);
+            // TODO: Replace this with actual algo metadata once it's implemented
+            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _dummyAlgoId)?.Candle;
+
+            var ctx = CreateCandleContext(algoCandle);
+
+            lock (_sync)
+            {
+                _functionsService.Recalculate(candleUpdates);
+
+                if (algoCandle != null)
+                    _algo.OnCandleReceived(ctx);
+            }
         }
 
         private Task OnQuote(IAlgoQuote quote)
         {
-            // Handling of the synchronization could extract it in a separate class
-            IContext ctx = CreateContext(quote);
+            _statisticsService.OnQuote(quote);
+
+            var ctx = CreateQuoteContext(quote);
 
             try
             {
-                _algo.OnQuoteReceived(ctx);
+                lock (_sync)
+                {
+                    _algo.OnQuoteReceived(ctx);
+                }
             }
             catch (TradingServiceException e)
             {
@@ -105,21 +137,33 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             Console.WriteLine(e);
         }
 
-        private IContext CreateContext(IAlgoQuote quote)
+        private IQuoteContext CreateQuoteContext(IAlgoQuote quote)
         {
-            var context = new Context();
+            var context = new QuoteContext();
 
-            context.Data = new ContextData(quote);
+            context.Data = new AlgoQuoteData(quote);
 
-            //_functionsService.Calculate(quote);
-           context.Functions = _functionsService.GetFunctionResults();
-
-            _statisticsService.OnQuote(quote);
-            context.Data = new AlgoData(quote);
-
-            context.Actions = this.actions;
+            SetContextProperties(context);
 
             return context;
+        }
+
+        private ICandleContext CreateCandleContext(IAlgoCandle candle)
+        {
+            var context = new CandleContext();
+
+            context.Data = new AlgoCandleData(candle);
+
+            SetContextProperties(context);
+
+            return context;
+        }
+
+        private void SetContextProperties(Context context)
+        {
+            context.Functions = _functionsService.GetFunctionResults();
+
+            context.Actions = actions;
         }
 
         public Task StopAsync()
