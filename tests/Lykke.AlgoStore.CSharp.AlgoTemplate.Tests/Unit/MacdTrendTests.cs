@@ -19,7 +19,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var algo = new MacdTrendAlgo();
             var macd = context.Functions.GetFunction<MacdFunction>("MACD");
 
-            algo.OnStartup(context.Functions);
+            algo.OnStartUp(context.Functions);
 
             algo.OnCandleReceived(context);
             Assert.AreEqual(2, algo.Holdings);

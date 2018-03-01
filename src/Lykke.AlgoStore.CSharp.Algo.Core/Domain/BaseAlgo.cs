@@ -10,7 +10,7 @@
         {
         }
 
-        public virtual void OnStartup(IFunctionProvider functions)
+        public virtual void OnStartUp(IFunctionProvider functions)
         {
         }
     }

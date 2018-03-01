@@ -1,18 +1,19 @@
 ﻿using Autofac;
+using AutoMapper;
 using Common.Log;
+using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
+using Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Modules;
+using Lykke.SettingsReader;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
-using Lykke.SettingsReader;
-using Microsoft.Extensions.Configuration;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -29,7 +30,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             // Initialize eagerly the class for the algo assembly so
             // that the runtime loads the algos assembly prior to
             // tunning the main
-            DEFAULT_ALGO_CLASS_TO_RUN = typeof(DummyAlgo);
+            DEFAULT_ALGO_CLASS_TO_RUN = typeof(MacdTrendAlgo);
         }
 
         public static async Task Main(string[] args)

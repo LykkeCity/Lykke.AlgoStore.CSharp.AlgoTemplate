@@ -9,7 +9,7 @@
         /// Perform actions on algo startup
         /// </summary>
         /// <param name="functions">The algo function provider</param>
-        void OnStartup(IFunctionProvider functions);
+        void OnStartUp(IFunctionProvider functions);
 
         /// <summary>
         /// Perform action on each quote
