@@ -1,20 +1,18 @@
 ﻿using Autofac;
+using AutoMapper;
 using Common.Log;
+using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Modules;
+using Lykke.SettingsReader;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
-using Lykke.SettingsReader;
-using Microsoft.Extensions.Configuration;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
