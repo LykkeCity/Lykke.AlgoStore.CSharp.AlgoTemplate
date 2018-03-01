@@ -14,9 +14,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
         private EmaParameters _functionParams = new EmaParameters();
         private double? _emaPreviousPeriod;
 
+        private double? _value;
+
         private bool isReady = false;
 
         public override FunctionParamsBase FunctionParameters => _functionParams;
+        public override double? Value => _value;
 
         public EmaFunction(EmaParameters emaParameters)
         {
@@ -49,6 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
             foreach (var value in values)
                 _emaPreviousPeriod = GetInitialValue(value);
 
+            _value = _emaPreviousPeriod;
             return _emaPreviousPeriod;
         }
 
@@ -64,7 +68,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
                 return _emaPreviousPeriod;
             }
 
-            return GetEmaValue(value);
+            _value = GetEmaValue(value);
+            return _value;
         }
 
         public double? GetEmaAndAddValue(double value)

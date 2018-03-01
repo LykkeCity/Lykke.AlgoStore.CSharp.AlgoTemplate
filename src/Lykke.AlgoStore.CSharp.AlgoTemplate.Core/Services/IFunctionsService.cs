@@ -42,6 +42,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         /// Gets the current function results
         /// </summary>
         /// <returns></returns>
-        IFunctionsResultsProvider GetFunctionResults();
+        IFunctionProvider GetFunctionResults();
     }
 }
