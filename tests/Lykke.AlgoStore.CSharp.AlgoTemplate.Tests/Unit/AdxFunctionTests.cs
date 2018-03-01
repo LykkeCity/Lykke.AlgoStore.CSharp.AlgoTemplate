@@ -78,6 +78,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             Assert.NotNull(adxValue);
             Assert.AreEqual(valueToCheck, Math.Round(adxValue.Value, 2));
+            Assert.AreEqual(adxValue, function.Value);
+
         }
 
         [Test]
