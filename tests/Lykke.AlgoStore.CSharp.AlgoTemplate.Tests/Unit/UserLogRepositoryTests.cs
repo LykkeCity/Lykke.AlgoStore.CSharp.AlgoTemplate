@@ -22,7 +22,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [SetUp]
         public void SetUp()
         {
-            _instanceId = SettingsMock.GetInstanceId().CurrentValue;
+            _instanceId = SettingsMock.GetInstanceId();
 
             _entity = new UserLog
             {
