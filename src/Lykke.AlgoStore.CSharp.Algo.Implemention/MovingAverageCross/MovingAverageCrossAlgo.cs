@@ -30,6 +30,10 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross
             _smaShortPeriod = functions.GetFunction<SmaFunction>("SMA_Short");
             _smaLongPeriod = functions.GetFunction<SmaFunction>("SMA_Long");
             _adx = functions.GetFunction<AdxFunction>("ADX");
+
+            _lastSMAShort = _smaShortPeriod.Value ?? 0;
+            _lastSMALong = _smaLongPeriod.Value ?? 0;
+            _lastADXValue = _adx.Value;
         }
 
         public override void OnCandleReceived(ICandleContext contextCandle)
@@ -39,6 +43,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross
             double? adx = _adx.Value;
 
             contextCandle.Actions.Log($"SMA_Short: {currentSMAShort}, SMA_Long: {currentSMALong}, ADX: {adx}");
+
+            _cross = false;
 
             if (adx.HasValue && adx > _adxThreshold)
             {
@@ -57,24 +63,18 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross
                 }
             }
 
+
             _lastSMALong = currentSMALong;
             _lastSMAShort = currentSMAShort;
             _lastADXValue = adx;
         }
 
-        public double GetSMAShortTerm()
-        {
-            return _lastSMAShort;
-        }
+        public double GetSMAShortTerm() => _lastSMAShort;
 
-        public double GetSMALongTerm()
-        {
-            return _lastSMALong;
-        }
+        public double GetSMALongTerm() => _lastSMALong;
 
-        public double? GetADX()
-        {
-            return _lastADXValue;
-        }
+        public double? GetADX() => _lastADXValue;
+
+        public bool GetCross() => _cross;
     }
 }

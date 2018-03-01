@@ -32,7 +32,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         private Queue<double> DirectionalMovementIndexes { get; set; }
 
         private double? PreviousADX { get; set; }
-        public double? AverageTrueRange { get; set; }
+        private double? AverageTrueRange { get; set; }
 
         public DirectionalMovementIndexPlusFunction DMIPlusFucn => _dmiPlusFucn;
         public DirectionalMovementIndexMinusFunction DMIMinusFucn => _dmiMinusFucn;

@@ -30,6 +30,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 var parts = line.Split(',');
                 if (first)
                 {
+                    first = false;
                     continue;
                 }
 
@@ -45,8 +46,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             return candles;
         }
 
-
-
         private ICandleContext CreateContextMock()
         {
             var candleContextMock = new Mock<ICandleContext>();
@@ -56,14 +55,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var smaShort = new SmaFunction(new SmaParameters
             {
-                Capacity = 100,
+                Capacity = 10,
                 CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
                 CandleTimeInterval = CandleTimeInterval.Day,
             });
 
             var smaLong = new SmaFunction(new SmaParameters
             {
-                Capacity = 1000,
+                Capacity = 30,
                 CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
                 CandleTimeInterval = CandleTimeInterval.Day,
             });
@@ -79,6 +78,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             smaShort.WarmUp(candles.Select(c => c.Close).ToArray());
             smaLong.WarmUp(candles.Select(c => c.Close).ToArray());
             adx.WarmUp(candles);
+
 
             var functionsMock = new Mock<IFunctionProvider>();
             functionsMock.Setup(c => c.GetFunction<SmaFunction>("SMA_Short"))
@@ -102,17 +102,83 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var mockedContext = CreateContextMock();
             var algo = new MovingAverageCrossAlgo();
 
+            var smaShort = mockedContext.Functions.GetFunction<SmaFunction>("SMA_Short");
+            var smaLong = mockedContext.Functions.GetFunction<SmaFunction>("SMA_Long");
+            var adx = mockedContext.Functions.GetFunction<AdxFunction>("ADX");
+
+
             algo.OnStartUp(mockedContext.Functions);
 
-            Assert.IsNull(algo.GetADX());
+            Assert.AreEqual(20.96, Math.Round(algo.GetADX().Value, 2));
+            Assert.AreEqual(45.85, Math.Round(algo.GetSMAShortTerm(), 2));
+            Assert.AreEqual(45.60, Math.Round(algo.GetSMALongTerm(), 2));
 
-            double? adxValue = 0.0d;
-            double valueToCheck = 20.39;
+            Assert.AreEqual(20.96, Math.Round(adx.Value.Value, 2));
+            Assert.AreEqual(45.85, Math.Round(smaShort.Value.Value, 2));
+            Assert.AreEqual(45.60, Math.Round(smaLong.Value.Value, 2));
 
-            //function.OnCandleReceived(MockContext(values[0]));
+            Assert.AreEqual(false, algo.GetCross());
+        }
 
-            //function.WarmUp(values);
+        [Test]
+        public void MovingAverageCrossAddNewValues()
+        {
+            var mockedContext = CreateContextMock();
+            var algo = new MovingAverageCrossAlgo();
 
+            var smaShort = mockedContext.Functions.GetFunction<SmaFunction>("SMA_Short");
+            var smaLong = mockedContext.Functions.GetFunction<SmaFunction>("SMA_Long");
+            var adx = mockedContext.Functions.GetFunction<AdxFunction>("ADX");
+
+            algo.OnStartUp(mockedContext.Functions);
+
+            Assert.AreEqual(20.96, Math.Round(algo.GetADX().Value, 2));
+            Assert.AreEqual(45.85, Math.Round(algo.GetSMAShortTerm(), 2));
+            Assert.AreEqual(45.60, Math.Round(algo.GetSMALongTerm(), 2));
+            Assert.AreEqual(false, algo.GetCross());
+
+            adx.AddNewValue(new Candle()
+            {
+                DateTime = DateTime.Now,
+                Open = 930,
+                High = 45.71,
+                Low = 45,
+                Close = 45.44,
+            });
+
+            smaShort.AddNewValue(45.44);
+            smaLong.AddNewValue(45.44);
+
+            algo.OnCandleReceived(mockedContext);
+
+            Assert.AreEqual(20.35, Math.Round(adx.Value.Value, 2));
+            Assert.AreEqual(45.71, Math.Round(smaShort.Value.Value, 2));
+            Assert.AreEqual(45.59, Math.Round(smaLong.Value.Value, 2));
+            Assert.AreEqual(false, algo.GetCross());
+
+            adx.AddNewValue(new Candle()
+            {
+                DateTime = DateTime.Now,
+                Open = 930,
+                High = 45.35,
+                Low = 44.45,
+                Close = 44.75,
+            });
+
+            smaShort.AddNewValue(44.75);
+            smaLong.AddNewValue(44.75);
+
+            algo.OnCandleReceived(mockedContext);
+
+            Assert.AreEqual(20.39, Math.Round(adx.Value.Value, 2));
+            Assert.AreEqual(45.52, Math.Round(smaShort.Value.Value, 2));
+            Assert.AreEqual(45.56, Math.Round(smaLong.Value.Value, 2));
+
+            Assert.AreEqual(20.39, Math.Round(algo.GetADX().Value, 2));
+            Assert.AreEqual(45.52, Math.Round(algo.GetSMAShortTerm(), 2));
+            Assert.AreEqual(45.56, Math.Round(algo.GetSMALongTerm(), 2));
+
+            Assert.AreEqual(true, algo.GetCross());
         }
     }
 }

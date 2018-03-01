@@ -43,6 +43,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     FunctionInstanceIdentifier = "MACD",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
                     CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
+                    FastEmaPeriod = 12,
+                    SlowEmaPeriod = 26,
+                    SignalLinePeriod = 9                    
                 })
             };
         }
