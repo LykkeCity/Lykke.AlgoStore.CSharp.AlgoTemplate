@@ -6,8 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestData\Adx_Examples.txt" />
+    <None Remove="TestData\Adx_Examples2.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="..\..\src\Lykke.AlgoStore.CSharp.AlgoTemplate.API\appsettings.Development.json" Link="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Adx_Examples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Adx_Examples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -39,6 +50,9 @@
   <ItemGroup>
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Adx_Examples3.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -2,10 +2,14 @@
 {
     public interface IAlgoSettingsService
     {
-        void Initialise();
+        void Initialize();
+        string GetSetting(string key);
+        bool IsAlive();
+
         string GetMetadataSetting(string key);
-        string GetAlgoInstanceClientId();
+        string GetAlgoInstanceWalletId();
         string GetAlgoInstanceAssetPair();
         string GetAlgoInstanceTradedAsset();
+        string GetAlgoInstanceClientId();
     }
 }

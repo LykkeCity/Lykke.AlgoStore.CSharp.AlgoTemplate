@@ -7,7 +7,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
     /// </summary>
     public interface ITradingService
     {
-        void Initialise();
+        void Initialize();
         Task<double> BuyStraight(double volume);
         Task<double> SellStraight(double volume);
     }

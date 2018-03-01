@@ -68,7 +68,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             _entity = new Statistics
             {
-                InstanceId = SettingsMock.GetInstanceId().CurrentValue,
+                InstanceId = SettingsMock.GetInstanceId(),
                 Amount = 123.45,
                 Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
                 IsBuy = true,
@@ -85,7 +85,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             _entity = new Statistics
             {
-                InstanceId = SettingsMock.GetInstanceId().CurrentValue,
+                InstanceId = SettingsMock.GetInstanceId(),
                 Amount = 123.45,
                 Id = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
                 IsBuy = false,
@@ -100,7 +100,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         public void Statistics_CreateMultipleBuy_GetStatistics_Test()
         {
-            var instanceId = SettingsMock.GetInstanceId().CurrentValue;
+            var instanceId = SettingsMock.GetInstanceId();
             var repo = Given_Statistics_Repository();
 
             _entitiesToBuy = new List<Statistics>
@@ -140,7 +140,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         public void Statistics_CreateMultipleSell_GetStatistics_Test()
         {
-            var instanceId = SettingsMock.GetInstanceId().CurrentValue;
+            var instanceId = SettingsMock.GetInstanceId();
             var repo = Given_Statistics_Repository();
 
             _entitiesToSell = new List<Statistics>
@@ -180,7 +180,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         public void Statistics_AlgoStart_Test()
         {
-            var instanceId = SettingsMock.GetInstanceId().CurrentValue;
+            var instanceId = SettingsMock.GetInstanceId();
             var repo = Given_Statistics_Repository();
 
             _entity = new Statistics

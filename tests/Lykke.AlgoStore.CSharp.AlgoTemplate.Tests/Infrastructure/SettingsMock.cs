@@ -1,8 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System.Threading.Tasks;
+using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -21,6 +27,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                 .Build();
             config.Providers.First().Set("SettingsUrl", "appsettings.Development.json");
             config.Providers.First().Set("ASPNETCORE_ENVIRONMENT", "Development");
+
             return config.LoadSettings<AppSettings>();
         }
 
@@ -38,9 +45,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                             LogsConnString = "Mock connectionString",
                             TableStorageConnectionString = "Mock connectionString"
                         },
-                        InstanceId = "Mock InstanceId",
-                        AlgoId = "Mock AlgoId",
-                        ClientId = "Mock ClientId", 
                         QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings(),                       
                     },
                     MatchingEngineClient = new MatchingEngineSettings(),
@@ -66,25 +70,32 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
             return config.ConnectionString(x => x.CSharpAlgoTemplateService.Db.TableStorageConnectionString);
         }
 
-        public static IReloadingManager<string> GetInstanceId()
+        public static string GetInstanceId()
         {
-            var config = InitConfig();
+            var settingsService = InitSettingsService();
 
-            return config.Nested(x => x.CSharpAlgoTemplateService.InstanceId);
+            return settingsService.GetSetting("InstanceId");
         }
 
-        public static IReloadingManager<string> GetAlgoId()
+        public static string GetAlgoId()
         {
-            var config = InitConfig();
+            var settingsService = InitSettingsService();
 
-            return config.Nested(x => x.CSharpAlgoTemplateService.AlgoId);
+            return settingsService.GetSetting("AlgoId");
         }
 
-        public static IReloadingManager<string> GetClientId()
+        public static string GetClientId()
         {
-            var config = InitConfig();
+            var settingsService = InitSettingsService();
 
-            return config.Nested(x => x.CSharpAlgoTemplateService.ClientId);
+            return settingsService.GetAlgoInstanceClientId();
+        }
+
+        public static string GetWalletId()
+        {
+            var settingsService = InitSettingsService();
+
+            return settingsService.GetAlgoInstanceWalletId();
         }
 
         public static IReloadingManager<QuoteRabbitMqSubscriptionSettings> GetQuoteSettings()
@@ -103,6 +114,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
             else
                 config = InitMockConfiguration();
             return config;
-        }       
+        }
+
+        public static IAlgoSettingsService InitSettingsService()
+        {
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321_MJTEST\" }");
+
+            var result = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
+            result.Initialize();
+
+            return result;
+        }
+
+        private static AlgoClientInstanceRepository Given_AlgoClientInstance_Repository()
+        {
+            return new AlgoClientInstanceRepository(AzureTableStorage<AlgoClientInstanceEntity>.Create(
+                SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()));
+        }
     }
 }

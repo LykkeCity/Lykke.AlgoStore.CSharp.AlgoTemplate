@@ -49,7 +49,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public Task StartAsync()
         {
             // read settings/metadata/env. var
-            _algoSettingsService.Initialise();
+            _algoSettingsService.Initialize();
 
             // Function service initialization.
             _functionsService.Initialize();
@@ -58,7 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             // Gets not finished limited orders?!?
             // can we get it for algo ?!?
-            _tradingService.Initialise();
+            _tradingService.Initialize();
 
             // subscribe for RabbitMQ quotes
             // throws if fail

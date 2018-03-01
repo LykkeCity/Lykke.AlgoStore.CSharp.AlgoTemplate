@@ -23,6 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.InstanceId = entitiy.RowKey;
             result.AssetPair = entitiy.AssetPair;
             result.HftApiKey = entitiy.HftApiKey;
+            result.WalletId = entitiy.WalletId;
             result.Margin = entitiy.Margin;
             result.TradedAsset = entitiy.TradedAsset;
             result.Volume = entitiy.Volume;
@@ -42,6 +43,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.RowKey = data.InstanceId;
             result.AssetPair = data.AssetPair;
             result.HftApiKey = data.HftApiKey;
+            result.WalletId = data.WalletId;
             result.Margin = data.Margin;
             result.TradedAsset = data.TradedAsset;
             result.Volume = data.Volume;
@@ -63,6 +65,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.RowKey = data.InstanceId;
             result.AssetPair = data.AssetPair;
             result.HftApiKey = data.HftApiKey;
+            result.WalletId = data.WalletId;
             result.Margin = data.Margin;
             result.TradedAsset = data.TradedAsset;
             result.Volume = data.Volume;

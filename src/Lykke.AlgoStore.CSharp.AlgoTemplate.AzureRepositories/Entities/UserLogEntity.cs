@@ -9,6 +9,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities
 
         public string Message { get; set; }
 
-        public DateTime Date => DateTime.UtcNow;
+        public DateTime Date { get; set; }
     }
 }

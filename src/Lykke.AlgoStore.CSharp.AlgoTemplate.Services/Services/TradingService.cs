@@ -23,7 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private string _assetPairId;
         private string _asset;
-        private string _clientId;
+        private string _walletId;
     
         public TradingService(IMatchingEngineAdapter matchingEngineAdapter,
             IAssetServiceDecorator assetServiceDecorator,
@@ -34,11 +34,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algoSettingsService = algoSettingsService;
         }
 
-        public void Initialise()
+        public void Initialize()
         {
             _assetPairId = _algoSettingsService.GetAlgoInstanceAssetPair();
             _asset = _algoSettingsService.GetAlgoInstanceTradedAsset();
-            _clientId = _algoSettingsService.GetAlgoInstanceClientId();
+            _walletId = _algoSettingsService.GetAlgoInstanceWalletId();
         }
 
         public async Task<double> SellStraight(double volume)
@@ -65,7 +65,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
 
             var response = await _matchingEngineAdapter.HandleMarketOrderAsync(
-                clientId: _clientId,
+                clientId: _walletId,
                 assetPairId: order.AssetPairId,
                 orderAction: order.OrderAction,
                 volume: orderVolume,
@@ -98,7 +98,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             //Validate volume if needed
 
             var response = await _matchingEngineAdapter.HandleMarketOrderAsync(
-                clientId: _clientId,
+                clientId: _walletId,
                 assetPairId: order.AssetPairId,
                 orderAction: order.OrderAction,
                 volume: orderVolume,

@@ -12,5 +12,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public double Volume { get; set; }
         public double Margin { get; set; }
         public string AlgoMetaDataInformation { get; set; }
+        public string WalletId { get; set; }
     }
 }

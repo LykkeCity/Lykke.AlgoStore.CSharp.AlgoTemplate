@@ -14,16 +14,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private string _instanceId;
         private string _algoId;
         private string _clientId;
-
+        private string _walletId;
         private AlgoClientInstanceData _entity;
         private static bool _entitySaved;
 
         [SetUp]
         public void SetUp()
         {
-            _instanceId = SettingsMock.GetInstanceId().CurrentValue;
-            _algoId = SettingsMock.GetAlgoId().CurrentValue;
-            _clientId = SettingsMock.GetClientId().CurrentValue;
+            _instanceId = SettingsMock.GetInstanceId();
+            _algoId = SettingsMock.GetAlgoId();
+            _clientId = "123456clientId";
+            _walletId = "123456walletId";
 
             _entity = new AlgoClientInstanceData
             {
@@ -35,6 +36,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 Margin = 1,
                 Volume = 1,
                 ClientId = _clientId,
+                WalletId = _walletId,
                 AlgoMetaDataInformation = new AlgoMetaDataInformation()
                 {
                     Parameters = new[] {new  AlgoMetaDataParameter()
@@ -77,16 +79,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             When_Invoke_Save(repo, _entity);
 
             string clientIdValue = repo.GetAlgoInstanceClientId(_algoId, _instanceId).Result;
+            string walletIdValue = repo.GetAlgoInstanceWalletId(_algoId, _instanceId).Result;
             string assetPairValue = repo.GetAlgoInstanceAssetPair(_algoId, _instanceId).Result;
             string assetValue = repo.GetAlgoInstanceTradedAsset(_algoId, _instanceId).Result;
             string metadataInfo = repo.GetAlgoInstanceMetadataSetting(_algoId, _instanceId, "Stopwatch").Result;
 
             string expectedClientId = _clientId;
+            string expectedWalletId = _walletId;
             string expectedAssetPair = "BTCUSD";
             string expectedAsset = "BTC";
             string expectedMetadataInfo = "Val 1";
 
             Assert.AreEqual(expectedClientId, clientIdValue);
+            Assert.AreEqual(expectedWalletId, walletIdValue);
             Assert.AreEqual(expectedAssetPair, assetPairValue);
             Assert.AreEqual(expectedAsset, assetValue);
             Assert.AreEqual(metadataInfo, expectedMetadataInfo);

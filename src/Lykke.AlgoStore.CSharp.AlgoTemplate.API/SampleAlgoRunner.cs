@@ -7,10 +7,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.Configuration;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -32,6 +34,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
         public static async Task Main(string[] args)
         {
+            // Initialize AutoMapper
+            Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile>());
+            Mapper.AssertConfigurationIsValid();
+
             // Build the inversion of control container
             var ioc = BuildIoc();
 
@@ -74,9 +80,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 .AddEnvironmentVariables()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .Build();
-
-            config.Providers.First().Set("SettingsUrl", "appsettings.Development.json");
-            config.Providers.First().Set("ASPNETCORE_ENVIRONMENT", "Development");
 
             var appSettings = config.LoadSettings<AppSettings>();
 

@@ -82,9 +82,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IAlgoWorkflowService>();
 
             builder.RegisterType<AlgoSettingsService>()
-                .WithParameter("instanceId", _settings.CurrentValue.CSharpAlgoTemplateService.InstanceId)
-                .WithParameter("algoId", _settings.CurrentValue.CSharpAlgoTemplateService.AlgoId)
-                .As<IAlgoSettingsService>();
+                .As<IAlgoSettingsService>()
+                .SingleInstance();
 
             builder.RegisterType<FunctionsService>()
                 .As<IFunctionsService>();
@@ -93,8 +92,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IHistoryDataService>();
 
             builder.RegisterType<StatisticsService>()
-                .WithParameter("instanceId", _settings.CurrentValue.CSharpAlgoTemplateService.InstanceId)
-                .As<IStatisticsService>();
+                //.WithParameter("instanceId", _settings.CurrentValue.InstanceId)
+                .As<IStatisticsService>()
+                .SingleInstance();
 
             builder.RegisterType<ActionsService>()
                 .As<IActions>();
