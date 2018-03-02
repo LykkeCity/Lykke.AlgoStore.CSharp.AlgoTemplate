@@ -45,7 +45,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
                     FastEmaPeriod = 12,
                     SlowEmaPeriod = 26,
-                    SignalLinePeriod = 9                    
+                    SignalLinePeriod = 9
                 })
             };
         }

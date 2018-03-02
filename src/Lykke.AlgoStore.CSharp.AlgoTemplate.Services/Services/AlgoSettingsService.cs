@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Newtonsoft.Json;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -16,7 +17,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private IDictionary<string, object> _settings;
         private bool _isAlive;
 
-        public bool IsAlive() => _isAlive; 
+        public bool IsAlive() => _isAlive;
         private readonly IAlgoClientInstanceRepository _algoClientInstanceMetadataRepository;
         private string _instanceId;
         private string _algoId;
@@ -53,9 +54,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return _settings[key] as string;
         }
 
+        public AlgoClientInstanceData GetAlgoInstance()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result;
+        }
+
         public string GetMetadataSetting(string key)
         {
-           return  _algoClientInstanceMetadataRepository.GetAlgoInstanceMetadataSetting(_algoId,_instanceId, key).Result;
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceMetadataSetting(_algoId, _instanceId, key).Result;
         }
 
         public string GetAlgoInstanceWalletId()
