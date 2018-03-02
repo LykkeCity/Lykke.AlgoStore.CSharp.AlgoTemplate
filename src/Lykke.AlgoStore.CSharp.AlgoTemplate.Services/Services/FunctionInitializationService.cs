@@ -39,14 +39,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Type functionType = Type.GetType(function.Type);
 
                 Type parameterType = null;
-                string paramName = string.Empty;
+                string functionParamTypeName = string.Empty;
                 FunctionParamsBase paramObject = new FunctionParamsBase();
 
                 foreach (var param in function.Parameters)
                 {
-                    if (paramName != param.ParameterType)
+                    if (functionParamTypeName != param.ParameterType)
                     {
-                        paramName = param.ParameterType;
+                        functionParamTypeName = param.ParameterType;
                         parameterType = Type.GetType(param.ParameterType);
                         paramObject = (FunctionParamsBase)Activator.CreateInstance(parameterType);
                     }
