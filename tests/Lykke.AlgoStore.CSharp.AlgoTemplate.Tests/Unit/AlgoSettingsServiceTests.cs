@@ -1,9 +1,13 @@
 ﻿using System;
 using AutoMapper;
+using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using NUnit.Framework;
+using Mapper = AutoMapper.Mapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -26,7 +30,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "");
 
-            var settingsService = new AlgoSettingsService();
+            var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
 
             Assert.Throws<ArgumentException>(settingsService.Initialize);
         }
@@ -36,7 +40,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
 
-            var settingsService = new AlgoSettingsService();
+            var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             settingsService.Initialize();
 
             var result = settingsService.GetSetting("unknown");
@@ -49,7 +53,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
 
-            var settingsService = new AlgoSettingsService();
+            var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             settingsService.Initialize();
 
             var result = settingsService.GetSetting("AlgoId");
@@ -62,7 +66,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
 
-            var settingsService = new AlgoSettingsService();
+            var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
 
             var result = settingsService.IsAlive();
 
@@ -74,12 +78,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
 
-            var settingsService = new AlgoSettingsService();
+            var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             settingsService.Initialize();
 
             var result = settingsService.IsAlive();
 
             Assert.AreEqual(result, true);
+        }
+
+        private static AlgoClientInstanceRepository Given_AlgoClientInstance_Repository()
+        {
+            return new AlgoClientInstanceRepository(AzureTableStorage<AlgoClientInstanceEntity>.Create(
+                SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()));
         }
     }
 }

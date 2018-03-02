@@ -85,7 +85,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             var appSettings = config.LoadSettings<AppSettings>();
 
             var builder = new ContainerBuilder();
-            var serviceModule = new ServiceModule(appSettings.Nested(x => x.CSharpAlgoTemplateService), new LogToConsole());
+            var serviceModule = new ServiceModule(appSettings, new LogToConsole());
             serviceModule.AlgoType = GetAlgoType();
             builder.RegisterModule(serviceModule);
 

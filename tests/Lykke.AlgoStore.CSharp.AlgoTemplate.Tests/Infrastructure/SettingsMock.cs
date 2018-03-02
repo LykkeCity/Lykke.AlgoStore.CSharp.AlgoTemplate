@@ -2,8 +2,12 @@
 using System.IO;
 using System.Linq;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using System.Threading.Tasks;
+using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.Configuration;
@@ -38,10 +42,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                     {
                         Db = new DbSettings
                         {
-                            LogsConnString = "Mock connectionString"
+                            LogsConnString = "Mock connectionString",
+                            TableStorageConnectionString = "Mock connectionString"
                         },
-                        QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings()
-                    }
+                        QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings(),                       
+                    },
+                    MatchingEngineClient = new MatchingEngineSettings(),
+                    AssetsServiceClient = new AssetsServiceClient(),
+                    FeeCalculatorServiceClient = new FeeCalculatorServiceClient(),
+                    FeeSettings = new FeeSettings()
                 }
             );
             return reloadingMock.Object;
@@ -54,11 +63,39 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
             return config.ConnectionString(x => x.CSharpAlgoTemplateService.Db.LogsConnString);
         }
 
+        public static IReloadingManager<string> GetTableStorageConnectionString()
+        {
+            var config = InitConfig();
+
+            return config.ConnectionString(x => x.CSharpAlgoTemplateService.Db.TableStorageConnectionString);
+        }
+
         public static string GetInstanceId()
         {
             var settingsService = InitSettingsService();
 
             return settingsService.GetSetting("InstanceId");
+        }
+
+        public static string GetAlgoId()
+        {
+            var settingsService = InitSettingsService();
+
+            return settingsService.GetSetting("AlgoId");
+        }
+
+        public static string GetClientId()
+        {
+            var settingsService = InitSettingsService();
+
+            return settingsService.GetAlgoInstanceClientId();
+        }
+
+        public static string GetWalletId()
+        {
+            var settingsService = InitSettingsService();
+
+            return settingsService.GetAlgoInstanceWalletId();
         }
 
         public static IReloadingManager<QuoteRabbitMqSubscriptionSettings> GetQuoteSettings()
@@ -83,10 +120,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
         {
             Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321_MJTEST\" }");
 
-            var result = new AlgoSettingsService();
+            var result = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             result.Initialize();
 
             return result;
+        }
+
+        private static AlgoClientInstanceRepository Given_AlgoClientInstance_Repository()
+        {
+            return new AlgoClientInstanceRepository(AzureTableStorage<AlgoClientInstanceEntity>.Create(
+                SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()));
         }
     }
 }

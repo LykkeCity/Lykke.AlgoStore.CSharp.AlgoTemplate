@@ -1,8 +1,9 @@
 ﻿using AzureStorage.Tables;
 using Common.Log;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entitites;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.SettingsReader;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories
@@ -21,5 +22,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories
             return new StatisticsRepository(
                 AzureTableStorage<StatisticsEntity>.Create(connectionString, StatisticsRepository.TableName, log));
         }
-    }
+
+        public static AlgoClientInstanceRepository CreateAlgoClientInstanceRepository(IReloadingManager<string> connectionString,
+            ILog log)
+        {
+            return new AlgoClientInstanceRepository(
+                AzureTableStorage<AlgoClientInstanceEntity>.Create(connectionString, AlgoClientInstanceRepository.TableName, log));
+        }
+    } 
 }

@@ -8,12 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\AlgoClientInstanceEntity.cs" />
+    <Compile Remove="Mapper\AlgoClientInstanceMapper.cs" />
+    <Compile Remove="Mapper\KeyGenerator.cs" />
+    <Compile Remove="Repositories\AlgoClientInstanceRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.2" />
-    <PackageReference Include="Lykke.AzureStorage" Version="3.2.0" />
+    <PackageReference Include="Lykke.AzureStorage" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Core\Lykke.AlgoStore.CSharp.AlgoTemplate.Core.csproj" />
+    <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj" />
   </ItemGroup>
 
 </Project>

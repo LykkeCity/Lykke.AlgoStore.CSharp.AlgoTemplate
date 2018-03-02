@@ -5,12 +5,8 @@
     /// </summary>
     public interface IActions
     {
-        double BuyStraight(double volume);
-        double BuyReverse(double volume);
-
-        double SellStraight(double volume);
-        double SellReverse(double volume);
-
+        double Buy(double volume);      
+        double Sell(double volume);
         void Log(string message);
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Newtonsoft.Json;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -15,7 +16,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private IDictionary<string, object> _settings;
         private bool _isAlive;
 
-        public bool IsAlive() => _isAlive;
+        public bool IsAlive() => _isAlive; 
+        private readonly IAlgoClientInstanceRepository _algoClientInstanceMetadataRepository;
+        private string _instanceId;
+        private string _algoId;
+
+        public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
+        {
+            _algoClientInstanceMetadataRepository = algoClientInstanceMetadataRepository;
+        }
 
         public void Initialize()
         {
@@ -27,9 +36,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 throw new ArgumentException("Environment variable 'ALGO_INSTANCE_PARAMS' does not contain settings");
 
             dynamic dynamicSettings = JsonConvert.DeserializeObject<ExpandoObject>(_settingsJson);
-            _settings = (IDictionary<string, object>) dynamicSettings;
+            _settings = (IDictionary<string, object>)dynamicSettings;
+
+            _instanceId = GetSetting("InstanceId");
+            _algoId = GetSetting("AlgoId");
 
             _isAlive = true;
+
         }
 
         public string GetSetting(string key)
@@ -38,6 +51,31 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 return string.Empty;
 
             return _settings[key] as string;
+        }
+
+        public string GetMetadataSetting(string key)
+        {
+           return  _algoClientInstanceMetadataRepository.GetAlgoInstanceMetadataSetting(_algoId,_instanceId, key).Result;
+        }
+
+        public string GetAlgoInstanceWalletId()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.WalletId;
+        }
+
+        public string GetAlgoInstanceTradedAsset()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAsset;
+        }
+
+        public string GetAlgoInstanceAssetPair()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPair;
+        }
+
+        public string GetAlgoInstanceClientId()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.ClientId;
         }
     }
 }

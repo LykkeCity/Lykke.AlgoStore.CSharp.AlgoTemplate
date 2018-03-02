@@ -5,5 +5,11 @@
         void Initialize();
         string GetSetting(string key);
         bool IsAlive();
+
+        string GetMetadataSetting(string key);
+        string GetAlgoInstanceWalletId();
+        string GetAlgoInstanceAssetPair();
+        string GetAlgoInstanceTradedAsset();
+        string GetAlgoInstanceClientId();
     }
 }
