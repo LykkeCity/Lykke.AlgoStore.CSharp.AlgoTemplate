@@ -97,9 +97,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         {
             var partitionKey = KeyGenerator.GenerateAlgoIdPartitionKey(algoId);
             var data = await _table.GetDataAsync(partitionKey,instanceId);
-            var algoMetadataInformation = JsonConvert.DeserializeObject<AlgoMetaDataInformation>(data.AlgoMetaDataInformation);
-            
-            string settingValue = algoMetadataInformation.Parameters.Where(p => p.Key == key).Select(p => p.Value).FirstOrDefault();
+            if (data == null)
+                return string.Empty;
+
+            var algoMetadataInformation = JsonConvert.DeserializeObject<AlgoMetaDataInformation>(data.AlgoMetaDataInformation);           
+            string settingValue = algoMetadataInformation.Parameters.Where(p => p.Key == key).Select(p => p.Value).SingleOrDefault();
 
             return settingValue ?? string.Empty;
         }
