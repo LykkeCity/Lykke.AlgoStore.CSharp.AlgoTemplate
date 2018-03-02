@@ -70,7 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             // Gets not finished limited orders?!?
             // can we get it for algo ?!?
-            _tradingService.Initialise();
+            _tradingService.Initialize();
 
             // subscribe for RabbitMQ quotes
             // throws if fail

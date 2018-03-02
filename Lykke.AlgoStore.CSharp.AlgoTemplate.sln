@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.AlgoTemplate.API", "src\Lykke.AlgoStore.CSharp.AlgoTemplate.API\Lykke.AlgoStore.CSharp.AlgoTemplate.API.csproj", "{E414FDB9-FEEA-4CD0-9BBA-D1541601DF29}"
 EndProject
@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.Algo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Models", "5 - Models", "{1B91A99B-B77F-45D2-9C15-7C08DFDF8AF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lykke.AlgoStore.CSharp.AlgoTemplate.Models", "src\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj", "{8F7B39C3-9198-4A03-87D1-29D1ED9A7930}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.AlgoTemplate.Models", "src\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj", "{8F7B39C3-9198-4A03-87D1-29D1ED9A7930}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

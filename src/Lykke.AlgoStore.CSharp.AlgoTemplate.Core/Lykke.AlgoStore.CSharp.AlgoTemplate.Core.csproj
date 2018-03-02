@@ -8,11 +8,33 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lykke.Common" Version="4.0.0" />
+    <Compile Remove="Domain\Entities\AlgoClientInstanceData.cs" />
+    <Compile Remove="Domain\Entities\BaseAlgoData.cs" />
+    <Compile Remove="Domain\Entities\BaseAlgoInstance.cs" />
+    <Compile Remove="Domain\Entities\BaseValidatableData.cs" />
+    <Compile Remove="Repositories\IAlgoClientInstanceRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lykke.Common" Version="4.4.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.Algo.Core\Lykke.AlgoStore.CSharp.Algo.Core.csproj" />
+    <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Lykke.MatchingEngine.Connector.Abstractions">
+      <HintPath>..\..\..\..\..\Users\IliyanIvanov\.nuget\packages\lykke.matchingengine.connector.abstractions\1.0.7\lib\netstandard1.6\Lykke.MatchingEngine.Connector.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Lykke.Service.Assets.Client">
+      <HintPath>..\..\..\..\..\Users\IliyanIvanov\.nuget\packages\lykke.service.assets.client\3.3.1\lib\netstandard2.0\Lykke.Service.Assets.Client.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Strings\" />
   </ItemGroup>
 
 </Project>

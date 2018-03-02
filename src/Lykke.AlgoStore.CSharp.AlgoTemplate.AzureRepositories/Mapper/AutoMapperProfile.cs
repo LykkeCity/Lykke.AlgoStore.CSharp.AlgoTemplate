@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entitites;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.Entities;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper
