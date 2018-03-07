@@ -44,7 +44,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                         Key = "Stopwatch",
                         Value = "Val 1",
                         Type = "String",
-                        ParameterType = "Lykke.AlgoStore.CSharp.Funct.SimpleMovingAverage"
+                        //ParameterType = "Lykke.AlgoStore.CSharp.Funct.SimpleMovingAverage"
                     }}
                 }
             };

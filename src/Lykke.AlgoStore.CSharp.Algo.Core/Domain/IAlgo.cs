@@ -1,4 +1,7 @@
-﻿namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using System;
+
+namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
 {
     /// <summary>
     /// A user defined algo.
@@ -22,5 +25,20 @@
         /// </summary>
         /// <param name="context">The <see cref="ICandleContext"/> provided to the algo</param>
         void OnCandleReceived(ICandleContext context);
+
+        /// <summary>
+        /// Algo Asset Pair, which will be used for getting candles or quotes information
+        /// </summary>
+        string AssetPair { get; set; }
+        
+        /// <summary>
+        /// Time Interval for getting new candles
+        /// </summary>
+        CandleTimeInterval CandleInterval { get; set; }
+
+        /// <summary>
+        /// The Start Date for which we will get candles or quotes
+        /// </summary>
+        DateTime StartFrom { get; set; }
     }
 }

@@ -1,11 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -48,10 +49,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algo = algo;
         }
 
+
+
         public Task StartAsync()
         {
             // read settings/metadata/env. var
             _algoSettingsService.Initialize();
+
+            //get algo parameters
+            SetUpAlgoParameters();
 
             // Function service initialization.
             _functionsService.Initialize();
@@ -60,10 +66,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // TODO: Replace this with actual algo metadata once it's implemented
             candleServiceCandleRequests.Add(new CandleServiceRequest
             {
-                AssetPair = "BTCEUR",
-                CandleInterval = Algo.Core.Candles.CandleTimeInterval.Minute,
-                RequestId = _dummyAlgoId,
-                StartFrom = DateTime.Now
+                AssetPair = _algo.AssetPair, //"BTCEUR",
+                CandleInterval = _algo.CandleInterval,
+                RequestId = _algoSettingsService.GetAlgoId(),
+                StartFrom = _algo.StartFrom
             });
 
             _candlesService.Subscribe(candleServiceCandleRequests, OnInitialFunctionServiceData, OnFunctionServiceUpdate);
@@ -176,5 +182,27 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             throw new NotImplementedException();
         }
 
+        private void SetUpAlgoParameters()
+        {
+            var algoInstance = _algoSettingsService.GetAlgoInstance();
+
+            if (algoInstance == null)
+                return;
+
+            Type parameterType = _algo.GetType();
+
+            foreach (var parameter in algoInstance.AlgoMetaDataInformation.Parameters)
+            {
+                PropertyInfo prop = parameterType.GetProperty(parameter.Key);
+
+                if (prop != null && prop.CanWrite)
+                {
+                    if (prop.PropertyType.IsEnum)
+                        prop.SetValue(_algo, Enum.ToObject(prop.PropertyType, Convert.ToInt32(parameter.Value)), null);
+                    else
+                        prop.SetValue(_algo, Convert.ChangeType(parameter.Value, prop.PropertyType), null);
+                }
+            }
+        }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -25,24 +24,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 new SmaFunction(new SmaParameters(){
                     FunctionInstanceIdentifier = "SMA_Short",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
+                    CandleTimeInterval = CandleTimeInterval.Day,
                     Capacity = 100
                 }),
                 new SmaFunction(new SmaParameters(){
                     FunctionInstanceIdentifier = "SMA_Long",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
+                    CandleTimeInterval = CandleTimeInterval.Day,
                     Capacity = 1000
                 }),
                 new AdxFunction(new AdxParameters(){
                     FunctionInstanceIdentifier = "ADX",
-                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
+                    CandleTimeInterval =CandleTimeInterval.Day,
                     AdxPeriod = 14
                 }),
                 new MacdFunction(new MacdParameters(){
                     FunctionInstanceIdentifier = "MACD",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
+                    CandleTimeInterval = CandleTimeInterval.Day,
                     FastEmaPeriod = 12,
                     SlowEmaPeriod = 26,
                     SignalLinePeriod = 9

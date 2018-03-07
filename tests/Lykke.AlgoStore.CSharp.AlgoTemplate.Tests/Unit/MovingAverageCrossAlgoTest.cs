@@ -1,7 +1,8 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
-using Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross;
+using Lykke.AlgoStore.CSharp.Algo.Implemention;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
 using Moq;

@@ -1,12 +1,8 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -16,14 +12,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// </summary>
     public class FunctionInitializationService : IFunctionInitializationService
     {
-        private IAlgoClientInstanceRepository _algoClientInstanceRepository;
-
         private IAlgoSettingsService _algoSettingsService;
 
-        public FunctionInitializationService(IAlgoClientInstanceRepository algoClientInstanceRepository,
-            IAlgoSettingsService algoSettingsService)
+        public FunctionInitializationService(IAlgoSettingsService algoSettingsService)
         {
-            _algoClientInstanceRepository = algoClientInstanceRepository;
             _algoSettingsService = algoSettingsService;
         }
 
@@ -31,26 +23,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             var algoInstance = _algoSettingsService.GetAlgoInstance();
 
+            if (algoInstance == null)
+                return null;
+
             IList<IFunction> functions = new List<IFunction>();
 
             foreach (var function in algoInstance.AlgoMetaDataInformation.Functions)
             {
-                //function.Id == FunctionInstanceIdentifier
                 Type functionType = Type.GetType(function.Type);
 
-                Type parameterType = null;
-                string functionParamTypeName = string.Empty;
+                string functionParamTypeName = function.FunctionParameterType;
                 FunctionParamsBase paramObject = new FunctionParamsBase();
+
+                Type parameterType = Type.GetType(functionParamTypeName);
+                paramObject = (FunctionParamsBase)Activator.CreateInstance(parameterType);
 
                 foreach (var param in function.Parameters)
                 {
-                    if (functionParamTypeName != param.ParameterType)
-                    {
-                        functionParamTypeName = param.ParameterType;
-                        parameterType = Type.GetType(param.ParameterType);
-                        paramObject = (FunctionParamsBase)Activator.CreateInstance(parameterType);
-                    }
-
                     PropertyInfo prop = parameterType.GetProperty(param.Key);
                     if (prop != null && prop.CanWrite)
                     {

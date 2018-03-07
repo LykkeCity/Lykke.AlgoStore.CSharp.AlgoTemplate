@@ -15,5 +15,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         string GetAlgoInstanceClientId();
 
         AlgoClientInstanceData GetAlgoInstance();
+
+        string GetAlgoId();
+        string GetInstanceId();
     }
 }

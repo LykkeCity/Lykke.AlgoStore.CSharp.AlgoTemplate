@@ -22,6 +22,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _instanceId;
         private string _algoId;
 
+        public string GetAlgoId() => _algoId;
+        public string GetInstanceId() => _instanceId;
+
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
         {
             _algoClientInstanceMetadataRepository = algoClientInstanceMetadataRepository;
