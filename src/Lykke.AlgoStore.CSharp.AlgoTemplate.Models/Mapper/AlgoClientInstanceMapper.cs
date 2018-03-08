@@ -27,8 +27,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.Margin = entitiy.Margin;
             result.TradedAsset = entitiy.TradedAsset;
             result.Volume = entitiy.Volume;
+            result.InstanceName = entitiy.InstanceName;
             result.AlgoMetaDataInformation = entitiy.AlgoMetaDataInformation != null ?
-                JsonConvert.DeserializeObject<AlgoMetaDataInformation>(entitiy.AlgoMetaDataInformation) 
+                JsonConvert.DeserializeObject<AlgoMetaDataInformation>(entitiy.AlgoMetaDataInformation)
                 : new AlgoMetaDataInformation();
 
             return result;
@@ -52,6 +53,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.ETag = "*";
             result.ClientId = data.ClientId;
             result.AlgoId = data.AlgoId;
+            result.InstanceName = data.InstanceName;
             result.AlgoMetaDataInformation = JsonConvert.SerializeObject(data.AlgoMetaDataInformation);
             return result;
         }
@@ -74,6 +76,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.ETag = "*";
             result.ClientId = data.ClientId;
             result.AlgoId = data.AlgoId;
+            result.InstanceName = data.InstanceName;
             result.AlgoMetaDataInformation = JsonConvert.SerializeObject(data.AlgoMetaDataInformation);
             return result;
         }

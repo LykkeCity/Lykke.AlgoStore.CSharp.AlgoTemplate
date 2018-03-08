@@ -125,11 +125,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<PredefinedDataFeedCandleService>()
                 .As<ICandlesService>();
 
-            //builder.RegisterType<HardCodedMovingAverageCrossFunctionInitializationService>()
-            //    .As<IFunctionInitializationService>();
-
             builder.RegisterType<FunctionInitializationService>()
-             .As<IFunctionInitializationService>();
+                .As<IFunctionInitializationService>();
 
             builder.RegisterType<PredefinedHistoryDataService>()
                 .As<IHistoryDataService>();

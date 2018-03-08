@@ -11,10 +11,6 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
         private MacdFunction _macd;
         private double _holdings;
 
-        // TODO: Replace this with algo parameters when they're implemented
-        //private const double HOLDINGS_STEP = 2;
-        //private const double TOLERANCE = 0.0025;
-
         public double Holdings => _holdings;
 
         public override void OnStartUp(IFunctionProvider functions)
@@ -43,6 +39,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             }
             else if (_holdings > 0 && signalDeltaPercent < -Tolerance)
             {
+                // TODO: Implement buying/selling when trading logic is finalized
                 //context.Actions.SellStraight(_holdings);
                 _holdings = 0;
 

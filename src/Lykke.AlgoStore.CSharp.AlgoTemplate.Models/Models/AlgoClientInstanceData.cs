@@ -22,6 +22,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         public double Margin { get; set; }
 
+        public string InstanceName { get; set; }
+
         [Required]
         public AlgoMetaDataInformation AlgoMetaDataInformation { get; set; }
     }
