@@ -20,5 +20,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
         public string AssetPair { get; set; }
         public CandleTimeInterval CandleInterval { get; set; }
         public DateTime StartFrom { get; set; }
+        public double Volume { get; set; }
+        public string TradedAsset { get; set; }
     }
 }

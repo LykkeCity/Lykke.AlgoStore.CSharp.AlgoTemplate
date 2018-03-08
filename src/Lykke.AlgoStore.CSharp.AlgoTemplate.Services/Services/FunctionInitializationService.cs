@@ -23,19 +23,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             var algoInstance = _algoSettingsService.GetAlgoInstance();
 
-            if (algoInstance == null)
-                return null;
-
             IList<IFunction> functions = new List<IFunction>();
 
+            if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Functions == null)
+                return functions;
+
             foreach (var function in algoInstance.AlgoMetaDataInformation.Functions)
-            {
+            {                 
+                //All functions should have parameters - defined in one class, if parameters are null, function can not be instantiated.
+                if (function.Parameters == null)
+                    continue;
+
                 Type functionType = Type.GetType(function.Type);
 
-                string functionParamTypeName = function.FunctionParameterType;
                 FunctionParamsBase paramObject = new FunctionParamsBase();
 
-                Type parameterType = Type.GetType(functionParamTypeName);
+                Type parameterType = Type.GetType(function.FunctionParameterType);
                 paramObject = (FunctionParamsBase)Activator.CreateInstance(parameterType);
 
                 foreach (var param in function.Parameters)
@@ -50,8 +53,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     }
                 }
 
-                var funcObj = Activator.CreateInstance(functionType, paramObject);
-                functions.Add((IFunction)funcObj);
+                var functionObject = (IFunction)Activator.CreateInstance(functionType, paramObject);
+                //functionObject.FunctionParameters.FunctionInstanceIdentifier = function.Id;
+                functions.Add(functionObject);
             }
 
             return functions;

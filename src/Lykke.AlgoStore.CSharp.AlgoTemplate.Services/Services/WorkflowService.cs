@@ -186,8 +186,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             var algoInstance = _algoSettingsService.GetAlgoInstance();
 
-            if (algoInstance == null)
+            if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Parameters == null)
                 return;
+
 
             Type parameterType = _algo.GetType();
 

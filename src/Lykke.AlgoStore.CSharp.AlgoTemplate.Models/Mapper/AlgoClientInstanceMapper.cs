@@ -27,11 +27,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.Margin = entitiy.Margin;
             result.TradedAsset = entitiy.TradedAsset;
             result.Volume = entitiy.Volume;
-            result.AlgoMetaDataInformation =
-                JsonConvert.DeserializeObject<AlgoMetaDataInformation>(entitiy.AlgoMetaDataInformation);
+            result.AlgoMetaDataInformation = entitiy.AlgoMetaDataInformation != null ?
+                JsonConvert.DeserializeObject<AlgoMetaDataInformation>(entitiy.AlgoMetaDataInformation) 
+                : new AlgoMetaDataInformation();
 
             return result;
         }
+
         public static AlgoClientInstanceEntity ToEntityWithAlgoIdPartitionKey(this AlgoClientInstanceData data)
         {
             var result = new AlgoClientInstanceEntity();

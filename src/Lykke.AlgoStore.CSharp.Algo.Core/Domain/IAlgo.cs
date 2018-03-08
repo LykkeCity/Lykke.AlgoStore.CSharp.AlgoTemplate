@@ -40,5 +40,15 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
         /// The Start Date for which we will get candles or quotes
         /// </summary>
         DateTime StartFrom { get; set; }
+
+        /// <summary>
+        /// Volume which we will buy or sell
+        /// </summary>
+        double Volume { get; set; }
+
+        /// <summary>
+        /// Traded asset for the trading service
+        /// </summary>
+        string TradedAsset { get; set; }
     }
 }
