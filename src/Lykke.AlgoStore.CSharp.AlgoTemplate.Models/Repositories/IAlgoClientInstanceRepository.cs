@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         Task SaveAlgoInstanceDataAsync(AlgoClientInstanceData data);
         Task DeleteAlgoInstanceDataAsync(AlgoClientInstanceData metaData);
 
-        Task<string> GetAlgoInstanceMetadataSetting(string algoId, string instanceId, string key);       
-
+        Task<string> GetAlgoInstanceMetadataSetting(string algoId, string instanceId, string key);
+        Task<bool> HasInstanceData(string clientId, string algoId);
     }
 }
