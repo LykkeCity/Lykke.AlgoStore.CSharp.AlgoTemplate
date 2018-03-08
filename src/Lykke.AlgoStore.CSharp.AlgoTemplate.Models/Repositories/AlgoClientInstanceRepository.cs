@@ -105,5 +105,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             return settingValue ?? string.Empty;
         }
+
+        public async Task<bool> HasInstanceData(string clientId, string algoId)
+        {
+            string keyWithAlgoId = KeyGenerator.GenerateAlgoIdPartitionKey(algoId);
+            string keyWithClientId = KeyGenerator.GenerateClientIdPartitionKey(clientId);
+
+            var dataWithAlgoIdPartitionKey = await _table.GetTopRecordAsync(keyWithAlgoId);
+            var dataWithClientIdPartitionKey = await _table.GetTopRecordAsync(keyWithClientId);
+
+            return dataWithAlgoIdPartitionKey != null || dataWithClientIdPartitionKey != null;
+        }
     }
 }

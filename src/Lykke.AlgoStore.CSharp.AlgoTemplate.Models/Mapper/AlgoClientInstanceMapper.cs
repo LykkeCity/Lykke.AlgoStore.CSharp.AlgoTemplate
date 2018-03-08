@@ -14,10 +14,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             if (entitiy == null)
                 return result;
 
-            var pair = KeyGenerator.ParseKey(entitiy.PartitionKey);
-            if (pair == null)
-                return result;
-
             result.ClientId = entitiy.ClientId;
             result.AlgoId = entitiy.AlgoId;
             result.InstanceId = entitiy.RowKey;
