@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using OrderAction = Lykke.MatchingEngine.Connector.Abstractions.Models.OrderAction;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services

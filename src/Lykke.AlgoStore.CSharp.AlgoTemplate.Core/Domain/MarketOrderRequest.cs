@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using Lykke.MatchingEngine.Connector.Abstractions.Models;
+﻿using Lykke.MatchingEngine.Connector.Abstractions.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
 {

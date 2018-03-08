@@ -4,4 +4,14 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Lykke.MatchingEngine.Connector" Version="1.0.7" />
+    <PackageReference Include="Lykke.MatchingEngine.Connector.Abstractions" Version="1.0.7" />
+    <PackageReference Include="Lykke.Service.Assets.Client" Version="3.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj" />
+  </ItemGroup>
+
 </Project>

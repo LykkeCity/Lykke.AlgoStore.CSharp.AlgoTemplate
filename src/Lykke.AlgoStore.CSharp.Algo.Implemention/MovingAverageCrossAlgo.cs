@@ -1,19 +1,19 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
+using System;
 
-namespace Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross
+namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 {
     /// <summary>
     /// Moving Average Cross Algorithm
     /// </summary>
     public class MovingAverageCrossAlgo : BaseAlgo
     {
-        //public MovingAverageCrossParameters Parameters { get; set; }
-        private bool _crossSMAShortAbove { get; set; }
-        private bool _crossSMAShortBelow { get; set; }
+        public int ADXTreshhold { get; set; }
 
-        private int _adxThreshold = 10;
+        private bool _crossSMAShortAbove;
+        private bool _crossSMAShortBelow;
 
         private double _lastSMAShort;
         private double _lastSMALong;
@@ -29,9 +29,6 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross
 
         public override void OnStartUp(IFunctionProvider functions)
         {
-            //TODO  we should get params
-            //_adxThreshold = Convert.ToInt32(context.Parameters.GetParameterValue("AdxThreshold"));
-
             _smaShortPeriod = functions.GetFunction<SmaFunction>("SMA_Short");
             _smaLongPeriod = functions.GetFunction<SmaFunction>("SMA_Long");
             _adx = functions.GetFunction<AdxFunction>("ADX");
@@ -71,7 +68,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention.MovingAverageCross
             //TODO we should set in parameter value for sell and buy if 
             //it is one and the same we can use delegates for calling trading methods
 
-            if (_currentADX.HasValue && _currentADX > _adxThreshold)
+            if (_currentADX.HasValue && _currentADX > ADXTreshhold)
             {
                 if (_crossSMAShortAbove)
                 {

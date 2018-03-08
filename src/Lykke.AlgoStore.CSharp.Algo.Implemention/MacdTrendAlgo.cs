@@ -5,12 +5,11 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 {
     public class MacdTrendAlgo : BaseAlgo
     {
+        public double HoldingStep { get; set; }
+        public double Tolerance { get; set; }
+
         private MacdFunction _macd;
         private double _holdings;
-
-        // TODO: Replace this with algo parameters when they're implemented
-        private const double HOLDINGS_STEP = 2;
-        private const double TOLERANCE = 0.0025;
 
         public double Holdings => _holdings;
 
@@ -29,21 +28,22 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             var signalDeltaPercent = histogram / fast;
 
-            if(signalDeltaPercent > TOLERANCE)
+            if (signalDeltaPercent > Tolerance)
             {
                 // TODO: Implement buying/selling when trading logic is finalized
                 //context.Actions.BuyStraight(HOLDINGS_STEP);
-                _holdings += HOLDINGS_STEP;
+                _holdings += HoldingStep;
 
-                context.Actions.Log($"{signalDeltaPercent} is above {TOLERANCE}, buying {HOLDINGS_STEP} more of the asset. " +
+                context.Actions.Log($"{signalDeltaPercent} is above {Tolerance}, buying {HoldingStep} more of the asset. " +
                                     $"Current holdings: {_holdings}");
             }
-            else if(_holdings > 0 && signalDeltaPercent < -TOLERANCE)
+            else if (_holdings > 0 && signalDeltaPercent < -Tolerance)
             {
+                // TODO: Implement buying/selling when trading logic is finalized
                 //context.Actions.SellStraight(_holdings);
                 _holdings = 0;
 
-                context.Actions.Log($"{signalDeltaPercent} is below {-TOLERANCE}, selling all holdings.");
+                context.Actions.Log($"{signalDeltaPercent} is below {-Tolerance}, selling all holdings.");
             }
         }
     }
