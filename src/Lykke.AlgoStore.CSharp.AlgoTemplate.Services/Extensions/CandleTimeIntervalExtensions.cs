@@ -5,6 +5,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
 {
     public static class CandleTimeIntervalExtensions
     {
+        /// <summary>
+        /// Increments a <see cref="DateTime"/> using a given <see cref="CandleTimeInterval"/>
+        /// </summary>
+        /// <param name="interval">The <see cref="CandleTimeInterval"/></param>
+        /// <param name="timestamp">The <see cref="DateTime"/> to increment</param>
+        /// <returns>A new <see cref="DateTime"/> containing the incremented time</returns>
         public static DateTime IncrementTimestamp(this CandleTimeInterval interval, DateTime timestamp)
         {
             if (interval == CandleTimeInterval.Month) // Month can't be accurate because of the different month lenghts, so add it manually instead
@@ -15,6 +21,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
                 return timestamp.AddSeconds((int)interval);
         }
 
+        /// <summary>
+        /// Decrements a <see cref="DateTime"/> using a given <see cref="CandleTimeInterval"/>
+        /// </summary>
+        /// <param name="interval">The <see cref="CandleTimeInterval"/></param>
+        /// <param name="timestamp">The <see cref="DateTime"/> to decrement</param>
+        /// <returns>A new <see cref="DateTime"/> containing the decremented time</returns>
         public static DateTime DecrementTimestamp(this CandleTimeInterval interval, DateTime timestamp)
         {
             if (interval == CandleTimeInterval.Month) // Month can't be accurate because of the different month lenghts, so add it manually instead
