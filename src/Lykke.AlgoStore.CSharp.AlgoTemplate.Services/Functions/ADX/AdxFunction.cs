@@ -71,8 +71,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
                 if (_samples >= _period + 1)
                 {
-                    DirectionalMovementIndex = (Math.Abs(DirectionalMovementIndexPlus.Value - DirectionalMovementIndexMinus.Value)
+                    if (DirectionalMovementIndexPlus == 0 && DirectionalMovementIndexMinus == 0)
+                        DirectionalMovementIndex = 0;
+                    else
+                        DirectionalMovementIndex = (Math.Abs(DirectionalMovementIndexPlus.Value - DirectionalMovementIndexMinus.Value)
                                                         / (DirectionalMovementIndexPlus.Value + DirectionalMovementIndexMinus.Value)) * 100;
+
                     DirectionalMovementIndexes.Enqueue(DirectionalMovementIndex);
                 }
 

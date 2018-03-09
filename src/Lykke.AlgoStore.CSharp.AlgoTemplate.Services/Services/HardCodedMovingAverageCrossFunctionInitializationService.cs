@@ -25,27 +25,31 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 new SmaFunction(new SmaParameters(){
                     FunctionInstanceIdentifier = "SMA_Short",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
-                    Capacity = 100
+                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Minute,
+                    Capacity = 100,
+                    AssetPair = "BTCEUR",
                 }),
                 new SmaFunction(new SmaParameters(){
                     FunctionInstanceIdentifier = "SMA_Long",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
-                    Capacity = 1000
+                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Minute,
+                    Capacity = 1000,
+                    AssetPair = "BTCEUR",
                 }),
                 new AdxFunction(new AdxParameters(){
                     FunctionInstanceIdentifier = "ADX",
-                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
-                    AdxPeriod = 14
+                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Minute,
+                    AdxPeriod = 14,
+                    AssetPair = "BTCEUR"
                 }),
                 new MacdFunction(new MacdParameters(){
                     FunctionInstanceIdentifier = "MACD",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Day,
+                    CandleTimeInterval = Algo.Core.Candles.CandleTimeInterval.Minute,
                     FastEmaPeriod = 12,
                     SlowEmaPeriod = 26,
-                    SignalLinePeriod = 9                    
+                    SignalLinePeriod = 9,
+                    AssetPair = "BTCEUR"
                 })
             };
         }

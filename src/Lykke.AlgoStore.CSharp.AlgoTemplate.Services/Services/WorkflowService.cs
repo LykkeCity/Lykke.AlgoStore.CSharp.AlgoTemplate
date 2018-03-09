@@ -7,6 +7,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
+using System.Threading;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -107,7 +108,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _functionsService.Recalculate(candleUpdates);
 
                 if (algoCandle != null)
+                {
+                    // Allow time for all functions to recalculate before sending the event
+                    Thread.Sleep(100);
                     _algo.OnCandleReceived(ctx);
+                }
             }
         }
 
