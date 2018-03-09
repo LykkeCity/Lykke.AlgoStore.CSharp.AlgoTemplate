@@ -1,7 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
 {

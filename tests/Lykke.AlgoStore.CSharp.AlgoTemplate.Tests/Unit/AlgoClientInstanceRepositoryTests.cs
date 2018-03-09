@@ -44,7 +44,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                         Key = "Stopwatch",
                         Value = "Val 1",
                         Type = "String",
-                        FunctionType = "Lykke.AlgoStore.CSharp.Funct.SimpleMovingAverage"
+                        //ParameterType = "Lykke.AlgoStore.CSharp.Funct.SimpleMovingAverage"
                     }}
                 }
             };
@@ -124,7 +124,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var actualRetrievedByClientId = JsonConvert.SerializeObject(retrievedByClientId);
 
             Assert.AreEqual(expectedJson, actualRetrievedByAlgoIdJson);
-            Assert.AreEqual(expectedJson, actualRetrievedByClientId);          
+            Assert.AreEqual(expectedJson, actualRetrievedByClientId);
         }
 
         #endregion Private Methods

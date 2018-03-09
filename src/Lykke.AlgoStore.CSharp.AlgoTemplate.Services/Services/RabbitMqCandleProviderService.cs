@@ -32,6 +32,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private readonly IReloadingManager<BaseRabbitMqSubscriptionSettings> _settings;
         private readonly ILog _log;
+        private readonly IAlgoSettingsService _algoSettingsService;
 
         private RabbitMqSubscriber<CandlesUpdatedEvent> _subscriber;
         private bool _disposed;
@@ -39,13 +40,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         // Fast subscription lookup by asset pair and candle time interval
         private readonly Dictionary<string, Dictionary<CandleTimeInterval, SubscriptionData>> _subscriptions = new Dictionary<string, Dictionary<CandleTimeInterval, SubscriptionData>>();
 
-        public RabbitMqCandleProviderService(IReloadingManager<BaseRabbitMqSubscriptionSettings> settings, ILog log)
+        public RabbitMqCandleProviderService(IReloadingManager<BaseRabbitMqSubscriptionSettings> settings, ILog log, IAlgoSettingsService algoSettingsService)
         {
             _settings = settings;
             _log = log;
+            _algoSettingsService = algoSettingsService;
         }
 
-        public void Subscribe(string assetPair, Algo.Core.Candles.CandleTimeInterval timeInterval, Action<Candle> callback)
+        public void Subscribe(string assetPair, Models.Enumerators.CandleTimeInterval timeInterval, Action<Candle> callback)
         {
             if (assetPair == null)
                 throw new ArgumentNullException(nameof(assetPair));
@@ -63,7 +65,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _subscriptions[assetPair][contractTimeInterval].Callbacks.Add(callback);
         }
 
-        public void SetPrevCandleFromHistory(string assetPair, Algo.Core.Candles.CandleTimeInterval timeInterval, Candle candle)
+        public void SetPrevCandleFromHistory(string assetPair, Models.Enumerators.CandleTimeInterval timeInterval, Candle candle)
         {
             if (assetPair == null)
                 throw new ArgumentNullException(nameof(assetPair));
@@ -94,7 +96,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             var rabbitSettings = RabbitMqSubscriptionSettings.CreateForSubscriber(currentSettings.ConnectionString, currentSettings.NamespaceOfSourceEndpoint,
                                                                                   currentSettings.NameOfSourceEndpoint, currentSettings.NamespaceOfEndpoint,
-                                                                                  currentSettings.NameOfEndpoint);
+                                                                                  $"{currentSettings.NameOfEndpoint}-{_algoSettingsService.GetAlgoId()}");
+            rabbitSettings.DeadLetterExchangeName = null;
 
             if (currentSettings.IsDurable)
                 rabbitSettings.MakeDurable();
@@ -200,7 +203,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private void GeneratorThread(object data)
         {
             var subscriptionData = (SubscriptionData)data;
-            var algoStoreInterval = (Algo.Core.Candles.CandleTimeInterval)subscriptionData.TimeInterval;
+            var algoStoreInterval = (Models.Enumerators.CandleTimeInterval)subscriptionData.TimeInterval;
 
             var now = DateTime.UtcNow;
             DateTime nextCandleTime;

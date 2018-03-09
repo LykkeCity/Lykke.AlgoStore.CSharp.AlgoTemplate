@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Common;
 using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
 using System.Threading.Tasks;
 

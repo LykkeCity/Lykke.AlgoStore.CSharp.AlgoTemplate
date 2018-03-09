@@ -45,7 +45,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                             LogsConnString = "Mock connectionString",
                             TableStorageConnectionString = "Mock connectionString"
                         },
-                        QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings(),                       
+                        QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings(),
                     },
                     MatchingEngineClient = new MatchingEngineSettings(),
                     AssetsServiceClient = new AssetsServiceClient(),

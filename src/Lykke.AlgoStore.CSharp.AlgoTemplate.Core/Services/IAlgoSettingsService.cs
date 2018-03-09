@@ -1,4 +1,6 @@
-﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
     public interface IAlgoSettingsService
     {
@@ -11,5 +13,10 @@
         string GetAlgoInstanceAssetPair();
         string GetAlgoInstanceTradedAsset();
         string GetAlgoInstanceClientId();
+
+        AlgoClientInstanceData GetAlgoInstance();
+
+        string GetAlgoId();
+        string GetInstanceId();
     }
 }
