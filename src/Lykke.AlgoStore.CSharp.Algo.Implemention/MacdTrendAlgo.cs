@@ -28,6 +28,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             var signalDeltaPercent = histogram / fast;
 
+            context.Actions.Log($"Function values are: Macd histogram: {histogram}, Macd fast EMA: {fast}");
+
             if (signalDeltaPercent > Tolerance)
             {
                 // TODO: Implement buying/selling when trading logic is finalized
