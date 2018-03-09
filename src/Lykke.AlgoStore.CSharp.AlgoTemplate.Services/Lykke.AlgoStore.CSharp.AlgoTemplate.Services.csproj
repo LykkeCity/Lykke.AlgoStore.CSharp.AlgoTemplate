@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.2" />
     <PackageReference Include="Lykke.Common" Version="4.5.0" />
+    <PackageReference Include="Lykke.Job.CandlesProducer.Contract" Version="3.0.1" />
     <PackageReference Include="Lykke.Job.QuotesProducer.Contract" Version="1.0.0" />
     <PackageReference Include="Lykke.MatchingEngineConnector" Version="2.2.0" />
     <PackageReference Include="Lykke.RabbitMqBroker" Version="6.1.0" />

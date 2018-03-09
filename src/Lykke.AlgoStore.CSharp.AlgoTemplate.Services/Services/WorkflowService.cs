@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
+using System.Threading;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -49,8 +50,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algo = algo;
         }
 
-
-
         public Task StartAsync()
         {
             // read settings/metadata/env. var
@@ -78,12 +77,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // can we get it for algo ?!?
             _tradingService.Initialize();
 
-            // subscribe for RabbitMQ quotes
+            // subscribe for RabbitMQ quotes and candles
             // throws if fail
             // pass _algoSettingsService in constructor
+            _candlesService.StartProducing();
             var quoteGeneration = _quoteProviderService.Initialize();
             _quoteProviderService.Subscribe(OnQuote);
-            _candlesService.StartProducing();
 
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
@@ -113,7 +112,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _functionsService.Recalculate(candleUpdates);
 
                 if (algoCandle != null)
+                {
+                    // Allow time for all functions to recalculate before sending the event
+                    Thread.Sleep(100);
                     _algo.OnCandleReceived(ctx);
+                }
             }
         }
 

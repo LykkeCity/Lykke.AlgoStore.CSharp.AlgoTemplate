@@ -24,27 +24,31 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 new SmaFunction(new SmaParameters(){
                     FunctionInstanceIdentifier = "SMA_Short",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = CandleTimeInterval.Day,
-                    Capacity = 100
+                    CandleTimeInterval = CandleTimeInterval.Minute,
+                    Capacity = 100,
+                    AssetPair = "BTCEUR",
                 }),
                 new SmaFunction(new SmaParameters(){
                     FunctionInstanceIdentifier = "SMA_Long",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = CandleTimeInterval.Day,
-                    Capacity = 1000
+                    CandleTimeInterval = CandleTimeInterval.Minute,
+                    Capacity = 1000,
+                    AssetPair = "BTCEUR",
                 }),
                 new AdxFunction(new AdxParameters(){
                     FunctionInstanceIdentifier = "ADX",
-                    CandleTimeInterval =CandleTimeInterval.Day,
-                    AdxPeriod = 14
+                    CandleTimeInterval = CandleTimeInterval.Minute,
+                    AdxPeriod = 14,
+                    AssetPair = "BTCEUR"
                 }),
                 new MacdFunction(new MacdParameters(){
                     FunctionInstanceIdentifier = "MACD",
                     CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                    CandleTimeInterval = CandleTimeInterval.Day,
+                    CandleTimeInterval = CandleTimeInterval.Minute,
                     FastEmaPeriod = 12,
                     SlowEmaPeriod = 26,
-                    SignalLinePeriod = 9
+                    SignalLinePeriod = 9,
+                    AssetPair = "BTCEUR"
                 })
             };
         }
