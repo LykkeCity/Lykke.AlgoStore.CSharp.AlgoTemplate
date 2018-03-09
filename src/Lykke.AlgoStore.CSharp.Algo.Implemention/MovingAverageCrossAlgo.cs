@@ -51,6 +51,9 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             _crossSMAShortAbove = false;
             _crossSMAShortBelow = false;
 
+            contextCandle.Actions.Log($"Function values are: SMA_Short: {_currentSMAShort}, SMA_Long: {_currentSMALong}, ADX: {_currentADX}");
+
+
             //we want to mark the cross and later check if there is adx
             if (_lastSMAShort < _lastSMALong && _currentSMAShort > _currentSMALong)
             {
