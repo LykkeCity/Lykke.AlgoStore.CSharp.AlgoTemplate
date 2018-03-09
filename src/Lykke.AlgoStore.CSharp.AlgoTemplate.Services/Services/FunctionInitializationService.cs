@@ -40,7 +40,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 Type parameterType = Type.GetType(function.FunctionParameterType);
                 paramObject = (FunctionParamsBase)Activator.CreateInstance(parameterType);
-                paramObject.AssetPair = "BTCUSD";
 
                 foreach (var param in function.Parameters)
                 {
