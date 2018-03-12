@@ -154,7 +154,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private Task OnCandleReceived(CandlesUpdatedEvent candles)
         {
-            var filteredCandles = candles.Candles.Where(c => _subscriptions.ContainsKey(c.AssetPairId) &&
+            var filteredCandles = candles.Candles.Where(c => c.PriceType == CandlePriceType.Mid &&
+                                                             _subscriptions.ContainsKey(c.AssetPairId) &&
                                                              _subscriptions[c.AssetPairId].ContainsKey(c.TimeInterval));
 
             foreach (var candle in filteredCandles)
@@ -166,7 +167,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Low = candle.Low,
                     High = candle.High,
                     DateTime = candle.CandleTimestamp,
-                    LastTradePrice = candle.LastTradePrice,
                     TradingVolume = candle.TradingVolume
                 };
 
