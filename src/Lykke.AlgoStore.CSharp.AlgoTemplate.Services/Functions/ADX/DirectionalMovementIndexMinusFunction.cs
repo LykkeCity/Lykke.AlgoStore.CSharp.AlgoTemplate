@@ -135,7 +135,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
         /// <returns></returns>
         private double? ComputeNegativeDirectionalIndex()
         {
-            if (AverageTrueRange == null || AverageTrueRange == 0) return null;
+            if (AverageTrueRange == null || AverageTrueRange == 0) return AverageTrueRange;
 
             var negativeDirectionalIndex = (SmoothedDirectionalMovementMinus.Value / AverageTrueRange.Value) * 100;
 

@@ -1,4 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain

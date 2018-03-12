@@ -14,10 +14,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             if (entitiy == null)
                 return result;
 
-            var pair = KeyGenerator.ParseKey(entitiy.PartitionKey);
-            if (pair == null)
-                return result;
-
             result.ClientId = entitiy.ClientId;
             result.AlgoId = entitiy.AlgoId;
             result.InstanceId = entitiy.RowKey;
@@ -27,11 +23,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.Margin = entitiy.Margin;
             result.TradedAsset = entitiy.TradedAsset;
             result.Volume = entitiy.Volume;
-            result.AlgoMetaDataInformation =
-                JsonConvert.DeserializeObject<AlgoMetaDataInformation>(entitiy.AlgoMetaDataInformation);
+            result.InstanceName = entitiy.InstanceName;
+            result.AlgoMetaDataInformation = entitiy.AlgoMetaDataInformation != null ?
+                JsonConvert.DeserializeObject<AlgoMetaDataInformation>(entitiy.AlgoMetaDataInformation)
+                : new AlgoMetaDataInformation();
 
             return result;
         }
+
         public static AlgoClientInstanceEntity ToEntityWithAlgoIdPartitionKey(this AlgoClientInstanceData data)
         {
             var result = new AlgoClientInstanceEntity();
@@ -50,6 +49,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.ETag = "*";
             result.ClientId = data.ClientId;
             result.AlgoId = data.AlgoId;
+            result.InstanceName = data.InstanceName;
             result.AlgoMetaDataInformation = JsonConvert.SerializeObject(data.AlgoMetaDataInformation);
             return result;
         }
@@ -72,6 +72,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             result.ETag = "*";
             result.ClientId = data.ClientId;
             result.AlgoId = data.AlgoId;
+            result.InstanceName = data.InstanceName;
             result.AlgoMetaDataInformation = JsonConvert.SerializeObject(data.AlgoMetaDataInformation);
             return result;
         }

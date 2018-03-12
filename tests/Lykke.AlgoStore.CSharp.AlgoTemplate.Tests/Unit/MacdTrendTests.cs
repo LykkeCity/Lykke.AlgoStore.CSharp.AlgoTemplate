@@ -17,6 +17,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var context = CreateContextMock();
             var algo = new MacdTrendAlgo();
+
+            algo.HoldingStep = 2;
+            algo.Tolerance = 0.0025;
+
             var macd = context.Functions.GetFunction<MacdFunction>("MACD");
 
             algo.OnStartUp(context.Functions);
