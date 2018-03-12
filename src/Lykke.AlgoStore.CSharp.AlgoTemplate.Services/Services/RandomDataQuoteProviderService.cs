@@ -59,7 +59,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// Add a subscriber for a quote
         /// </summary>
         /// <param name="action"></param>
-        public void Subscribe(Func<IAlgoQuote, Task> action)
+        public void Subscribe(string assetPair, Func<IAlgoQuote, Task> action)
         {
             this.subscribers.Add(action);
         }

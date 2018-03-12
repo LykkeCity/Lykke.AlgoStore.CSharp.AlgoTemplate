@@ -81,8 +81,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // pass _algoSettingsService in constructor
             _candlesService.StartProducing();
             var quoteGeneration = _quoteProviderService.Initialize();
-            _quoteProviderService.Subscribe(OnQuote);
-
+            _quoteProviderService.Subscribe(_algo.AssetPair, OnQuote);
+            _quoteProviderService.Start();
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
 

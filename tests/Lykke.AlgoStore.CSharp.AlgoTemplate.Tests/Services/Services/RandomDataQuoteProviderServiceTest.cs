@@ -1,17 +1,18 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
-using NUnit.Framework;
-using Moq;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
+using Moq;
+using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {
     [TestFixture]
     public class RandomDataQuoteProviderServiceTest
     {
+        private string _assetPair = "BTCUSD";
+
         [Test]
         public void GenerateTick_InvokesSubscriber()
         {
@@ -22,7 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 
             // Subscribe and call generate tick
             RandomDataQuoteProviderService quoteProvider = new RandomDataQuoteProviderService(asyncExecutorMock.Object);
-            quoteProvider.Subscribe(actionMock.Object);
+            quoteProvider.Subscribe(_assetPair, actionMock.Object);
             quoteProvider.GenerateTick();
 
             // assert invocation
@@ -41,8 +42,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 
             // Subscribe and call generate tick
             RandomDataQuoteProviderService quoteProvider = new RandomDataQuoteProviderService(asyncExecutorMock.Object);
-            quoteProvider.Subscribe(action1Mock.Object);
-            quoteProvider.Subscribe(action2Mock.Object);
+            quoteProvider.Subscribe(_assetPair, action1Mock.Object);
+            quoteProvider.Subscribe(_assetPair, action2Mock.Object);
             quoteProvider.GenerateTick();
 
             // assert invocation

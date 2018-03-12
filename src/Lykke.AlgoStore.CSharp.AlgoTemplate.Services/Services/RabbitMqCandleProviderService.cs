@@ -82,7 +82,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             var subscriptionData = _subscriptions[assetPair][contractTimeInterval];
 
-            lock(subscriptionData.Sync)
+            lock (subscriptionData.Sync)
             {
                 subscriptionData.PrevCandle = candle;
             }
@@ -96,7 +96,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             var rabbitSettings = RabbitMqSubscriptionSettings.CreateForSubscriber(currentSettings.ConnectionString, currentSettings.NamespaceOfSourceEndpoint,
                                                                                   currentSettings.NameOfSourceEndpoint, currentSettings.NamespaceOfEndpoint,
-                                                                                  $"{currentSettings.NameOfEndpoint}-{_algoSettingsService.GetAlgoId()}");
+                                                                                  $"{currentSettings.NameOfEndpoint}-{_algoSettingsService.GetInstanceId()}");
             rabbitSettings.DeadLetterExchangeName = null;
 
             if (currentSettings.IsDurable)
@@ -137,9 +137,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         protected virtual void Dispose(bool disposing)
         {
-            foreach(var pair in _subscriptions.Values)
+            foreach (var pair in _subscriptions.Values)
             {
-                foreach(var data in pair.Values)
+                foreach (var data in pair.Values)
                 {
                     // Interrupt threads to wake them from potential sleep states and exit
                     data.CandleGenerator.Interrupt();
@@ -209,7 +209,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             DateTime nextCandleTime;
 
             // Figure out when the next candle is
-            switch(subscriptionData.TimeInterval)
+            switch (subscriptionData.TimeInterval)
             {
                 case CandleTimeInterval.Sec:
                     nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second).AddSeconds(1);
@@ -218,25 +218,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0).AddMinutes(1);
                     break;
                 case CandleTimeInterval.Min5:
-                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute/5*5, 0).AddMinutes(5);
+                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute / 5 * 5, 0).AddMinutes(5);
                     break;
                 case CandleTimeInterval.Min15:
-                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute/15*15, 0).AddMinutes(15);
+                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute / 15 * 15, 0).AddMinutes(15);
                     break;
                 case CandleTimeInterval.Min30:
-                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute/30*30, 0).AddMinutes(30);
+                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute / 30 * 30, 0).AddMinutes(30);
                     break;
                 case CandleTimeInterval.Hour:
                     nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0).AddHours(1);
                     break;
                 case CandleTimeInterval.Hour4:
-                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour/4*4, 0, 0).AddHours(4);
+                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour / 4 * 4, 0, 0).AddHours(4);
                     break;
                 case CandleTimeInterval.Hour6:
-                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour/6*6, 0, 0).AddHours(6);
+                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour / 6 * 6, 0, 0).AddHours(6);
                     break;
                 case CandleTimeInterval.Hour12:
-                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour/12*12, 0, 0).AddHours(12);
+                    nextCandleTime = new DateTime(now.Year, now.Month, now.Day, now.Hour / 12 * 12, 0, 0).AddHours(12);
                     break;
                 case CandleTimeInterval.Day:
                     nextCandleTime = now.Date.AddDays(1);
@@ -262,7 +262,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 {
                     Thread.Sleep(timeSpan);
                 }
-                catch(ThreadInterruptedException)
+                catch (ThreadInterruptedException)
                 {
                     return;
                 }
@@ -270,15 +270,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Candle currentCandle = null;
                 Action<Candle>[] callbacks = null;
 
-                lock(subscriptionData.Sync)
+                lock (subscriptionData.Sync)
                 {
-                    if(subscriptionData.CurrentCandle == null)
+                    if (subscriptionData.CurrentCandle == null)
                     {
                         if (subscriptionData.PrevCandle == null)
                         {
                             // No way to create an empty candle when there's no previous candle
                             nextCandleTime = nextCandleTime.AddSeconds((int)subscriptionData.TimeInterval);
-                            continue; 
+                            continue;
                         }
 
                         var candle = new Candle();
