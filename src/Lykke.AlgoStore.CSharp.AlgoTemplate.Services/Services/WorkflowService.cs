@@ -27,7 +27,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
         private readonly object _sync = new object();
-        private readonly string _dummyAlgoId = Guid.NewGuid().ToString();
 
         public WorkflowService(
             IAlgoSettingsService algoSettingsService,
@@ -102,8 +101,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnFunctionServiceUpdate(IList<SingleCandleResponse> candleUpdates)
         {
-            // TODO: Replace this with actual algo metadata once it's implemented
-            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _dummyAlgoId)?.Candle;
+            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAlgoId())?.Candle;
 
             var ctx = CreateCandleContext(algoCandle);
 
