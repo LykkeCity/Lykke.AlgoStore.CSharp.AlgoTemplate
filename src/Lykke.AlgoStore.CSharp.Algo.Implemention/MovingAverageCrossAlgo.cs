@@ -10,7 +10,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
     /// </summary>
     public class MovingAverageCrossAlgo : BaseAlgo
     {
-        public int ADXTreshhold { get; set; }
+        public int ADXThreshold { get; set; }
 
         private bool _crossSMAShortAbove;
         private bool _crossSMAShortBelow;
@@ -71,7 +71,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             //TODO we should set in parameter value for sell and buy if 
             //it is one and the same we can use delegates for calling trading methods
 
-            if (_currentADX.HasValue && _currentADX > ADXTreshhold)
+            if (_currentADX.HasValue && _currentADX > ADXThreshold)
             {
                 if (_crossSMAShortAbove)
                 {
