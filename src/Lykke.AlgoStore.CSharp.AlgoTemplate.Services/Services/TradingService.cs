@@ -41,7 +41,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _walletId = _algoSettingsService.GetAlgoInstanceWalletId();
         }
 
-        public async Task<double> SellStraight(double volume)
+        public async Task<ResponseModel<double>> SellStraight(double volume)
         {
             var order = new MarketOrderRequest
             {
@@ -72,10 +72,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 straight: straight,
                 reservedLimitVolume: null);
 
-            return response.Result;
+            return response;
         }
 
-        public async Task<double> BuyStraight(double volume)
+        public async Task<ResponseModel<double>> BuyStraight(double volume)
         {
             var order = new MarketOrderRequest
             {
@@ -105,7 +105,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 straight: straight,
                 reservedLimitVolume: null);
 
-            return response.Result;
+            return response;
         }
     }
 }

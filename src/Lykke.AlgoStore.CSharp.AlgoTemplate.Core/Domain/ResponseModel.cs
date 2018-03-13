@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Lykke.Service.HFT.Core.Strings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
 {

@@ -2,6 +2,7 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -13,6 +14,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private ITradingService tradingService;
         private Action<Exception, string> onErrorHandler;
         private IStatisticsService statisticsService;
+        private readonly IAlgoSettingsService _algoSettingsService;
 
         /// <summary>
         /// Initializes new instance of ActionsService
@@ -21,28 +23,38 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// implementation for providing the trading capabilities</param>
         /// <param name="statisticsService">The <see cref="IStatisticsService"/> 
         /// implementation for providing the statics capabilities</param>
+        /// <param name="algoSettingsService">The <see cref="IAlgoSettingsService"/>
+        /// implementation for providing the algo settings</param>
         /// <param name="onErrorHandler">A handler to be executed upon error</param>
         public ActionsService(ITradingService tradingService,
             IStatisticsService statisticsService,
+            IAlgoSettingsService algoSettingsService,
             Action<Exception, string> onErrorHandler)
         {
             this.tradingService = tradingService;
             this.statisticsService = statisticsService;
-            this.onErrorHandler = onErrorHandler;
+            _algoSettingsService = algoSettingsService;
+            this.onErrorHandler = onErrorHandler;          
         }
 
         public double Buy(double volume)
         {
             try
             {
-                var price = this.tradingService.BuyStraight(volume);
+                var result = this.tradingService.BuyStraight(volume);
 
-                if (price.Result > 0)
+                if (result.Result.Error != null)
                 {
-                    this.statisticsService.OnAction(true, volume, price.Result);
+                    Console.WriteLine($"There was a problem placing a buy order. Error: {result.Result.Error.Message}");
                 }
 
-                return price.Result;
+                if (result.Result.Result > 0)
+                {
+                    this.statisticsService.OnAction(true, volume, result.Result.Result);
+                    Console.WriteLine($"Buying {volume} {_algoSettingsService.GetAlgoInstanceTradedAsset()} - price {result.Result.Result} at {DateTime.UtcNow}");
+                }
+
+                return result.Result.Result;
             }
             catch (Exception e)
             {
@@ -61,14 +73,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var price = this.tradingService.SellStraight(volume);
+                var result = this.tradingService.SellStraight(volume);
 
-                if (price.Result > 0)
+                if (result.Result.Error != null)
                 {
-                    this.statisticsService.OnAction(true, volume, price.Result);
+                    Console.WriteLine($"There was a problem placing a sell order. Error: {result.Result.Error.Message}");
+                }
+                
+                if (result.Result.Result > 0)
+                {
+                    this.statisticsService.OnAction(false, volume, result.Result.Result);
+                    Console.WriteLine($"Selling {volume} {_algoSettingsService.GetAlgoInstanceTradedAsset()} - price {result.Result.Result} at {DateTime.UtcNow}");
                 }
 
-                return price.Result;
+                return result.Result.Result;
             }
             catch (Exception e)
             {

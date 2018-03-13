@@ -45,7 +45,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _statisticsService = statisticsService;
             _tradingService = tradingService;
             _candlesService = candlesService;
-            actions = new ActionsService(_tradingService, _statisticsService, this.OnErrorHandler);
+            actions = new ActionsService(_tradingService, _statisticsService, _algoSettingsService, this.OnErrorHandler);
             _algo = algo;
         }
 
@@ -180,7 +180,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnErrorHandler(Exception e, string message)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(e);
+            Console.WriteLine(message);
         }
 
         private void SetUpAlgoParameters()
