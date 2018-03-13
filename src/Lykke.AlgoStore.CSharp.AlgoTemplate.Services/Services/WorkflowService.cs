@@ -193,13 +193,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             context.Actions = actions;
         }
 
-        private void SetUpAlgoParameters()
+        public void SetUpAlgoParameters()
         {
             var algoInstance = _algoSettingsService.GetAlgoInstance();
 
             if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Parameters == null)
                 return;
-
 
             Type parameterType = _algo.GetType();
 
