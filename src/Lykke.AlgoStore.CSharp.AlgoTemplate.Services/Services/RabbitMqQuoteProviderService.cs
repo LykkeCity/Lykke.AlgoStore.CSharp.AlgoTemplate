@@ -93,6 +93,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// <param name="action">The action.</param>
         public void Subscribe(string assetPair, Func<IAlgoQuote, Task> action)
         {
+            if (string.IsNullOrEmpty(assetPair))
+                throw new ArgumentNullException(nameof(assetPair));
+
             _algoAssetPair = assetPair;
 
             lock (_subsciptionLock)
