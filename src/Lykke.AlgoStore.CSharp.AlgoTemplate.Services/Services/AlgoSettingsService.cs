@@ -21,11 +21,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IAlgoClientInstanceRepository _algoClientInstanceMetadataRepository;
         private string _instanceId;
         private string _algoId;
-        private string _traddedAsset;
+        private string _tradedAsset;
 
         public string GetAlgoId() => _algoId;
         public string GetInstanceId() => _instanceId;
-        public string GetTradedAsset() => _traddedAsset;
+        public string GetTradedAsset() => _tradedAsset;
 
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
         {
@@ -46,7 +46,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             _instanceId = GetSetting("InstanceId");
             _algoId = GetSetting("AlgoId");
-            _traddedAsset = GetAlgoInstanceTradedAsset();
+            _tradedAsset = GetAlgoInstanceTradedAsset();
 
             _isAlive = true;
 
