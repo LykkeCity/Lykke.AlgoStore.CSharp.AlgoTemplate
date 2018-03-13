@@ -180,8 +180,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnErrorHandler(Exception e, string message)
         {
-            Console.WriteLine(e);
-            Console.WriteLine(message);
+            actions.Log(e.ToString());
+            actions.Log(message);
         }
 
         private void SetUpAlgoParameters()

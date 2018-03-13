@@ -31,6 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
         /// <summary>
         /// Initializes new instance of the <see cref="ServiceModule"/>
         /// </summary>
+        /// <param name="settings">The <see cref="IReloadingManager{T}"/> implementation to be used</param>
         /// <param name="log">The <see cref="ILog"/> implementation to be used</param>
         public ServiceModule(IReloadingManager<AppSettings> settings, ILog log)
         {

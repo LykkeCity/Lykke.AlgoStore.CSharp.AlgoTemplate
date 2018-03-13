@@ -1,8 +1,6 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
-using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -11,9 +9,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// </summary>
     public class ActionsService : IActions
     {
-        private ITradingService tradingService;
-        private Action<Exception, string> onErrorHandler;
-        private IStatisticsService statisticsService;
+        private readonly ITradingService _tradingService;
+        private readonly Action<Exception, string> _onErrorHandler;
+        private readonly IStatisticsService _statisticsService;
         private readonly IAlgoSettingsService _algoSettingsService;
 
         /// <summary>
@@ -31,34 +29,34 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IAlgoSettingsService algoSettingsService,
             Action<Exception, string> onErrorHandler)
         {
-            this.tradingService = tradingService;
-            this.statisticsService = statisticsService;
+            _tradingService = tradingService;
+            _statisticsService = statisticsService;
             _algoSettingsService = algoSettingsService;
-            this.onErrorHandler = onErrorHandler;          
+            _onErrorHandler = onErrorHandler;          
         }
 
         public double Buy(double volume)
         {
             try
             {
-                var result = this.tradingService.BuyStraight(volume);
+                var result = _tradingService.BuyStraight(volume);
 
                 if (result.Result.Error != null)
                 {
-                    Console.WriteLine($"There was a problem placing a buy order. Error: {result.Result.Error.Message}");
+                    Log($"There was a problem placing a buy order. Error: {result.Result.Error.Message}");
                 }
 
                 if (result.Result.Result > 0)
                 {
-                    this.statisticsService.OnAction(true, volume, result.Result.Result);
-                    Console.WriteLine($"Buying {volume} {_algoSettingsService.GetAlgoInstanceTradedAsset()} - price {result.Result.Result} at {DateTime.UtcNow}");
+                    _statisticsService.OnAction(true, volume, result.Result.Result);
+                    Log($"Buy order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result.Result} at {DateTime.UtcNow}");
                 }
 
                 return result.Result.Result;
             }
             catch (Exception e)
             {
-                onErrorHandler.Invoke(e, "There was a problem placing a buy order.");
+                _onErrorHandler.Invoke(e, "There was a problem placing a buy order.");
                 // If we can not return. re-throw.
                 throw;
             }
@@ -73,24 +71,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var result = this.tradingService.SellStraight(volume);
+                var result = _tradingService.SellStraight(volume);
 
                 if (result.Result.Error != null)
                 {
-                    Console.WriteLine($"There was a problem placing a sell order. Error: {result.Result.Error.Message}");
+                    Log($"There was a problem placing a sell order. Error: {result.Result.Error.Message}");
                 }
                 
                 if (result.Result.Result > 0)
                 {
-                    this.statisticsService.OnAction(false, volume, result.Result.Result);
-                    Console.WriteLine($"Selling {volume} {_algoSettingsService.GetAlgoInstanceTradedAsset()} - price {result.Result.Result} at {DateTime.UtcNow}");
+                    _statisticsService.OnAction(false, volume, result.Result.Result);
+                    Log($"Sell order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result.Result} at {DateTime.UtcNow}");
                 }
 
                 return result.Result.Result;
             }
             catch (Exception e)
             {
-                onErrorHandler.Invoke(e, "There was a problem placing a sell order.");
+                _onErrorHandler.Invoke(e, "There was a problem placing a sell order.");
                 // If we can not return. re-throw.
                 throw;
             }
