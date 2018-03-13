@@ -38,7 +38,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
         public static async Task Main(string[] args)
         {
-            System.AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
             AssemblyLoadContext.Default.Unloading += Default_Unloading;
 
             // Initialize AutoMapper
@@ -76,11 +75,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
         }
 
         private static void Default_Unloading(AssemblyLoadContext obj)
-        {
-            _algoWorkflow.StopAsync();
-        }
-
-        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             _algoWorkflow.StopAsync();
         }
