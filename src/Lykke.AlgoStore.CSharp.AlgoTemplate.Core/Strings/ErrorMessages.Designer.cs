@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Lykke.Service.HFT.Core.Strings {
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Lykke.Service.HFT.Core.Strings {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Lykke.Service.HFT.Core.Strings.ErrorMessages", typeof(ErrorMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings.ErrorMessages", typeof(ErrorMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

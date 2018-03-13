@@ -30,8 +30,15 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             var smaLong = _longSma.GetValue();
             context.Actions.Log($"Function values are: SMA_Short: {smaShort}, SMA_Long: {smaLong}");
 
-            //var buyOrder = context.Actions.Buy(0.2);
-            //context.Actions.Log($"Buying {buyOrder} at {DateTime.UtcNow}");
+            //if (quote.Price < 10000)
+            //{
+            //    context.Actions.Buy(Volume);
+            //}
+
+            //if (quote.Price > 8000)
+            //{
+            //    context.Actions.Sell(Volume);
+            //}
         }
 
     }

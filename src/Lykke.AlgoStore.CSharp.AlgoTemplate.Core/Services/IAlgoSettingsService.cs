@@ -11,12 +11,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         string GetMetadataSetting(string key);
         string GetAlgoInstanceWalletId();
         string GetAlgoInstanceAssetPair();
-        string GetAlgoInstanceTradedAsset();
         string GetAlgoInstanceClientId();
 
         AlgoClientInstanceData GetAlgoInstance();
 
         string GetAlgoId();
         string GetInstanceId();
+        string GetTradedAsset();
     }
 }
