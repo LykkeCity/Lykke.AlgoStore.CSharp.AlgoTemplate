@@ -105,7 +105,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnErrorHandler(Exception e, string message)
         {
-            throw new NotImplementedException();
+            actions.Log(e.ToString());
+            actions.Log(message);
         }
 
         private void OnInitialFunctionServiceData(IList<MultipleCandlesResponse> warmupData)
