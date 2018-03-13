@@ -106,6 +106,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<ICandleProviderService>()
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.CandleRabbitMqSettings)));
 
+            builder.RegisterType<RabbitMqQuoteProviderService>()
+                .As<IQuoteProviderService>()
+                .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.QuoteRabbitMqSettings)));
+
             builder.RegisterType<AssetServiceDecorator>()
                 .As<IAssetServiceDecorator>()
                 .SingleInstance();

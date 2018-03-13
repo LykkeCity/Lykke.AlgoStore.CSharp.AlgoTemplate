@@ -75,14 +75,12 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             {
                 if (_crossSMAShortAbove)
                 {
-                    contextCandle.Actions.Log($"Cross above and ADX occurred BUY => SMA_Short: {_currentSMAShort}," +
-                        $"                           SMA_Long: {_currentSMALong}");
+                    contextCandle.Actions.Log($"Cross above and ADX occurred BUY => SMA_Short: {_currentSMAShort}, SMA_Long: {_currentSMALong}");
                     //context.Actions.BuyStraight(parameter.ValueToBuy);
                 }
 
                 if (_crossSMAShortBelow)
-                    contextCandle.Actions.Log($"Cross below and ADX occurred SELL => SMA_Short: {_currentSMAShort}, " +
-                        $"                          SMA_Long: {_currentSMALong}");
+                    contextCandle.Actions.Log($"Cross below and ADX occurred SELL => SMA_Short: {_currentSMAShort}, SMA_Long: {_currentSMALong}");
                 //context.Actions.SellStraight(parameter.ValueToSell);
             }
 

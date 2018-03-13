@@ -19,19 +19,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IReloadingManager<QuoteRabbitMqSubscriptionSettings> _settings;
         private readonly ILog _log;
         private RabbitMqSubscriber<QuoteMessage> _subscriber;
+        private readonly IAlgoSettingsService _algoSettingsService;
 
         private readonly object _subsciptionLock = new object();
         private List<Func<IAlgoQuote, Task>> _subscriptions = new List<Func<IAlgoQuote, Task>>();
+
+        private string _algoAssetPair;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitMqQuoteProviderService" /> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="log">The log.</param>
-        public RabbitMqQuoteProviderService(IReloadingManager<QuoteRabbitMqSubscriptionSettings> settings, ILog log)
+        public RabbitMqQuoteProviderService(IReloadingManager<QuoteRabbitMqSubscriptionSettings> settings,
+                                            ILog log, IAlgoSettingsService algoSettingsService)
         {
             _settings = settings;
             _log = log;
+            _algoSettingsService = algoSettingsService;
         }
         /// <summary>
         /// Finalizes an instance of the <see cref="RabbitMqQuoteProviderService"/> class.
@@ -53,7 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _subscriptions = new List<Func<IAlgoQuote, Task>>();
             }
 
-            var settings = _settings.CurrentValue.ToRabbitMqSettings();
+            var settings = _settings.CurrentValue.ToRabbitMqSettings(_algoSettingsService.GetInstanceId());
 
             // Look at https://github.com/LykkeCity/Lykke.RabbitMqDotNetBroker
             // https://github.com/LykkeCity/Lykke.RabbitMqDotNetBroker/blob/master/src/Lykke.RabbitMqBroker/Subscriber/RabbitMqSubscriber.cs
@@ -86,8 +91,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// Subscribes the specified action.
         /// </summary>
         /// <param name="action">The action.</param>
-        public void Subscribe(Func<IAlgoQuote, Task> action)
+        public void Subscribe(string assetPair, Func<IAlgoQuote, Task> action)
         {
+            if (string.IsNullOrEmpty(assetPair))
+                throw new ArgumentNullException(nameof(assetPair));
+
+            _algoAssetPair = assetPair;
+
             lock (_subsciptionLock)
             {
                 _subscriptions.Add(action);
@@ -109,7 +119,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// <returns></returns>
         private Task OnQuoteInternal(QuoteMessage quoteMessage)
         {
-            if (quoteMessage.AssetPair != _settings.CurrentValue.SubscriptionAsset)
+            if (quoteMessage.AssetPair != _algoAssetPair /*_settings.CurrentValue.SubscriptionAsset*/)
                 return Task.CompletedTask;
 
             // i think that here should NOT use reference swap

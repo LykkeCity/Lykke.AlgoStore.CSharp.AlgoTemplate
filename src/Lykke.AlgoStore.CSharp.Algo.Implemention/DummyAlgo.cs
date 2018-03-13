@@ -29,17 +29,10 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             var smaShort = _shortSma.GetValue();
             var smaLong = _longSma.GetValue();
             context.Actions.Log($"Function values are: SMA_Short: {smaShort}, SMA_Long: {smaLong}");
-            
+
             //var buyOrder = context.Actions.Buy(0.2);
             //context.Actions.Log($"Buying {buyOrder} at {DateTime.UtcNow}");
         }
 
-        public override void OnCandleReceived(ICandleContext context)
-        {
-            var candle = context.Data.Candle;
-
-            context.Actions.Log($"Receiving candle at {DateTime.UtcNow} " +
-                $"{{candle O,H,L,C: {candle.Open}, {candle.High}, {candle.Low}, {candle.Close}}}, {{candle.Timestamp: {candle.DateTime}}}");
-        }
     }
 }
