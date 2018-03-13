@@ -9,10 +9,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// </summary>
     public class ActionsService : IActions
     {
+        private readonly IAlgoSettingsService _algoSettingsService;
+        private readonly IUserLogService _logService;
         private readonly ITradingService _tradingService;
         private readonly Action<Exception, string> _onErrorHandler;
         private readonly IStatisticsService _statisticsService;
-        private readonly IAlgoSettingsService _algoSettingsService;
 
         /// <summary>
         /// Initializes new instance of ActionsService
@@ -20,19 +21,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// <param name="tradingService">The <see cref="ITradingService"/> 
         /// implementation for providing the trading capabilities</param>
         /// <param name="statisticsService">The <see cref="IStatisticsService"/> 
-        /// implementation for providing the statics capabilities</param>
+        /// implementation for providing the statistics capabilities</param>
+        /// <param name="logService">The <see cref="IUserLogService"/>
+        /// implementation for providing log capabilities</param>
         /// <param name="algoSettingsService">The <see cref="IAlgoSettingsService"/>
         /// implementation for providing the algo settings</param>
         /// <param name="onErrorHandler">A handler to be executed upon error</param>
         public ActionsService(ITradingService tradingService,
             IStatisticsService statisticsService,
+            IUserLogService logService,
             IAlgoSettingsService algoSettingsService,
             Action<Exception, string> onErrorHandler)
         {
             _tradingService = tradingService;
             _statisticsService = statisticsService;
+            _logService = logService;
             _algoSettingsService = algoSettingsService;
-            _onErrorHandler = onErrorHandler;          
+            _onErrorHandler = onErrorHandler;        
         }
 
         public double Buy(double volume)
@@ -65,6 +70,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public void Log(string message)
         {
             Console.WriteLine(message);
+
+            var instanceId = _algoSettingsService.GetInstanceId();
+
+            _logService.Write(instanceId, message);
         }
 
         public double Sell(double volume)

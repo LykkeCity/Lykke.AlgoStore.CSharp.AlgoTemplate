@@ -24,6 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ITradingService _tradingService;
         private readonly ICandlesService _candlesService;
         private readonly IStatisticsService _statisticsService;
+        private readonly IUserLogService _logService;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
         private readonly object _sync = new object();
@@ -36,6 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             ITradingService tradingService,
             ICandlesService candlesService,
             IStatisticsService statisticsService,
+            IUserLogService logService,
             IAlgo algo)
         {
             _algoSettingsService = algoSettingsService;
@@ -43,9 +45,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _historyDataService = historyDataService;
             _functionsService = functionsService;
             _statisticsService = statisticsService;
+            _logService = logService;
             _tradingService = tradingService;
             _candlesService = candlesService;
-            actions = new ActionsService(_tradingService, _statisticsService, _algoSettingsService, this.OnErrorHandler);
+            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler);
             _algo = algo;
         }
 
@@ -87,6 +90,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _statisticsService.OnAlgoStarted();
 
             return Task.WhenAll(quoteGeneration);
+        }
+
+        public Task StopAsync()
+        {
+            actions.Log("Executing 'StopAsync' event started");
+
+            //TODO: We should reconsider what to do with initialized services in here
+
+            actions.Log("Executing 'StopAsync' event finished");
+
+            return Task.CompletedTask;
+        }
+
+        public void OnErrorHandler(Exception e, string message)
+        {
+            actions.Log(e.ToString());
+            actions.Log(message);
         }
 
         private void OnInitialFunctionServiceData(IList<MultipleCandlesResponse> warmupData)
@@ -171,17 +191,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             context.Functions = _functionsService.GetFunctionResults();
 
             context.Actions = actions;
-        }
-
-        public Task StopAsync()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnErrorHandler(Exception e, string message)
-        {
-            actions.Log(e.ToString());
-            actions.Log(message);
         }
 
         private void SetUpAlgoParameters()

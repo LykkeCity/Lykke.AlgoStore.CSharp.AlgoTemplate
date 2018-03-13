@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.Loader;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
@@ -23,6 +25,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
     {
         public const string USER_DEFINED_ALGOS_NAMESPACE = "Lykke.AlgoStore.CSharp.Algo.Implemention.ExecutableClass";
         public static readonly Type DEFAULT_ALGO_CLASS_TO_RUN;
+        private static LogToConsole _log;
+        private static IAlgoWorkflowService _algoWorkflow;
 
         static AlgoRunner()
         {
@@ -34,6 +38,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
         public static async Task Main(string[] args)
         {
+            System.AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            AssemblyLoadContext.Default.Unloading += Default_Unloading;
+
             // Initialize AutoMapper
             Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile>());
             Mapper.AssertConfigurationIsValid();
@@ -42,12 +49,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             var ioc = BuildIoc();
 
             // Create a workflow
-            var algoWorkflow = ioc.Resolve<IAlgoWorkflowService>();
+            _algoWorkflow = ioc.Resolve<IAlgoWorkflowService>();
 
             try
             {
                 // Start the workflow. Await the task to block current thread on the algo execution
-                await algoWorkflow.StartAsync();
+                await _algoWorkflow.StartAsync();
             }
             catch (Exception e)
             {
@@ -62,12 +69,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 var delay = TimeSpan.FromMinutes(1);
 
                 await Task.WhenAny(
-                Task.Delay(delay),
-                Task.Run(() =>
-                {
-                    Console.ReadKey(true);
-                }));
+                    Task.Delay(delay),
+                    Task.Run(() => { Console.ReadKey(true); })
+                );
             }
+        }
+
+        private static void Default_Unloading(AssemblyLoadContext obj)
+        {
+            _algoWorkflow.StopAsync();
+        }
+
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            _algoWorkflow.StopAsync();
         }
 
         /// <summary>
@@ -84,7 +99,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             var appSettings = config.LoadSettings<AppSettings>();
 
             var builder = new ContainerBuilder();
-            var serviceModule = new ServiceModule(appSettings, new LogToConsole());
+            _log = new LogToConsole();
+            var serviceModule = new ServiceModule(appSettings, _log);
             serviceModule.AlgoType = GetAlgoType();
             builder.RegisterModule(serviceModule);
 
