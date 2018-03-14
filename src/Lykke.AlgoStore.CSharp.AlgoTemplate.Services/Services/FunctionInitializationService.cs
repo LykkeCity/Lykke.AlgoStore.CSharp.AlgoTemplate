@@ -29,7 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 return functions;
 
             foreach (var function in algoInstance.AlgoMetaDataInformation.Functions)
-            {                 
+            {
                 //All functions should have parameters - defined in one class, if parameters are null, function can not be instantiated.
                 if (function.Parameters == null)
                     continue;

@@ -3,8 +3,12 @@ using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -704,6 +708,117 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             return result;
         }
         #endregion
+
+        #region GetFunctionMetadata
+
+        [Test]
+        public void GetCorrect_FunctionMetadata()
+        {
+            var algoSettingsService = GetIAlgoSettingsServiceMockReturnCorrectData();
+            FunctionInitializationService service = new FunctionInitializationService(algoSettingsService);
+
+            var functions = service.GetAllFunctions();
+
+            var result = GetExampleFunctionResult();
+
+            Then_Data_ShouldBe_Equal(functions, result);
+        }
+
+        [Test]
+        public void GetCorrect_FunctionMetadata_Return_Empty_List()
+        {
+            var algoSettingsService = GetIAlgoSettingsServiceMock_ReturnNoAlgoInstance();
+            FunctionInitializationService service = new FunctionInitializationService(algoSettingsService);
+
+            var functions = service.GetAllFunctions();
+            var result = new List<IFunction>();
+
+            Then_Data_ShouldBe_Equal(functions, result);
+        }
+
+        private static void Then_Data_ShouldBe_Equal(IList<IFunction> first, IList<IFunction> second)
+        {
+            string serializedFirst = JsonConvert.SerializeObject(first);
+            string serializedSecond = JsonConvert.SerializeObject(second);
+            Assert.AreEqual(serializedFirst, serializedSecond);
+        }
+
+
+        private IList<IFunction> GetExampleFunctionResult()
+        {
+            var result = new List<IFunction>();
+
+            result.Add(new SmaFunction(
+                new SmaParameters()
+                {
+                    Capacity = 10,
+                    FunctionInstanceIdentifier = "SAM_TEST",
+                    AssetPair = "BTCEUR",
+                    StartingDate = new DateTime(2018, 2, 10)
+                }));
+
+            return result;
+        }
+
+        #endregion
+
+        private IAlgoSettingsService GetIAlgoSettingsServiceMockReturnCorrectData()
+        {
+            var service = new Mock<IAlgoSettingsService>();
+
+            service.Setup(f => f.GetAlgoInstance()).Returns(new Models.Models.AlgoClientInstanceData()
+            {
+                AlgoMetaDataInformation = new AlgoMetaDataInformation()
+                {
+                    Functions = new List<AlgoMetaDataFunction>()
+                    {
+                        new AlgoMetaDataFunction()
+                        {
+                            Id="SAM_TEST",
+                            Type = "Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA.SmaFunction",
+                            FunctionParameterType = "Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA.SmaParameters",
+                            Parameters = new List<AlgoMetaDataParameter>()
+                                {
+                                    new AlgoMetaDataParameter()
+                                    {
+                                        Key="FunctionInstanceIdentifier",
+                                        Value="SAM_TEST",
+                                        Type= "String"
+                                    },
+                                     new AlgoMetaDataParameter()
+                                    {
+                                        Key="StartingDate",
+                                        Value="10-02-2018",
+                                        Type= "DateTime"
+                                    },
+                                    new AlgoMetaDataParameter()
+                                    {
+                                        Key="Capacity",
+                                        Value="10",
+                                        Type= "int"
+                                    },
+                                    new AlgoMetaDataParameter()
+                                    {
+                                        Key="AssetPair",
+                                        Value="BTCEUR",
+                                        Type= "String"
+                                    }
+                                }
+                        }
+                    }
+
+                }
+            });
+
+            return service.Object;
+        }
+
+        private IAlgoSettingsService GetIAlgoSettingsServiceMock_ReturnNoAlgoInstance()
+        {
+            var service = new Mock<IAlgoSettingsService>();
+            service.Setup(f => f.GetAlgoInstance()).Returns<AlgoClientInstanceData>(null);
+            return service.Object;
+        }
 
         private FunctionsService CreateFunctionService(params IFunction[] functions)
         {
