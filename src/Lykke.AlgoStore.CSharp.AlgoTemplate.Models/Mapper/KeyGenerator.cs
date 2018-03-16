@@ -19,6 +19,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             return string.Format(PartitionKeyPattern, AlgoPartitionKeyStatic, PartitionKeySeparator, algoId);
         }
 
+        public static string GenerateAlgoIdAndClientIdPartitionKey(string algoId, string clientId)
+        {
+            return string.Format(PartitionKeyPattern, algoId, PartitionKeySeparator, clientId);
+        }
+
         public static BaseAlgoData ParseKey(string partitionKey)
         {
             var values = partitionKey.Split(PartitionKeySeparator);

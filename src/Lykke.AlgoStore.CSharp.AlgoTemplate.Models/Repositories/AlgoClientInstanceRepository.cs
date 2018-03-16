@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
@@ -22,11 +23,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         }
 
         public async Task<List<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoAsync(string algoId)
-        { 
+        {
             var entities = await _table.GetDataAsync(KeyGenerator.GenerateAlgoIdPartitionKey(algoId));
 
             var result = entities.Select(entity => entity.ToModel()).ToList();
 
+            return result;
+        }
+
+        public async Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoIdAndClienIdAsync(string algoId, string clientId)
+        {
+            var entities = await _table.GetDataAsync(KeyGenerator.GenerateAlgoIdAndClientIdPartitionKey(algoId, clientId));
+            var result = entities.Select(entity => entity.ToModel());
             return result;
         }
 
@@ -79,9 +87,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         {
             var algoIdPartitionKeyEntity = data.ToEntityWithAlgoIdPartitionKey();
             var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
+            var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
 
             await _table.InsertOrMergeAsync(algoIdPartitionKeyEntity);
             await _table.InsertOrMergeAsync(clientIdPartitionKeyEntity);
+            await _table.InsertOrMergeAsync(algoIdAndClientIdPartitionKeyEntity);
         }
 
         public async Task DeleteAlgoInstanceDataAsync(AlgoClientInstanceData data)
@@ -89,18 +99,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var algoIdPartitionKeyEntity = data.ToEntityWithAlgoIdPartitionKey();
             var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
 
+            var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
+
             await _table.DeleteAsync(algoIdPartitionKeyEntity);
             await _table.DeleteAsync(clientIdPartitionKeyEntity);
+            await _table.DeleteAsync(algoIdAndClientIdPartitionKeyEntity);
         }
 
         public async Task<string> GetAlgoInstanceMetadataSetting(string algoId, string instanceId, string key)
         {
             var partitionKey = KeyGenerator.GenerateAlgoIdPartitionKey(algoId);
-            var data = await _table.GetDataAsync(partitionKey,instanceId);
+            var data = await _table.GetDataAsync(partitionKey, instanceId);
             if (data == null)
                 return string.Empty;
 
-            var algoMetadataInformation = JsonConvert.DeserializeObject<AlgoMetaDataInformation>(data.AlgoMetaDataInformation);           
+            var algoMetadataInformation = JsonConvert.DeserializeObject<AlgoMetaDataInformation>(data.AlgoMetaDataInformation);
             string settingValue = algoMetadataInformation.Parameters.Where(p => p.Key == key).Select(p => p.Value).SingleOrDefault();
 
             return settingValue ?? string.Empty;
@@ -110,11 +123,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         {
             string keyWithAlgoId = KeyGenerator.GenerateAlgoIdPartitionKey(algoId);
             string keyWithClientId = KeyGenerator.GenerateClientIdPartitionKey(clientId);
+            string keyWithAlgoIdAndClientId = KeyGenerator.GenerateAlgoIdAndClientIdPartitionKey(algoId, clientId);
 
             var dataWithAlgoIdPartitionKey = await _table.GetTopRecordAsync(keyWithAlgoId);
             var dataWithClientIdPartitionKey = await _table.GetTopRecordAsync(keyWithClientId);
+            var dataWithAlgoIdAndClientIdPartitionKey = await _table.GetTopRecordAsync(keyWithAlgoIdAndClientId);
 
-            return dataWithAlgoIdPartitionKey != null || dataWithClientIdPartitionKey != null;
+            return dataWithAlgoIdPartitionKey != null || dataWithClientIdPartitionKey != null
+                                || dataWithAlgoIdAndClientIdPartitionKey != null;
         }
     }
 }

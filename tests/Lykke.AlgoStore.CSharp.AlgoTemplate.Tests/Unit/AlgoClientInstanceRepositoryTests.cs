@@ -6,6 +6,8 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using AutoMapper;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -48,6 +50,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                     }}
                 }
             };
+
+            Mapper.Reset();
+
+            Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperModelProfile>());
+            Mapper.AssertConfigurationIsValid();
         }
 
         [TearDown]

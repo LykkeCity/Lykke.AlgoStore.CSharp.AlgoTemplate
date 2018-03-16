@@ -22,12 +22,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         [Test]
         public void GetCorrect_ParametersMetadata()
         {
-            var algoSettingsService = GetIAlgoSettingsServiceMockReturnCorrectData();
+            var algoInstance = GetAlgoInstanceMockReturnCorrectData();
             var algo = new DummyAlgo();
 
-            WorkflowService service = new WorkflowService(algoSettingsService, null, null, null, null, null, null, null, algo);
+            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, algo);
 
-            service.SetUpAlgoParameters();
+            service.SetUpAlgoParameters(algoInstance);
             Assert.AreEqual(_tradedAsset, algo.TradedAsset);
             Assert.AreEqual(_assetPair, algo.AssetPair);
             Assert.AreEqual(_volume, algo.Volume);
@@ -37,12 +37,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         [Test]
         public void Get_NoParametersMetadata()
         {
-            var algoSettingsService = GetIAlgoSettingsServiceMock_ReturnNoAlgoInstance();
             var algo = new DummyAlgo();
 
-            WorkflowService service = new WorkflowService(algoSettingsService, null, null, null, null, null, null, null, algo);
+            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, algo);
 
-            service.SetUpAlgoParameters();
+            service.SetUpAlgoParameters(null);
             Assert.IsNull(algo.TradedAsset);
             Assert.IsNull(algo.AssetPair);
         }
@@ -56,11 +55,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 
         #region MockUps
 
-        private IAlgoSettingsService GetIAlgoSettingsServiceMockReturnCorrectData()
+        private AlgoClientInstanceData GetAlgoInstanceMockReturnCorrectData()
         {
-            var service = new Mock<IAlgoSettingsService>();
-
-            service.Setup(f => f.GetAlgoInstance()).Returns(new Models.Models.AlgoClientInstanceData()
+            var result = new Models.Models.AlgoClientInstanceData()
             {
                 AlgoMetaDataInformation = new AlgoMetaDataInformation()
                 {
@@ -93,16 +90,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                         }
                     }
                 }
-            });
-
-            return service.Object;
-        }
-
-        private IAlgoSettingsService GetIAlgoSettingsServiceMock_ReturnNoAlgoInstance()
-        {
-            var service = new Mock<IAlgoSettingsService>();
-            service.Setup(f => f.GetAlgoInstance()).Returns<AlgoClientInstanceData>(null);
-            return service.Object;
+            };
+            return result;
         }
 
         #endregion

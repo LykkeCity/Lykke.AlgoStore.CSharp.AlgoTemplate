@@ -44,6 +44,10 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         public override void OnCandleReceived(ICandleContext contextCandle)
         {
+            contextCandle.Actions.Log($"Algo ADX Threshold {ADXThreshold}");
+            contextCandle.Actions.Log($"SMA_Short Asset Pair: {_smaShortPeriod.FunctionParameters.AssetPair}, " +
+                                      $"SMA_Long Asset Pair: {_smaLongPeriod.FunctionParameters.AssetPair}");
+
             _currentSMAShort = _smaShortPeriod.Value ?? 0;
             _currentSMALong = _smaLongPeriod.Value ?? 0;
             _currentADX = _adx.Value;

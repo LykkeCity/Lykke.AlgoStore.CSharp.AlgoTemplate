@@ -14,20 +14,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             if (entitiy == null)
                 return result;
 
-            result.ClientId = entitiy.ClientId;
-            result.AlgoId = entitiy.AlgoId;
-            result.InstanceId = entitiy.RowKey;
-            result.AssetPair = entitiy.AssetPair;
-            result.HftApiKey = entitiy.HftApiKey;
-            result.WalletId = entitiy.WalletId;
-            result.Margin = entitiy.Margin;
-            result.TradedAsset = entitiy.TradedAsset;
-            result.Volume = entitiy.Volume;
-            result.InstanceName = entitiy.InstanceName;
-            result.AlgoMetaDataInformation = entitiy.AlgoMetaDataInformation != null ?
-                JsonConvert.DeserializeObject<AlgoMetaDataInformation>(entitiy.AlgoMetaDataInformation)
-                : new AlgoMetaDataInformation();
+            result = AutoMapper.Mapper.Map<AlgoClientInstanceData>(entitiy);
 
+            result.AlgoMetaDataInformation = entitiy.AlgoMetaDataInformation != null ?
+                                                JsonConvert.DeserializeObject<AlgoMetaDataInformation>(entitiy.AlgoMetaDataInformation)
+                                                : new AlgoMetaDataInformation();
             return result;
         }
 
@@ -38,19 +29,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             if (data == null)
                 return result;
 
+            result = GetEntityResult(data, result);
             result.PartitionKey = KeyGenerator.GenerateAlgoIdPartitionKey(data.AlgoId);
-            result.RowKey = data.InstanceId;
-            result.AssetPair = data.AssetPair;
-            result.HftApiKey = data.HftApiKey;
-            result.WalletId = data.WalletId;
-            result.Margin = data.Margin;
-            result.TradedAsset = data.TradedAsset;
-            result.Volume = data.Volume;
-            result.ETag = "*";
-            result.ClientId = data.ClientId;
-            result.AlgoId = data.AlgoId;
-            result.InstanceName = data.InstanceName;
-            result.AlgoMetaDataInformation = JsonConvert.SerializeObject(data.AlgoMetaDataInformation);
+            return result;
+        }
+
+        public static AlgoClientInstanceEntity ToEntityWithAlgoIdAndClientIdPartitionKey(this AlgoClientInstanceData data)
+        {
+            var result = new AlgoClientInstanceEntity();
+
+            if (data == null)
+                return result;
+
+            result = GetEntityResult(data, result);
+            result.PartitionKey = KeyGenerator.GenerateAlgoIdAndClientIdPartitionKey(data.AlgoId, data.ClientId);
             return result;
         }
 
@@ -61,18 +53,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             if (data == null)
                 return result;
 
+            result = GetEntityResult(data, result);
             result.PartitionKey = KeyGenerator.GenerateClientIdPartitionKey(data.ClientId);
-            result.RowKey = data.InstanceId;
-            result.AssetPair = data.AssetPair;
-            result.HftApiKey = data.HftApiKey;
-            result.WalletId = data.WalletId;
-            result.Margin = data.Margin;
-            result.TradedAsset = data.TradedAsset;
-            result.Volume = data.Volume;
+            return result;
+        }
+
+        private static AlgoClientInstanceEntity GetEntityResult(AlgoClientInstanceData data, AlgoClientInstanceEntity result)
+        {
+            result = AutoMapper.Mapper.Map<AlgoClientInstanceEntity>(data);
             result.ETag = "*";
-            result.ClientId = data.ClientId;
-            result.AlgoId = data.AlgoId;
-            result.InstanceName = data.InstanceName;
             result.AlgoMetaDataInformation = JsonConvert.SerializeObject(data.AlgoMetaDataInformation);
             return result;
         }
