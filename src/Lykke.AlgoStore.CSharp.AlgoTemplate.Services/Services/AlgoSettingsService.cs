@@ -36,8 +36,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             _settingsJson = Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS");
 
-            Console.WriteLine($"ALGO_INSTANCE_PARAMS: {_settingsJson}");
-
             if (String.IsNullOrEmpty(_settingsJson))
                 throw new ArgumentException("Environment variable 'ALGO_INSTANCE_PARAMS' does not contain settings");
 
@@ -49,7 +47,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _tradedAsset = GetAlgoInstanceTradedAsset();
 
             _isAlive = true;
-
         }
 
         public string GetSetting(string key)
