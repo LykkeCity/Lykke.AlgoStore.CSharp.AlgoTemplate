@@ -25,10 +25,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
             get
             {
                 AlgoInstanceStatus type = 0;
-                if (!string.IsNullOrEmpty(AlgoInstanceStatusValue))
-                {
-                    Enum.TryParse(AlgoInstanceStatusValue, out type);
-                }
+                Enum.TryParse(AlgoInstanceStatusValue, out type);
                 return type;
             }
             set => AlgoInstanceStatusValue = value.ToString();
@@ -39,10 +36,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
             get
             {
                 AlgoInstanceType type = 0;
-                if (!string.IsNullOrEmpty(AlgoInstanceTypeValue))
-                {
-                    Enum.TryParse(AlgoInstanceTypeValue, out type);
-                }
+                Enum.TryParse(AlgoInstanceTypeValue, out type);
                 return type;
             }
             set => AlgoInstanceTypeValue = value.ToString();
