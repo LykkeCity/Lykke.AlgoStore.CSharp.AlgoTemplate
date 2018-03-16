@@ -170,7 +170,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnErrorHandler(TradingServiceException e)
         {
-            Console.WriteLine(e);
+            _logService.Write(_algoSettingsService.GetInstanceId(), e);
         }
 
         private IQuoteContext CreateQuoteContext(IAlgoQuote quote)

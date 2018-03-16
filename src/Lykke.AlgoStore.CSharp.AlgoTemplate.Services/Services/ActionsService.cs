@@ -69,8 +69,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void Log(string message)
         {
-            Console.WriteLine(message);
-
             var instanceId = _algoSettingsService.GetInstanceId();
 
             _logService.Write(instanceId, message);
