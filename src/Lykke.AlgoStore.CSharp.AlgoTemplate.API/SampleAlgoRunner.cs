@@ -6,6 +6,7 @@ using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Modules;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +42,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             AssemblyLoadContext.Default.Unloading += Default_Unloading;
 
             // Initialize AutoMapper
-            Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile>());
+            Mapper.Initialize(cfg =>
+            {
+                cfg.AddProfiles(typeof(AutoMapperProfile));
+                cfg.AddProfiles(typeof(AutoMapperModelProfile));
+            });
             Mapper.AssertConfigurationIsValid();
 
             // Build the inversion of control container

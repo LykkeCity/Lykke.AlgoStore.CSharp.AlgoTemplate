@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
 using System.Threading;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -57,8 +58,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // read settings/metadata/env. var
             _algoSettingsService.Initialize();
 
+            var algoInstance = _algoSettingsService.GetAlgoInstance();
+
             //get algo parameters
-            SetUpAlgoParameters();
+            SetUpAlgoParameters(algoInstance);
 
             // Function service initialization.
             _functionsService.Initialize();
@@ -88,6 +91,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _quoteProviderService.Start();
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
+
+            if (algoInstance != null)
+            {
+                algoInstance.AlgoInstanceStatus = Models.Enumerators.AlgoInstanceStatus.Started;
+                _algoSettingsService.UpdateAlgoInstance(algoInstance);
+            }
 
             return Task.WhenAll(quoteGeneration);
         }
@@ -193,10 +202,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             context.Actions = actions;
         }
 
-        public void SetUpAlgoParameters()
+        public void SetUpAlgoParameters(AlgoClientInstanceData algoInstance)
         {
-            var algoInstance = _algoSettingsService.GetAlgoInstance();
-
             if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Parameters == null)
                 return;
 

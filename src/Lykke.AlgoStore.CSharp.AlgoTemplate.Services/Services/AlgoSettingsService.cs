@@ -5,6 +5,7 @@ using System.Dynamic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -58,6 +59,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 return string.Empty;
 
             return _settings[key] as string;
+        }
+
+        public async Task UpdateAlgoInstance(AlgoClientInstanceData data)
+        {
+            await _algoClientInstanceMetadataRepository.SaveAlgoInstanceDataAsync(data);
         }
 
         public AlgoClientInstanceData GetAlgoInstance()

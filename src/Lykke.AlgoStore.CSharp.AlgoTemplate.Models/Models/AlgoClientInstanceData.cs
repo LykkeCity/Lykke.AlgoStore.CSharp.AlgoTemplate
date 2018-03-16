@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
@@ -24,7 +25,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         public string InstanceName { get; set; }
 
+        public AlgoInstanceStatus AlgoInstanceStatus { get; set; }
+
+        public AlgoInstanceType AlgoInstanceType { get; set; }
+
         [Required]
         public AlgoMetaDataInformation AlgoMetaDataInformation { get; set; }
+
+        public string AlgoClientId { get; set; }
     }
 }

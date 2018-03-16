@@ -21,6 +21,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         public override void OnQuoteReceived(IQuoteContext context)
         {
+            context.Actions.Log($"Volume value: {Volume}");
+
             var quote = context.Data.Quote;
             context.Actions.Log($"Receiving quote at {DateTime.UtcNow} " +
                 $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
