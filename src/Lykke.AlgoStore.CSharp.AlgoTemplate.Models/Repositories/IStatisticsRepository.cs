@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
     public interface IStatisticsRepository
     {

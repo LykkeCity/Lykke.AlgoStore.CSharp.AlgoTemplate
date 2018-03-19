@@ -24,4 +24,10 @@
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\" />
+    <Folder Include="Mapper\" />
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>

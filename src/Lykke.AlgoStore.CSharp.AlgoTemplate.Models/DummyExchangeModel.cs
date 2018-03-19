@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models
+﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models
 {
     /// <summary>
     /// REMARK: Just a dummy exchange model for future reference.

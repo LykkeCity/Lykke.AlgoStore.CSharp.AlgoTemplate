@@ -9,7 +9,6 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.Service.Assets.Client;

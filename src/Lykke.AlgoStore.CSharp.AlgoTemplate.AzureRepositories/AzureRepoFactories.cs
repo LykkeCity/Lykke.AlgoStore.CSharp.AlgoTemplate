@@ -1,7 +1,5 @@
 ﻿using AzureStorage.Tables;
 using Common.Log;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.SettingsReader;

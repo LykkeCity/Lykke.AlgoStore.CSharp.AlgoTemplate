@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
     public class UserLog
     {

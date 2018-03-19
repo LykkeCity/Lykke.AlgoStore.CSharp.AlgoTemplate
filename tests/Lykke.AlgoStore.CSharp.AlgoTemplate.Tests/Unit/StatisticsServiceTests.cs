@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoMapper;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.Entities;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using Moq;
 using NUnit.Framework;
-using Remotion.Linq.Utilities;
 using Mapper = AutoMapper.Mapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
@@ -27,7 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             //Reset should not be used in production code. It is intended to support testing scenarios only.
             Mapper.Reset();
 
-            Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile>());
+            Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperModelProfile>());
             Mapper.AssertConfigurationIsValid();
 
             _instanceId = SettingsMock.GetInstanceId();

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureStorage;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
     /// <summary>
     /// <see cref="IUserLogRepository"/> implementation

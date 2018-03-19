@@ -4,7 +4,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using static Lykke.AlgoStore.CSharp.Algo.Core.Functions.AbstractFunction;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
