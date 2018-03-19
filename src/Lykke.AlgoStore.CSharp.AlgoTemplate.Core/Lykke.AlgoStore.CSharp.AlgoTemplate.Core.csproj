@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lykke.Common" Version="4.5.0" />
-    <PackageReference Include="Lykke.MatchingEngineConnector" Version="2.2.0" />
+    <PackageReference Include="Lykke.Common" Version="5.0.0" />
+    <PackageReference Include="Lykke.MatchingEngineConnector" Version="3.0.2" />
     <PackageReference Include="Lykke.Service.Assets.Client" Version="3.3.2" />
   </ItemGroup>
 
