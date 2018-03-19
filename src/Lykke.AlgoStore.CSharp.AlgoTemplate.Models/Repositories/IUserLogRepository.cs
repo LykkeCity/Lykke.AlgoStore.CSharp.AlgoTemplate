@@ -11,5 +11,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         Task WriteAsync(string instanceId, string message);
         Task WriteAsync(string instanceId, Exception exception);
         Task<List<UserLog>> GetEntries(int limit, string instanceId);
+        Task DeleteAllAsync(string instanceId);
     }
 }

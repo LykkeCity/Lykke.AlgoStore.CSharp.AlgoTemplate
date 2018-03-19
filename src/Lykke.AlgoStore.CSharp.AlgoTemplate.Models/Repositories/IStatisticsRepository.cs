@@ -8,6 +8,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
     {
         Task CreateAsync(Statistics data);
         Task DeleteAsync(string instanceId, string id);
+        Task DeleteAllAsync(string instanceId);
         Task<double> GetBoughtAmountAsync(string instanceId);
         Task<double> GetSoldAmountAsync(string instanceId);
         Task<double> GetBoughtQuantityAsync(string instanceId);

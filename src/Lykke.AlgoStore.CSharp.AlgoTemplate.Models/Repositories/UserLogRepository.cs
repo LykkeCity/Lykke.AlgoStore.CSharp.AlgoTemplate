@@ -68,6 +68,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             return result;
         }
 
+        public async Task DeleteAllAsync(string instanceId)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId);
+
+            //REMARK: This is potential problem due to large amount of data that can have same partition key
+            //Maybe we should reconsider and have another approach and have one table per algo instance
+            //In that way we can delete complete table
+            var dataToDelete = await _table.GetDataAsync(partitionKey);
+
+            await _table.DeleteAsync(dataToDelete);
+        }
+
         private string GenerateRowKey()
         {
             lock (_sync)

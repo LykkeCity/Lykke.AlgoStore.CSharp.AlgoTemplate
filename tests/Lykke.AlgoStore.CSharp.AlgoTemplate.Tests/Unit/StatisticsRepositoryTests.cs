@@ -35,6 +35,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [TearDown]
         public void CleanUp()
         {
+            var instanceId = SettingsMock.GetInstanceId();
             var repo = Given_Statistics_Repository();
 
             if (_entitySaved)
@@ -45,21 +46,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             _entity = null;
 
-            if (_entitiesToBuySaved)
-            {
-                foreach (var entity in _entitiesToBuy)
-                {
-                    repo.DeleteAsync(entity.InstanceId, entity.Id).Wait();
-                }
-            }
-
-            if (_entitiesToSellSaved)
-            {
-                foreach (var entity in _entitiesToSell)
-                {
-                    repo.DeleteAsync(entity.InstanceId, entity.Id).Wait();
-                }
-            }
+            if (_entitiesToBuySaved || _entitiesToSellSaved)
+                repo.DeleteAllAsync(instanceId).Wait(); //This will test deletion by partition key ;)
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]

@@ -78,18 +78,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var repo = Given_UserLog_Repository();
 
-            if (_entitySaved)
-            {
-                _entitySaved = false;
-            }
+            repo.DeleteAllAsync(_instanceId).Wait(); //This will test deletion by partition key ;)
 
             _entity = null;
-
-            if (_entitiesSaved)
-            {
-                _entitiesSaved = false;
-            }
-
             _entities = null;
         }
 
