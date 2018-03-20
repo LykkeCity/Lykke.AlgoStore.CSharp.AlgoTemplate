@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
@@ -88,9 +89,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
 
-            await _table.InsertOrMergeAsync(algoIdPartitionKeyEntity);
-            await _table.InsertOrMergeAsync(clientIdPartitionKeyEntity);
-            await _table.InsertOrMergeAsync(algoIdAndClientIdPartitionKeyEntity);
+            await _table.InsertOrMergeBatchAsync(new List<AlgoClientInstanceEntity>
+            {
+                algoIdPartitionKeyEntity,
+                clientIdPartitionKeyEntity,
+                algoIdAndClientIdPartitionKeyEntity
+            });
         }
 
         public async Task DeleteAlgoInstanceDataAsync(AlgoClientInstanceData data)
@@ -100,9 +104,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
 
-            await _table.DeleteAsync(algoIdPartitionKeyEntity);
-            await _table.DeleteAsync(clientIdPartitionKeyEntity);
-            await _table.DeleteAsync(algoIdAndClientIdPartitionKeyEntity);
+            await _table.DeleteAsync(new List<AlgoClientInstanceEntity>
+            {
+                algoIdPartitionKeyEntity,
+                clientIdPartitionKeyEntity,
+                algoIdAndClientIdPartitionKeyEntity
+            });
         }
 
         public async Task<string> GetAlgoInstanceMetadataSetting(string algoId, string instanceId, string key)
