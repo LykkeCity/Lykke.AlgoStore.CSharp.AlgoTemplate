@@ -89,27 +89,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
 
-            await _table.InsertOrMergeBatchAsync(new List<AlgoClientInstanceEntity>
-            {
-                algoIdPartitionKeyEntity,
-                clientIdPartitionKeyEntity,
-                algoIdAndClientIdPartitionKeyEntity
-            });
+            await _table.InsertOrMergeAsync(algoIdPartitionKeyEntity);
+            await _table.InsertOrMergeAsync(clientIdPartitionKeyEntity);
+            await _table.InsertOrMergeAsync(algoIdAndClientIdPartitionKeyEntity);
         }
 
         public async Task DeleteAlgoInstanceDataAsync(AlgoClientInstanceData data)
         {
             var algoIdPartitionKeyEntity = data.ToEntityWithAlgoIdPartitionKey();
             var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
-
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
 
-            await _table.DeleteAsync(new List<AlgoClientInstanceEntity>
-            {
-                algoIdPartitionKeyEntity,
-                clientIdPartitionKeyEntity,
-                algoIdAndClientIdPartitionKeyEntity
-            });
+            await _table.DeleteAsync(algoIdPartitionKeyEntity);
+            await _table.DeleteAsync(clientIdPartitionKeyEntity);
+            await _table.DeleteAsync(algoIdAndClientIdPartitionKeyEntity);
         }
 
         public async Task<string> GetAlgoInstanceMetadataSetting(string algoId, string instanceId, string key)
