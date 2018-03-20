@@ -27,7 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Domain\Entities\" />
     <Folder Include="Properties\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
   <ItemGroup>

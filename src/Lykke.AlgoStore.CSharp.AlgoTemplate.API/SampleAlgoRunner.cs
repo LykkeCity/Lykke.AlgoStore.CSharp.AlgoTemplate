@@ -3,7 +3,6 @@ using AutoMapper;
 using Common.Log;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
@@ -48,13 +47,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             try
             {
                 // Initialize AutoMapper
-               Mapper.Initialize(cfg =>
+                Mapper.Initialize(cfg =>
                 {
-                cfg.AddProfiles(typeof(AutoMapperProfile));
-                cfg.AddProfiles(typeof(AutoMapperModelProfile));
-                 });
-            Mapper.AssertConfigurationIsValid();
-              
+                     cfg.AddProfiles(typeof(AutoMapperModelProfile));
+                });
+                Mapper.AssertConfigurationIsValid();
+
                 var services = new ServiceCollection();
 
                 // Build the inversion of control container
@@ -72,7 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 Console.WriteLine($@"Error '{e.Message}' was thrown while executing the algo.");
                 Console.WriteLine(e);
 
-                _log?.WriteFatalErrorAsync(nameof(AlgoRunner),nameof(Main), "", e);
+                _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
 
                 // Non-zero exit code
                 Environment.ExitCode = 1;

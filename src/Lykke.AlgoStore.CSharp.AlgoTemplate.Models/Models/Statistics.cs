@@ -1,4 +1,4 @@
-﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.Entities
+﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
     public class Statistics
     {

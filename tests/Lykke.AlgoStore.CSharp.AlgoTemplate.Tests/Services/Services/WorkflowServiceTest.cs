@@ -1,10 +1,8 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
-using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;

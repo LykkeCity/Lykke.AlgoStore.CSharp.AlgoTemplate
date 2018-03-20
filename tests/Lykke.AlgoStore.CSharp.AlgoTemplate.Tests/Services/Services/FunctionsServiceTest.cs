@@ -788,7 +788,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                                      new AlgoMetaDataParameter()
                                     {
                                         Key="StartingDate",
-                                        Value="10-02-2018",
+                                        Value="2018-02-10",
                                         Type= "DateTime"
                                     },
                                     new AlgoMetaDataParameter()

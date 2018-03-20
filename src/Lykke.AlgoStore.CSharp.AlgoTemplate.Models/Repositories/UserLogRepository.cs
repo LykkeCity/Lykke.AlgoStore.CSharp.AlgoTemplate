@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureStorage;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Entities;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
     /// <summary>
     /// <see cref="IUserLogRepository"/> implementation
@@ -67,6 +66,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Repositories
             var result = AutoMapper.Mapper.Map<List<UserLog>>(data);
 
             return result;
+        }
+
+        public async Task DeleteAllAsync(string instanceId)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId);
+
+            //REMARK: This is potential problem due to large amount of data that can have same partition key
+            //Maybe we should reconsider and have another approach and have one table per algo instance
+            //In that way we can delete complete table
+            var dataToDelete = await _table.GetDataAsync(partitionKey);
+
+            await _table.DeleteAsync(dataToDelete);
         }
 
         private string GenerateRowKey()
