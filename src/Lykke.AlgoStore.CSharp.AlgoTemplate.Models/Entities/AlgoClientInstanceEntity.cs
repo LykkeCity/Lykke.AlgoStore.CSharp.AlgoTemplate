@@ -17,6 +17,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public string WalletId { get; set; }
         public string InstanceName { get; set; }
 
+        public DateTime? AlgoInstanceRunDate { get; set; }
+
         public string AlgoInstanceStatusValue { get; set; }
         public string AlgoInstanceTypeValue { get; set; }
 

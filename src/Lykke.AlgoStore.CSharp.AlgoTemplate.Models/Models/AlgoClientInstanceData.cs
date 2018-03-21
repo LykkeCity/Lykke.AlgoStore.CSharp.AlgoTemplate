@@ -24,6 +24,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public double Margin { get; set; }
 
         public string InstanceName { get; set; }
+        
+        public DateTime? AlgoInstanceRunDate { get; set; }
 
         public AlgoInstanceStatus AlgoInstanceStatus { get; set; }
 

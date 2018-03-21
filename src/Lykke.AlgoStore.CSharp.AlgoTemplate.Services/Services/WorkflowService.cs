@@ -95,6 +95,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (algoInstance != null)
             {
                 algoInstance.AlgoInstanceStatus = Models.Enumerators.AlgoInstanceStatus.Started;
+                algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
                 _algoSettingsService.UpdateAlgoInstance(algoInstance);
             }
 
