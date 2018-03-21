@@ -127,9 +127,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();
 
-            //builder.RegisterType<PredefinedDataFeedCandleService>()
-            //    .As<ICandlesService>();
-
             builder.RegisterType<CandlesService>()
                 .As<ICandlesService>();
 
