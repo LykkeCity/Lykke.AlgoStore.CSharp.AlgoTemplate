@@ -2,7 +2,6 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using System;
 using System.Threading.Tasks;
-using Common;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -18,19 +17,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public class TradingServiceException : Exception { }
 
         private readonly IMatchingEngineAdapter _matchingEngineAdapter;
-        private readonly IAssetServiceDecorator _assetServiceDecorator;
         private readonly IAlgoSettingsService _algoSettingsService;
 
         private string _assetPairId;
         private string _asset;
         private string _walletId;
+        private bool _straight;
     
         public TradingService(IMatchingEngineAdapter matchingEngineAdapter,
-            IAssetServiceDecorator assetServiceDecorator,
             IAlgoSettingsService algoSettingsService)
         {
             _matchingEngineAdapter = matchingEngineAdapter;
-            _assetServiceDecorator = assetServiceDecorator;
             _algoSettingsService = algoSettingsService;
         }
 
@@ -39,9 +36,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _assetPairId = _algoSettingsService.GetAlgoInstanceAssetPair();
             _asset = _algoSettingsService.GetTradedAsset();
             _walletId = _algoSettingsService.GetAlgoInstanceWalletId();
+            _straight = _algoSettingsService.IsAlgoInstanceMarketOrderStraight();
         }
 
-        public async Task<ResponseModel<double>> SellStraight(double volume)
+        public async Task<ResponseModel<double>> Sell(double volume)
         {
             var order = new MarketOrderRequest
             {
@@ -51,31 +49,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Volume = volume
             };
 
-            var assetPair = await _assetServiceDecorator.GetEnabledAssetPairAsync(order.AssetPairId);
-            //Validata asset pair if needed
-
-            var baseAsset = await _assetServiceDecorator.GetEnabledAssetAsync(assetPair.BaseAssetId);
-            var quotingAsset = await _assetServiceDecorator.GetEnabledAssetAsync(assetPair.QuotingAssetId);
-            //Validate Asset if needed
-
-            var straight = order.Asset == baseAsset.Id || order.Asset == baseAsset.Name;
-            var orderVolume = order.Volume.TruncateDecimalPlaces(straight ? baseAsset.Accuracy : quotingAsset.Accuracy);
-            var minVolume = straight ? assetPair.MinVolume : assetPair.MinInvertedVolume;
-            //Validate volume if needed
-
-
             var response = await _matchingEngineAdapter.HandleMarketOrderAsync(
                 clientId: _walletId,
                 assetPairId: order.AssetPairId,
                 orderAction: order.OrderAction,
-                volume: orderVolume,
-                straight: straight,
+                volume: volume,
+                straight: _straight,
                 reservedLimitVolume: null);
 
             return response;
         }
 
-        public async Task<ResponseModel<double>> BuyStraight(double volume)
+        public async Task<ResponseModel<double>> Buy(double volume)
         {
             var order = new MarketOrderRequest
             {
@@ -85,24 +70,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Volume = volume
             };
 
-            var assetPair = await _assetServiceDecorator.GetEnabledAssetPairAsync(order.AssetPairId);
-            //Validata asset pair if needed
-
-            var baseAsset = await _assetServiceDecorator.GetEnabledAssetAsync(assetPair.BaseAssetId);
-            var quotingAsset = await _assetServiceDecorator.GetEnabledAssetAsync(assetPair.QuotingAssetId);
-            //Validate Asset if needed
-
-            var straight = order.Asset == baseAsset.Id || order.Asset == baseAsset.Name;
-            var orderVolume = order.Volume.TruncateDecimalPlaces(straight ? baseAsset.Accuracy : quotingAsset.Accuracy);
-            var minVolume = straight ? assetPair.MinVolume : assetPair.MinInvertedVolume;
-            //Validate volume if needed
-
             var response = await _matchingEngineAdapter.HandleMarketOrderAsync(
                 clientId: _walletId,
                 assetPairId: order.AssetPairId,
                 orderAction: order.OrderAction,
-                volume: orderVolume,
-                straight: straight,
+                volume: volume,
+                straight: _straight,
                 reservedLimitVolume: null);
 
             return response;

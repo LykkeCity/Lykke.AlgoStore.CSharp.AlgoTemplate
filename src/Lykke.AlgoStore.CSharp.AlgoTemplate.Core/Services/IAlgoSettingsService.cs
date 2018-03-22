@@ -13,6 +13,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         string GetAlgoInstanceWalletId();
         string GetAlgoInstanceAssetPair();
         string GetAlgoInstanceClientId();
+        bool IsAlgoInstanceMarketOrderStraight();
 
         AlgoClientInstanceData GetAlgoInstance();
 

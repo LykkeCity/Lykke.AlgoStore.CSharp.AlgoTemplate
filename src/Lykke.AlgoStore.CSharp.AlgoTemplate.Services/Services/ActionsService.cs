@@ -44,7 +44,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var result = _tradingService.BuyStraight(volume);
+                var result = _tradingService.Buy(volume);
 
                 if (result.Result.Error != null)
                 {
@@ -78,7 +78,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var result = _tradingService.SellStraight(volume);
+                var result = _tradingService.Sell(volume);
 
                 if (result.Result.Error != null)
                 {
