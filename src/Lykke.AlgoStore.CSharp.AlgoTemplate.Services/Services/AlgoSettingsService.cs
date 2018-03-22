@@ -88,6 +88,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPair;
         }
 
+        public bool IsAlgoInstanceMarketOrderStraight()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.IsStraight;
+        }
+
         public string GetAlgoInstanceClientId()
         {
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.ClientId;
