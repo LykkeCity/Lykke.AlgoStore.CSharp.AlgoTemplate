@@ -18,7 +18,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories
             ILog log)
         {
             return new StatisticsRepository(
-                AzureTableStorage<StatisticsEntity>.Create(connectionString, StatisticsRepository.TableName, log));
+                AzureTableStorage<StatisticsEntity>.Create(connectionString, StatisticsRepository.TableName, log),
+                AzureTableStorage<StatisticsSummaryEntity>.Create(connectionString, StatisticsRepository.SummaryTableName, log));
         }
 
         public static AlgoClientInstanceRepository CreateAlgoClientInstanceRepository(IReloadingManager<string> connectionString,

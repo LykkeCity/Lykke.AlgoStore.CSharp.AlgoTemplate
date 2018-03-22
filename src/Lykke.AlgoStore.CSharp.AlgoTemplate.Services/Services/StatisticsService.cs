@@ -51,29 +51,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = _algoSettings.GetSetting("InstanceId");
         }
 
-        public double GetBoughtAmount()
+        public StatisticsSummary GetSummary()
         {
-            return _statisticsRepository.GetBoughtAmountAsync(_instanceId).Result;
-        }
-
-        public double GetSoldAmount()
-        {
-            return _statisticsRepository.GetSoldAmountAsync(_instanceId).Result;
-        }
-
-        public double GetBoughtQuantity()
-        {
-            return _statisticsRepository.GetBoughtQuantityAsync(_instanceId).Result;
-        }
-
-        public double GetSoldQuantity()
-        {
-            return _statisticsRepository.GetSoldQuantityAsync(_instanceId).Result;
-        }
-
-        public int GetNumberOfRunningsForAnAlgo()
-        {
-            return _statisticsRepository.GetNumberOfRunnings(_instanceId).Result;
+            throw new NotImplementedException();
         }
     }
 }

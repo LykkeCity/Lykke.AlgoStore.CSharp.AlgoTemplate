@@ -37,10 +37,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForMember(dest => dest.ETag, opt => opt.Ignore());
 
             CreateMap<Statistics, StatisticsEntity>()
+                .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => $"{src.InstanceId}_{src.InstanceType}"))
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore())
+                .ForMember(dest => dest.AlgoInstanceTypeValue, opt => opt.Ignore());
+
+            CreateMap<Statistics, StatisticsSummaryEntity>()
+                .ForMember(dest => dest.RowKey, opt => opt.MapFrom(src => $"{src.InstanceId}_{src.InstanceType}"))
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore())
+                .ForMember(dest => dest.AlgoInstanceTypeValue, opt => opt.Ignore())
+                .ForMember(dest => dest.TotalNumberOfTrades, opt => opt.Ignore());
+
+            CreateMap<StatisticsSummary, StatisticsSummaryEntity>()
                 .ForMember(dest => dest.RowKey, opt => opt.Ignore())
                 .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
                 .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
-                .ForMember(dest => dest.ETag, opt => opt.Ignore());
+                .ForMember(dest => dest.ETag, opt => opt.Ignore())
+                .ForMember(dest => dest.AlgoInstanceTypeValue, opt => opt.Ignore());
         }
     }
 }
