@@ -17,10 +17,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         private readonly INoSQLTableStorage<StatisticsSummaryEntity> _tableSummary;
 
         public static readonly string TableName = "AlgoStatistics";
-        public static readonly string SummaryTableName = "AlgoStatisticsSummary";
 
         public StatisticsRepository(
-            INoSQLTableStorage<StatisticsEntity> table, 
+            INoSQLTableStorage<StatisticsEntity> table,
             INoSQLTableStorage<StatisticsSummaryEntity> tableSummary)
         {
             _table = table;
@@ -50,7 +49,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
                 entitySummary.RowKey = GenerateSummaryRowKey();
             }
 
-            entitySummary.TotalNumberOfTrades++;
+            if (data.IsBuy.HasValue)
+                entitySummary.TotalNumberOfTrades++;
+
+            if (data.IsStarted.HasValue && data.IsStarted.Value)
+                entitySummary.TotalNumberOfStarts++;
 
             var batch = new TableBatchOperation();
             batch.Insert(entity);

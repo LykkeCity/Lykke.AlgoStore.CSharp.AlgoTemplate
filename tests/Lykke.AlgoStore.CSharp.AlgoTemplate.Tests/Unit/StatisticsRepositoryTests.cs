@@ -176,6 +176,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void Statistics_AlgoStart_Test()
         {
             var instanceId = SettingsMock.GetInstanceId();
+            var instanceType = AlgoInstanceType.Test;
             var repo = Given_Statistics_Repository();
 
             _entity = new Statistics
@@ -187,6 +188,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             };
 
             When_Invoke_CreateSingleEntity(repo, _entity);
+
+            var summary = When_Invoke_GetSummary(repo, instanceId, instanceType);
+
+            Then_StatisticsSummary_ShouldHave_TotalNumberOfStarts_AndBeValid(instanceId, summary, instanceType);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -234,6 +239,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Then_StatisticsSummary_ShouldBeValid(instanceId, summary, instanceType);
         }
 
+        private static void Then_StatisticsSummary_ShouldHave_TotalNumberOfStarts_AndBeValid(
+            string instanceId, 
+            StatisticsSummary summary, 
+            AlgoInstanceType instanceType)
+        {
+            Assert.AreEqual(instanceId, summary.InstanceId);
+            Assert.AreEqual(instanceType, summary.InstanceType);
+            Assert.AreEqual(0, summary.TotalNumberOfTrades);
+            Assert.AreEqual(1, summary.TotalNumberOfStarts);
+        }
+
         private void When_Invoke_CreateMultipleEntitiesForSummary(StatisticsRepository repository)
         {
             if (_entitiesForStatisticsSummary?.Count > 0)
@@ -252,6 +268,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(instanceId, summary.InstanceId);
             Assert.AreEqual(instanceType, summary.InstanceType);
             Assert.AreEqual(3, summary.TotalNumberOfTrades);
+            Assert.AreEqual(0, summary.TotalNumberOfStarts);
         }
 
         private static StatisticsSummary When_Invoke_GetSummary(

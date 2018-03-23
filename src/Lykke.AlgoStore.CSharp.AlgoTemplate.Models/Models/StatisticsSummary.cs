@@ -11,5 +11,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public AlgoInstanceType InstanceType { get; set; }
 
         public int TotalNumberOfTrades { get; set; }
+
+        public int TotalNumberOfStarts { get; set; }
     }
 }

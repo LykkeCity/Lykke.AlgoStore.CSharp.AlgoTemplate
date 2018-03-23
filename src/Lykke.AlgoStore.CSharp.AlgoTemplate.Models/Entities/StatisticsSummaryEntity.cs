@@ -23,5 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         }
 
         public int TotalNumberOfTrades { get; set; }
+
+        public int TotalNumberOfStarts { get; set; }
     }
 }
