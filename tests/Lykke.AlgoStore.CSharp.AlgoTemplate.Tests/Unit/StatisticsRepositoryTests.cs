@@ -21,6 +21,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private static bool _entitiesToSellSaved;
         private List<Statistics> _entitiesToBuy;
         private static bool _entitiesToBuySaved;
+        private List<Statistics> _entitiesForStatisticsSummary;
+        private static bool _entitiesForStatisticsSummarySaved;
 
         [SetUp]
         public void SetUp()
@@ -33,23 +35,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Mapper.AssertConfigurationIsValid();
         }
 
-        //[TearDown]
-        //public void CleanUp()
-        //{
-        //    var instanceId = SettingsMock.GetInstanceId();
-        //    var repo = Given_Statistics_Repository();
+        [TearDown]
+        public void CleanUp()
+        {
+            var instanceId = SettingsMock.GetInstanceId();
+            var repo = Given_Statistics_Repository();
 
-        //    if (_entitySaved)
-        //    {
-        //        repo.DeleteAsync(_entity.InstanceId, AlgoInstanceType.Test, _entity.Id).Wait();
-        //        _entitySaved = false;
-        //    }
+            if (_entitySaved)
+            {
+                repo.DeleteAsync(_entity.InstanceId, AlgoInstanceType.Test, _entity.Id).Wait();
+                _entitySaved = false;
+            }
 
-        //    _entity = null;
+            _entity = null;
 
-        //    if (_entitiesToBuySaved || _entitiesToSellSaved)
-        //        repo.DeleteAllAsync(instanceId, AlgoInstanceType.Test).Wait(); //This will test deletion by partition key ;)
-        //}
+            if (_entitiesToBuySaved || _entitiesToSellSaved)
+                repo.DeleteAllAsync(instanceId, AlgoInstanceType.Test).Wait(); //This will test deletion by partition key ;)
+
+            if (_entitiesForStatisticsSummarySaved)
+                repo.DeleteAllAsync(instanceId, AlgoInstanceType.Demo).Wait();
+        }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         public void Statistics_CreateBuy_Test()
@@ -88,7 +93,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void Statistics_CreateMultipleBuy_GetStatistics_Test()
+        public void Statistics_CreateMultipleBuy_Test()
         {
             var instanceId = SettingsMock.GetInstanceId();
             var repo = Given_Statistics_Repository();
@@ -128,7 +133,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void Statistics_CreateMultipleSell_GetStatistics_Test()
+        public void Statistics_CreateMultipleSell_Test()
         {
             var instanceId = SettingsMock.GetInstanceId();
             var repo = Given_Statistics_Repository();
@@ -182,6 +187,79 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             };
 
             When_Invoke_CreateSingleEntity(repo, _entity);
+        }
+
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void Statistics_GetSummary_Test()
+        {
+            var instanceId = SettingsMock.GetInstanceId();
+            var instanceType = AlgoInstanceType.Demo;
+            var repo = Given_Statistics_Repository();
+
+            _entitiesForStatisticsSummary = new List<Statistics>
+            {
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = Guid.NewGuid().ToString(),
+                    IsBuy = false,
+                    Price = 1,
+                    Amount = 1,
+                    InstanceType = instanceType
+                },
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = Guid.NewGuid().ToString(),
+                    IsBuy = false,
+                    Price = 2,
+                    Amount = 2,
+                    InstanceType = instanceType
+                },
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = Guid.NewGuid().ToString(),
+                    IsBuy = false,
+                    Price = 3,
+                    Amount = 3,
+                    InstanceType = instanceType
+                }
+            };
+
+            When_Invoke_CreateMultipleEntitiesForSummary(repo);
+
+            var summary = When_Invoke_GetSummary(repo, instanceId, instanceType);
+
+            Then_StatisticsSummary_ShouldBeValid(instanceId, summary, instanceType);
+        }
+
+        private void When_Invoke_CreateMultipleEntitiesForSummary(StatisticsRepository repository)
+        {
+            if (_entitiesForStatisticsSummary?.Count > 0)
+            {
+                foreach (var entity in _entitiesForStatisticsSummary)
+                {
+                    repository.CreateAsync(entity).Wait();
+                }
+                _entitiesForStatisticsSummarySaved = true;
+            }
+        }
+
+        private static void Then_StatisticsSummary_ShouldBeValid(string instanceId, StatisticsSummary summary,
+            AlgoInstanceType instanceType)
+        {
+            Assert.AreEqual(instanceId, summary.InstanceId);
+            Assert.AreEqual(instanceType, summary.InstanceType);
+            Assert.AreEqual(3, summary.TotalNumberOfTrades);
+        }
+
+        private static StatisticsSummary When_Invoke_GetSummary(
+            StatisticsRepository repository, 
+            string instanceId,
+            AlgoInstanceType instanceType)
+        {
+            return repository.GetSummary(instanceId, instanceType).Result;
         }
 
         private void When_Invoke_CreateMultipleBuyEntities(StatisticsRepository repository)

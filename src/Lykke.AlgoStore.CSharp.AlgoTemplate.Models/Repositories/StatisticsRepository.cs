@@ -78,5 +78,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             await _table.DeleteAsync(dataToDelete);
         }
+
+        public async Task<StatisticsSummary> GetSummary(string instanceId, AlgoInstanceType instanceType)
+        {
+            var partitionKey = GeneratePartitionKey(instanceId, instanceType);
+            var rowKey = GenerateSummaryRowKey();
+
+            var result = await _tableSummary.GetDataAsync(partitionKey, rowKey);
+
+            return AutoMapper.Mapper.Map<StatisticsSummary>(result);
+        }
     }
 }
