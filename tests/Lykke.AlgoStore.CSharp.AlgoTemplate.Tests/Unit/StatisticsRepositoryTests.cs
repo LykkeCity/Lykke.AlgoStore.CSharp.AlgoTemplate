@@ -207,6 +207,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 {
                     InstanceId = instanceId,
                     Id = Guid.NewGuid().ToString(),
+                    IsStarted = true,
+                    InstanceType = instanceType
+                },
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = Guid.NewGuid().ToString(),
+                    IsStarted = true,
+                    InstanceType = instanceType
+                },
+                new Statistics
+                {
+                    InstanceId = instanceId,
+                    Id = Guid.NewGuid().ToString(),
                     IsBuy = false,
                     Price = 1,
                     Amount = 1,
@@ -268,7 +282,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(instanceId, summary.InstanceId);
             Assert.AreEqual(instanceType, summary.InstanceType);
             Assert.AreEqual(3, summary.TotalNumberOfTrades);
-            Assert.AreEqual(0, summary.TotalNumberOfStarts);
+            Assert.AreEqual(2, summary.TotalNumberOfStarts);
         }
 
         private static StatisticsSummary When_Invoke_GetSummary(
