@@ -8,8 +8,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
     {
         public string InstanceId { get; set; }
 
-        public string Id { get; set; }
-
         public string AlgoInstanceTypeValue { get; set; }
 
         public AlgoInstanceType InstanceType

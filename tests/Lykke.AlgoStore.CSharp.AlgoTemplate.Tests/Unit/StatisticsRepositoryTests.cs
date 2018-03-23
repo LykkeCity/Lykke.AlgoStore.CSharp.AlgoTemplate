@@ -41,14 +41,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var instanceId = SettingsMock.GetInstanceId();
             var repo = Given_Statistics_Repository();
 
-            if (_entitySaved)
-            {
-                repo.DeleteAsync(_entity.InstanceId, AlgoInstanceType.Test, _entity.Id).Wait();
-                _entitySaved = false;
-            }
-
-            _entity = null;
-
             if (_entitiesToBuySaved || _entitiesToSellSaved)
                 repo.DeleteAllAsync(instanceId, AlgoInstanceType.Test).Wait(); //This will test deletion by partition key ;)
 
@@ -63,7 +55,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             {
                 InstanceId = SettingsMock.GetInstanceId(),
                 Amount = 123.45,
-                Id = Guid.NewGuid().ToString(),
                 IsBuy = true,
                 Price = 123.45,
                 InstanceType = AlgoInstanceType.Test
@@ -81,7 +72,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             {
                 InstanceId = SettingsMock.GetInstanceId(),
                 Amount = 123.45,
-                Id = Guid.NewGuid().ToString(),
                 IsBuy = false,
                 Price = 123.45,
                 InstanceType = AlgoInstanceType.Test
@@ -103,7 +93,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = true,
                     Price = 1,
                     Amount = 1,
@@ -112,7 +102,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = true,
                     Price = 2,
                     Amount = 2,
@@ -121,7 +111,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = true,
                     Price = 3,
                     Amount = 3,
@@ -143,7 +133,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = false,
                     Price = 1,
                     Amount = 1,
@@ -152,7 +142,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = false,
                     Price = 2,
                     Amount = 2,
@@ -161,7 +151,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = false,
                     Price = 3,
                     Amount = 3,
@@ -182,7 +172,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                Id = Guid.NewGuid().ToString(),
+
                 IsStarted = true,
                 InstanceType = AlgoInstanceType.Test
             };
@@ -206,21 +196,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
                     IsStarted = true,
                     InstanceType = instanceType
                 },
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsStarted = true,
                     InstanceType = instanceType
                 },
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = false,
                     Price = 1,
                     Amount = 1,
@@ -229,7 +218,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = false,
                     Price = 2,
                     Amount = 2,
@@ -238,7 +227,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 new Statistics
                 {
                     InstanceId = instanceId,
-                    Id = Guid.NewGuid().ToString(),
+
                     IsBuy = false,
                     Price = 3,
                     Amount = 3,
@@ -254,8 +243,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         private static void Then_StatisticsSummary_ShouldHave_TotalNumberOfStarts_AndBeValid(
-            string instanceId, 
-            StatisticsSummary summary, 
+            string instanceId,
+            StatisticsSummary summary,
             AlgoInstanceType instanceType)
         {
             Assert.AreEqual(instanceId, summary.InstanceId);
@@ -286,7 +275,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         private static StatisticsSummary When_Invoke_GetSummary(
-            StatisticsRepository repository, 
+            StatisticsRepository repository,
             string instanceId,
             AlgoInstanceType instanceType)
         {
