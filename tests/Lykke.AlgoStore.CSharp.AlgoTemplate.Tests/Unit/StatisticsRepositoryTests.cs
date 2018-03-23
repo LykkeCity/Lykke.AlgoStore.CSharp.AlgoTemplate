@@ -71,7 +71,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var repo = Given_Statistics_Repository();
             When_Invoke_CreateSingleEntity(repo, _entity);
-            Then_Data_ShouldBe_Saved(repo, _entity);
+            Then_Data_ShouldBe_Saved(_entity);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -89,7 +89,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var repo = Given_Statistics_Repository();
             When_Invoke_CreateSingleEntity(repo, _entity);
-            Then_Data_ShouldBe_Saved(repo, _entity);
+            Then_Data_ShouldBe_Saved(_entity);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -286,7 +286,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             }
         }
 
-        private static void Then_Data_ShouldBe_Saved(StatisticsRepository repository, Statistics entity)
+        private static void Then_Data_ShouldBe_Saved(Statistics entity)
         {
             Assert.NotNull(entity);
         }

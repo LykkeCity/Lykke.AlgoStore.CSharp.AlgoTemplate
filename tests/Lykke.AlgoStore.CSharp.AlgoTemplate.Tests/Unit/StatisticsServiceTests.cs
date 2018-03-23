@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
@@ -93,7 +92,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Then_Exception_ShouldNotBe_Null(exception);
         }
 
-        private void When_Invoke_OnStart(IStatisticsService service, out Exception exception)
+        private static void When_Invoke_OnStart(IStatisticsService service, out Exception exception)
         {
             exception = null;
             try
@@ -109,16 +108,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private static void Then_Exception_ShouldNotBe_Null(Exception exception)
         {
             Assert.NotNull(exception);
-        }
-
-        private static void Then_Data_ShouldNotBe_Zero(double data)
-        {
-            Assert.Greater(data, 0);
-        }
-
-        private static void Then_Data_ShouldBe_Zero(double data)
-        {
-            Assert.AreEqual(data, 0);
         }
 
         private static void Then_Exception_ShouldBe_Null(Exception exception)
