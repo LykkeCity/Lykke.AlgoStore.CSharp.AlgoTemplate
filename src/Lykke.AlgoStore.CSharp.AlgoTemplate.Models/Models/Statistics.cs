@@ -1,9 +1,11 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+﻿using System.ComponentModel.DataAnnotations;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
     public class Statistics
     {
+        [Required]
         public string InstanceId { get; set; }
 
         public string Id { get; set; }
@@ -16,6 +18,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         public bool? IsStarted { get; set; }
 
+        [Required]
         public AlgoInstanceType InstanceType { get; set; }
     }
 }
