@@ -6,6 +6,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -23,10 +24,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _instanceId;
         private string _algoId;
         private string _tradedAsset;
+        private string _instanceType;
 
         public string GetAlgoId() => _algoId;
         public string GetInstanceId() => _instanceId;
         public string GetTradedAsset() => _tradedAsset;
+
+        public AlgoInstanceType GetInstanceType()
+        {
+            if(!Enum.TryParse(_instanceType, out AlgoInstanceType instanceType))
+                throw new ArgumentException("InstanceType is not of valid type");
+
+            return instanceType;
+        }
 
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
         {
@@ -46,6 +56,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = GetSetting("InstanceId");
             _algoId = GetSetting("AlgoId");
             _tradedAsset = GetAlgoInstanceTradedAsset();
+            _instanceType = GetSetting("InstanceType");
 
             _isAlive = true;
         }

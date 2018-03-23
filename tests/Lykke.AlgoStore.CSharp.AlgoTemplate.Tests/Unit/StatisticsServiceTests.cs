@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
@@ -16,6 +17,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     public class StatisticsServiceTests
     {
         private string _instanceId;
+        private AlgoInstanceType _instanceType;
 
         [SetUp]
         public void SetUp()
@@ -28,6 +30,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Mapper.AssertConfigurationIsValid();
 
             _instanceId = SettingsMock.GetInstanceId();
+            _instanceType = SettingsMock.GetInstanceType();
         }
 
         [Test]
@@ -48,6 +51,59 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             When_Invoke_Create(service, out var exception);
 
             Then_Exception_ShouldNotBe_Null(exception);
+        }
+
+        [Test]
+        public void GetSummary_Returns_Data()
+        {
+            var repo = Given_Correct_StatisticsRepositoryMock();
+            var service = Given_StatisticsService(repo);
+            When_Invoke_GetSummary(service, out var exception);
+
+            Then_Exception_ShouldBe_Null(exception);
+        }
+
+        [Test]
+        public void GetSummary_Throws_Exception()
+        {
+            var repo = Given_Error_StatisticsRepositoryMock();
+            var service = Given_StatisticsService(repo);
+            When_Invoke_GetSummary(service, out var exception);
+
+            Then_Exception_ShouldNotBe_Null(exception);
+        }
+
+        [Test]
+        public void OnStart_Returns_Data()
+        {
+            var repo = Given_Correct_StatisticsRepositoryMock();
+            var service = Given_StatisticsService(repo);
+            When_Invoke_OnStart(service, out var exception);
+
+            Then_Exception_ShouldBe_Null(exception);
+        }
+
+        [Test]
+        public void OnStart_Throws_Exception()
+        {
+            var repo = Given_Error_StatisticsRepositoryMock();
+            var service = Given_StatisticsService(repo);
+            When_Invoke_OnStart(service, out var exception);
+
+            Then_Exception_ShouldNotBe_Null(exception);
+        }
+
+        private void When_Invoke_OnStart(IStatisticsService service, out Exception exception)
+        {
+            exception = null;
+            try
+            {
+                service.OnAlgoStarted();
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
         }
 
         private static void Then_Exception_ShouldNotBe_Null(Exception exception)
@@ -74,8 +130,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var statisticsService = new StatisticsService(repo, SettingsMock.InitSettingsService());
 
-            statisticsService.OnAlgoStarted();
-
             return statisticsService;
         }
 
@@ -84,15 +138,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var result = new Mock<IStatisticsRepository>();
 
             result.Setup(repo => repo.CreateAsync(new Statistics()));
+            result.Setup(repo => repo.GetSummary(_instanceId, _instanceType));
 
             return result.Object;
         }
 
-        private IStatisticsRepository Given_Error_StatisticsRepositoryMock()
+        private static IStatisticsRepository Given_Error_StatisticsRepositoryMock()
         {
             var result = new Mock<IStatisticsRepository>();
 
             result.Setup(repo => repo.CreateAsync(It.IsAny<Statistics>())).ThrowsAsync(new Exception("CreateAsync"));
+            result.Setup(repo => repo.GetSummary(It.IsAny<string>(), It.IsAny<AlgoInstanceType>())).ThrowsAsync(new Exception("GetSummary"));
 
             return result.Object;
         }
@@ -103,6 +159,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             try
             {
                 service.OnAction(true, 1, 1);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+        }
+
+        private static void When_Invoke_GetSummary(IStatisticsService service, out Exception exception)
+        {
+            exception = null;
+            try
+            {
+                service.GetSummary();
             }
             catch (Exception ex)
             {

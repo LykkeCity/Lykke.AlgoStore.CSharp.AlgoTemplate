@@ -1,6 +1,7 @@
 ﻿using System;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 
@@ -14,6 +15,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly IAlgoSettingsService _algoSettings;
         private string _instanceId;
+        private AlgoInstanceType _instanceType;
 
         public StatisticsService(IStatisticsRepository statisticsRepository, IAlgoSettingsService algoSettings)
         {
@@ -38,7 +40,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 InstanceId = _instanceId,
                 Amount = volume,
                 IsBuy = isBuy,
-                Price = price
+                Price = price,
+                InstanceType = _instanceType
             };
 
             _statisticsRepository.CreateAsync(data).Wait();
@@ -46,14 +49,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnAlgoStarted()
         {
-            //REMARK: No need to save any statistics here (for now)
+            _instanceId = _algoSettings.GetInstanceId();
+            _instanceType = _algoSettings.GetInstanceType();
 
-            _instanceId = _algoSettings.GetSetting("InstanceId");
+            var data = new Statistics
+            {
+                InstanceId = _instanceId,
+                InstanceType = _instanceType,
+                IsStarted = true
+            };
+
+            _statisticsRepository.CreateAsync(data).Wait();
         }
 
         public StatisticsSummary GetSummary()
         {
-            throw new NotImplementedException();
+            return _statisticsRepository.GetSummary(_instanceId, _instanceType).Result;
         }
     }
 }
