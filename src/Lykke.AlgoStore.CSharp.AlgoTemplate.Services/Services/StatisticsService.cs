@@ -14,13 +14,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly IAlgoSettingsService _algoSettings;
-        private string _instanceId;
-        private AlgoInstanceType _instanceType;
+        private readonly string _instanceId;
+        private readonly AlgoInstanceType _instanceType;
 
         public StatisticsService(IStatisticsRepository statisticsRepository, IAlgoSettingsService algoSettings)
         {
             _statisticsRepository = statisticsRepository;
             _algoSettings = algoSettings;
+
+            _instanceId = _algoSettings.GetInstanceId();
+            _instanceType = _algoSettings.GetInstanceType();
         }
 
         public IAlgoQuote GetQuote()
@@ -47,16 +50,39 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _statisticsRepository.CreateAsync(data).Wait();
         }
 
-        public void OnAlgoStarted()
+        public void OnAlgoStarted(decimal initialWalletBalance, decimal assetOneBalance, decimal assetTwoBalance)
         {
-            _instanceId = _algoSettings.GetInstanceId();
-            _instanceType = _algoSettings.GetInstanceType();
+            var summaryData = new StatisticsSummary
+            {
+                InstanceId = _instanceId,
+                TotalNumberOfTrades = 0,
+                InstanceType = _instanceType,
+                TotalNumberOfStarts = 0,
+                AssetOneBalance = assetOneBalance, 
+                AssetTwoBalance = assetTwoBalance,
+                InitialWalletBalance = initialWalletBalance,
+                LastWalletBalance = initialWalletBalance
+            };
+
+            _statisticsRepository.CreateSummary(summaryData).Wait();
 
             var data = new Statistics
             {
                 InstanceId = _instanceId,
                 InstanceType = _instanceType,
                 IsStarted = true
+            };
+
+            _statisticsRepository.CreateAsync(data).Wait();
+        }
+
+        public void OnAlgoStopped()
+        {
+            var data = new Statistics
+            {
+                InstanceId = _instanceId,
+                InstanceType = _instanceType,
+                IsStarted = false
             };
 
             _statisticsRepository.CreateAsync(data).Wait();

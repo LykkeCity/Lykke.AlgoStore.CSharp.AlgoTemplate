@@ -11,5 +11,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         Task DeleteAsync(string instanceId, AlgoInstanceType instanceType, string id);
         Task DeleteAllAsync(string instanceId, AlgoInstanceType instanceType);
         Task<StatisticsSummary> GetSummary(string instanceId, AlgoInstanceType instanceType);
+        Task CreateSummary(StatisticsSummary data);
     }
 }

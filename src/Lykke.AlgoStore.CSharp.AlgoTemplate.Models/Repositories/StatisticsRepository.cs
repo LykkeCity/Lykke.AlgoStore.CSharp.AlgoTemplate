@@ -43,11 +43,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
                 GenerateSummaryRowKey());
 
             if (entitySummary == null)
-            {
-                entitySummary = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(data);
-                entitySummary.PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType);
-                entitySummary.RowKey = GenerateSummaryRowKey();
-            }
+                throw new ArgumentException("Statistics summary row not found");
 
             if (data.IsBuy.HasValue)
                 entitySummary.TotalNumberOfTrades++;
@@ -90,6 +86,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var result = await _tableSummary.GetDataAsync(partitionKey, rowKey);
 
             return AutoMapper.Mapper.Map<StatisticsSummary>(result);
+        }
+
+        public async Task CreateSummary(StatisticsSummary data)
+        {
+            var entity = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(data);
+            entity.PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType);
+            entity.RowKey = GenerateSummaryRowKey();
+
+            await _tableSummary.InsertAsync(entity);
         }
     }
 }

@@ -16,14 +16,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     public class StatisticsRepositoryTests
     {
         private Statistics _entity;
-        private static bool _entitySaved;
-        private List<Statistics> _entitiesToSell;
-        private static bool _entitiesToSellSaved;
-        private List<Statistics> _entitiesToBuy;
-        private static bool _entitiesToBuySaved;
-        private List<Statistics> _entitiesForStatisticsSummary;
-        private static bool _entitiesForStatisticsSummarySaved;
-
+        private StatisticsSummary _entitySummary;
+        
         [SetUp]
         public void SetUp()
         {
@@ -39,242 +33,230 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CleanUp()
         {
             var instanceId = SettingsMock.GetInstanceId();
-            var repo = Given_Statistics_Repository();
+            var instanceType = AlgoInstanceType.Test;
 
-            if (_entitiesToBuySaved || _entitiesToSellSaved)
-                repo.DeleteAllAsync(instanceId, AlgoInstanceType.Test).Wait(); //This will test deletion by partition key ;)
+            var repo = GivenStatisticsRepository();
 
-            if (_entitiesForStatisticsSummarySaved)
-                repo.DeleteAllAsync(instanceId, AlgoInstanceType.Demo).Wait();
+            repo.DeleteAllAsync(instanceId, instanceType).Wait(); //This will test deletion by partition key ;)
+
+            instanceType = AlgoInstanceType.Demo;
+
+            repo.DeleteAllAsync(instanceId, instanceType).Wait();
         }
 
-        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void Statistics_CreateBuy_Test()
-        {
-            _entity = new Statistics
-            {
-                InstanceId = SettingsMock.GetInstanceId(),
-                Amount = 123.45,
-                IsBuy = true,
-                Price = 123.45,
-                InstanceType = AlgoInstanceType.Test
-            };
-
-            var repo = Given_Statistics_Repository();
-            When_Invoke_CreateSingleEntity(repo, _entity);
-            Then_Data_ShouldBe_Saved(_entity);
-        }
-
-        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void Statistics_CreateSell_Test()
-        {
-            _entity = new Statistics
-            {
-                InstanceId = SettingsMock.GetInstanceId(),
-                Amount = 123.45,
-                IsBuy = false,
-                Price = 123.45,
-                InstanceType = AlgoInstanceType.Test
-            };
-
-            var repo = Given_Statistics_Repository();
-            When_Invoke_CreateSingleEntity(repo, _entity);
-            Then_Data_ShouldBe_Saved(_entity);
-        }
-
-        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void Statistics_CreateMultipleBuy_Test()
-        {
-            var instanceId = SettingsMock.GetInstanceId();
-            var repo = Given_Statistics_Repository();
-
-            _entitiesToBuy = new List<Statistics>
-            {
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = true,
-                    Price = 1,
-                    Amount = 1,
-                    InstanceType = AlgoInstanceType.Test
-                },
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = true,
-                    Price = 2,
-                    Amount = 2,
-                    InstanceType = AlgoInstanceType.Test
-                },
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = true,
-                    Price = 3,
-                    Amount = 3,
-                    InstanceType = AlgoInstanceType.Test
-                }
-            };
-
-            When_Invoke_CreateMultipleBuyEntities(repo);
-        }
-
-        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void Statistics_CreateMultipleSell_Test()
-        {
-            var instanceId = SettingsMock.GetInstanceId();
-            var repo = Given_Statistics_Repository();
-
-            _entitiesToSell = new List<Statistics>
-            {
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = false,
-                    Price = 1,
-                    Amount = 1,
-                    InstanceType = AlgoInstanceType.Test
-                },
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = false,
-                    Price = 2,
-                    Amount = 2,
-                    InstanceType = AlgoInstanceType.Test
-                },
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = false,
-                    Price = 3,
-                    Amount = 3,
-                    InstanceType = AlgoInstanceType.Test
-                }
-            };
-
-            When_Invoke_CreateMultipleSellEntities(repo);
-        }
-
-        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void Statistics_AlgoStart_Test()
+        [Test]
+        public void BuyWithoutInitialSummaryThrowsException()
         {
             var instanceId = SettingsMock.GetInstanceId();
             var instanceType = AlgoInstanceType.Test;
-            var repo = Given_Statistics_Repository();
+
+            var repo = GivenStatisticsRepository();
 
             _entity = new Statistics
             {
                 InstanceId = instanceId,
+                Amount = 123.45,
+                IsBuy = true,
+                Price = 123.45,
+                InstanceType = instanceType
+            };
 
+            Assert.Throws<AggregateException>(() => WhenInvokeCreateEntity(repo, _entity));
+        }
+
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void InitializeSummaryWillReturnValidSummary()
+        {
+            var instanceId = SettingsMock.GetInstanceId();
+            var instanceType = AlgoInstanceType.Test;
+
+            var repo = GivenStatisticsRepository();
+
+            _entitySummary = new StatisticsSummary
+            {
+                InstanceId = instanceId,
+                InstanceType = instanceType,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0,
+                InitialWalletBalance = 0,
+                AssetTwoBalance = 0,
+                AssetOneBalance = 0
+            };
+
+            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+
+            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+
+            Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
+            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
+            Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
+            Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
+            Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
+            Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
+        }
+
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void AlgoStartedWillReturnValidSummary()
+        {
+            var instanceId = SettingsMock.GetInstanceId();
+            var instanceType = AlgoInstanceType.Test;
+
+            var repo = GivenStatisticsRepository();
+
+            _entitySummary = new StatisticsSummary
+            {
+                InstanceId = instanceId,
+                InstanceType = instanceType,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0,
+                InitialWalletBalance = 0,
+                AssetTwoBalance = 0,
+                AssetOneBalance = 0
+            };
+
+            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
                 IsStarted = true,
                 InstanceType = AlgoInstanceType.Test
             };
 
-            When_Invoke_CreateSingleEntity(repo, _entity);
+            WhenInvokeCreateEntity(repo, _entity);
 
-            var summary = When_Invoke_GetSummary(repo, instanceId, instanceType);
+            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
 
-            Then_StatisticsSummary_ShouldHave_TotalNumberOfStarts_AndBeValid(instanceId, summary, instanceType);
+            Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
+            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
+            Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
+            Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
+            Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
+            Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void Statistics_GetSummary_Test()
+        public void AlgoStartedWithOneBuyWillReturnValidSummary()
         {
             var instanceId = SettingsMock.GetInstanceId();
-            var instanceType = AlgoInstanceType.Demo;
-            var repo = Given_Statistics_Repository();
+            var instanceType = AlgoInstanceType.Test;
 
-            _entitiesForStatisticsSummary = new List<Statistics>
+            var repo = GivenStatisticsRepository();
+
+            _entitySummary = new StatisticsSummary
             {
-                new Statistics
-                {
-                    InstanceId = instanceId,
-                    IsStarted = true,
-                    InstanceType = instanceType
-                },
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsStarted = true,
-                    InstanceType = instanceType
-                },
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = false,
-                    Price = 1,
-                    Amount = 1,
-                    InstanceType = instanceType
-                },
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = false,
-                    Price = 2,
-                    Amount = 2,
-                    InstanceType = instanceType
-                },
-                new Statistics
-                {
-                    InstanceId = instanceId,
-
-                    IsBuy = false,
-                    Price = 3,
-                    Amount = 3,
-                    InstanceType = instanceType
-                }
+                InstanceId = instanceId,
+                InstanceType = instanceType,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0,
+                InitialWalletBalance = 10,
+                AssetTwoBalance = 10,
+                AssetOneBalance = 10
             };
 
-            When_Invoke_CreateMultipleEntitiesForSummary(repo);
+            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
 
-            var summary = When_Invoke_GetSummary(repo, instanceId, instanceType);
-
-            Then_StatisticsSummary_ShouldBeValid(instanceId, summary, instanceType);
-        }
-
-        private static void Then_StatisticsSummary_ShouldHave_TotalNumberOfStarts_AndBeValid(
-            string instanceId,
-            StatisticsSummary summary,
-            AlgoInstanceType instanceType)
-        {
-            Assert.AreEqual(instanceId, summary.InstanceId);
-            Assert.AreEqual(instanceType, summary.InstanceType);
-            Assert.AreEqual(0, summary.TotalNumberOfTrades);
-            Assert.AreEqual(1, summary.TotalNumberOfStarts);
-        }
-
-        private void When_Invoke_CreateMultipleEntitiesForSummary(StatisticsRepository repository)
-        {
-            if (_entitiesForStatisticsSummary?.Count > 0)
+            _entity = new Statistics
             {
-                foreach (var entity in _entitiesForStatisticsSummary)
-                {
-                    repository.CreateAsync(entity).Wait();
-                }
-                _entitiesForStatisticsSummarySaved = true;
-            }
+                InstanceId = instanceId,
+                IsStarted = true,
+                InstanceType = AlgoInstanceType.Test
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                Amount = 1,
+                IsBuy = true,
+                Price = 1,
+                InstanceType = instanceType
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+
+            Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
+            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
+            Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
+            Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 1, summary.TotalNumberOfTrades);
+
+            //REMARK: Change lines below as soon as new math is done
+            //Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
+            //Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
+            //Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            //Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
+            
         }
 
-        private static void Then_StatisticsSummary_ShouldBeValid(string instanceId, StatisticsSummary summary,
-            AlgoInstanceType instanceType)
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void AlgoStartedWithOneSellWillReturnValidSummary()
         {
-            Assert.AreEqual(instanceId, summary.InstanceId);
-            Assert.AreEqual(instanceType, summary.InstanceType);
-            Assert.AreEqual(3, summary.TotalNumberOfTrades);
-            Assert.AreEqual(2, summary.TotalNumberOfStarts);
+            var instanceId = SettingsMock.GetInstanceId();
+            var instanceType = AlgoInstanceType.Test;
+
+            var repo = GivenStatisticsRepository();
+
+            _entitySummary = new StatisticsSummary
+            {
+                InstanceId = instanceId,
+                InstanceType = instanceType,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0,
+                InitialWalletBalance = 10,
+                AssetTwoBalance = 10,
+                AssetOneBalance = 10
+            };
+
+            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                IsStarted = true,
+                InstanceType = AlgoInstanceType.Test
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                Amount = 1,
+                IsBuy = false,
+                Price = 1,
+                InstanceType = instanceType
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+
+            Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
+            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
+            Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
+            Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 1, summary.TotalNumberOfTrades);
+
+            //REMARK: Change lines below as soon as new math is done
+            //Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
+            //Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
+            //Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            //Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
+
         }
 
-        private static StatisticsSummary When_Invoke_GetSummary(
+        private static void WhenInvokeCreateEntity(StatisticsRepository repository, Statistics entity)
+        {
+            repository.CreateAsync(entity).Wait();
+        }
+
+        private static StatisticsSummary WhenInvokeGetSummary(
             StatisticsRepository repository,
             string instanceId,
             AlgoInstanceType instanceType)
@@ -282,42 +264,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             return repository.GetSummary(instanceId, instanceType).Result;
         }
 
-        private void When_Invoke_CreateMultipleBuyEntities(StatisticsRepository repository)
+        private static void WhenInvokeCreateSummaryEntity(StatisticsRepository repository, StatisticsSummary entitySummary)
         {
-            if (_entitiesToBuy?.Count > 0)
-            {
-                foreach (var entity in _entitiesToBuy)
-                {
-                    repository.CreateAsync(entity).Wait();
-                }
-                _entitiesToBuySaved = true;
-            }
+            repository.CreateSummary(entitySummary).Wait();
         }
 
-        private void When_Invoke_CreateMultipleSellEntities(StatisticsRepository repository)
-        {
-            if (_entitiesToSell?.Count > 0)
-            {
-                foreach (var entity in _entitiesToSell)
-                {
-                    repository.CreateAsync(entity).Wait();
-                }
-                _entitiesToSellSaved = true;
-            }
-        }
-
-        private static void Then_Data_ShouldBe_Saved(Statistics entity)
-        {
-            Assert.NotNull(entity);
-        }
-
-        private static void When_Invoke_CreateSingleEntity(StatisticsRepository repository, Statistics entity)
-        {
-            repository.CreateAsync(entity).Wait();
-            _entitySaved = true;
-        }
-
-        private static StatisticsRepository Given_Statistics_Repository()
+        private static StatisticsRepository GivenStatisticsRepository()
         {
             return new StatisticsRepository(
                 AzureTableStorage<StatisticsEntity>.Create(

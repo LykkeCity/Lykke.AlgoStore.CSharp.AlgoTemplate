@@ -89,8 +89,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var quoteGeneration = _quoteProviderService.Initialize();
             _quoteProviderService.Subscribe(_algo.AssetPair, OnQuote);
             _quoteProviderService.Start();
+            
             //Update algo statistics
-            _statisticsService.OnAlgoStarted();
+            //TODO: Get asset one and two balance and get initial wallet balance before statistics is started
+            _statisticsService.OnAlgoStarted(0, 0, 0);
 
             if (algoInstance != null)
             {
@@ -106,7 +108,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             actions.Log("Executing 'StopAsync' event started");
 
-            //TODO: We should reconsider what to do with initialized services in here
+            _statisticsService.OnAlgoStopped();
 
             actions.Log("Executing 'StopAsync' event finished");
 
