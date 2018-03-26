@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
@@ -42,6 +43,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var entities = await _table.GetDataAsync(KeyGenerator.GenerateClientIdPartitionKey(clientId));
 
             var result = entities.Select(entity => entity.ToModel()).ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoIdAndInstanceTypeAsync(string algoId, AlgoInstanceType instanceType)
+        {
+            var entities = await _table.GetDataAsync(KeyGenerator.GenerateAlgoIdAndInstanceTypePartitionKey(algoId, instanceType));
+
+            var result = entities.Select(entity => entity.ToModel());
 
             return result;
         }
@@ -87,10 +97,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var algoIdPartitionKeyEntity = data.ToEntityWithAlgoIdPartitionKey();
             var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
+            var algoIdAndInstanceTypePartitionKeyEntity = data.ToEntityWithAlgoIdAndInstanceTypePartitionKey();
 
             await _table.InsertOrMergeAsync(algoIdPartitionKeyEntity);
             await _table.InsertOrMergeAsync(clientIdPartitionKeyEntity);
             await _table.InsertOrMergeAsync(algoIdAndClientIdPartitionKeyEntity);
+            await _table.InsertOrMergeAsync(algoIdAndInstanceTypePartitionKeyEntity);
         }
 
         public async Task DeleteAlgoInstanceDataAsync(AlgoClientInstanceData data)
@@ -98,10 +110,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var algoIdPartitionKeyEntity = data.ToEntityWithAlgoIdPartitionKey();
             var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
+            var algoIdAndInstanceTypePartitionKeyEntity = data.ToEntityWithAlgoIdAndInstanceTypePartitionKey();
 
             await _table.DeleteAsync(algoIdPartitionKeyEntity);
             await _table.DeleteAsync(clientIdPartitionKeyEntity);
             await _table.DeleteAsync(algoIdAndClientIdPartitionKeyEntity);
+            await _table.DeleteAsync(algoIdAndInstanceTypePartitionKeyEntity);
         }
 
         public async Task<string> GetAlgoInstanceMetadataSetting(string algoId, string instanceId, string key)

@@ -46,6 +46,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             return result;
         }
 
+        public static AlgoClientInstanceEntity ToEntityWithAlgoIdAndInstanceTypePartitionKey(this AlgoClientInstanceData data)
+        {
+            var result = new AlgoClientInstanceEntity();
+
+            if (data == null)
+                return result;
+
+            result = GetEntityResult(data, result);
+            result.PartitionKey = KeyGenerator.GenerateAlgoIdAndInstanceTypePartitionKey(data.AlgoId, data.AlgoInstanceType);
+            return result;
+        }       
+
         public static AlgoClientInstanceEntity ToEntityWithClientIdPartitionKey(this AlgoClientInstanceData data)
         {
             var result = new AlgoClientInstanceEntity();

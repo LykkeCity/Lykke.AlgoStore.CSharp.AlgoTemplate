@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
@@ -8,10 +9,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
     {
         Task<List<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoAsync(string algoId);
         Task<List<AlgoClientInstanceData>> GetAllAlgoInstancesByClientAsync(string clientId);
+        Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoIdAndClienIdAsync(string algoId, string clientId);
+        Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoIdAndInstanceTypeAsync(string algoId, AlgoInstanceType instanceType);
+
         Task<AlgoClientInstanceData> GetAlgoInstanceDataByAlgoIdAsync(string algoId, string instanceId);
         Task<AlgoClientInstanceData> GetAlgoInstanceDataByClientIdAsync(string clientId, string instanceId);
-        Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoIdAndClienIdAsync(string algoId, string clientId);
-
+        
         Task<bool> ExistsAlgoInstanceDataWithAlgoIdAsync(string algoId, string instanceId);
         Task<bool> ExistsAlgoInstanceDataWithClientIdAsync(string clientId, string instanceId);
         Task SaveAlgoInstanceDataAsync(AlgoClientInstanceData data);
