@@ -24,12 +24,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 
         public int TotalNumberOfStarts { get; set; }
 
-        public decimal InitialWalletBalance { get; set; }
+        public double InitialWalletBalance { get; set; }
 
-        public decimal LastWalletBalance { get; set; }
+        public double LastWalletBalance { get; set; }
 
-        public decimal AssetOneBalance { get; set; }
+        public double AssetOneBalance { get; set; }
 
-        public decimal AssetTwoBalance { get; set; }
+        public double AssetTwoBalance { get; set; }
     }
 }

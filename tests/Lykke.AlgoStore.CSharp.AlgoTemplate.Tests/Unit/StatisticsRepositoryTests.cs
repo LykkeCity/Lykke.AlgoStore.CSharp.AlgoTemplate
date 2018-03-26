@@ -153,7 +153,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
-                InitialWalletBalance = 10,
+                InitialWalletBalance = 20,
                 AssetTwoBalance = 10,
                 AssetOneBalance = 10
             };
@@ -172,9 +172,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                Amount = 1,
+                Amount = 2,
                 IsBuy = true,
-                Price = 1,
+                Price = 2,
                 InstanceType = instanceType
             };
 
@@ -186,13 +186,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 1, summary.TotalNumberOfTrades);
+            Assert.AreEqual(12, summary.AssetOneBalance);
+            Assert.AreEqual(6, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            Assert.AreEqual(18, summary.LastWalletBalance);
 
-            //REMARK: Change lines below as soon as new math is done
-            //Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
-            //Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
-            //Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
-            //Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
-            
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -228,9 +226,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                Amount = 1,
+                Amount = 2,
                 IsBuy = false,
-                Price = 1,
+                Price = 2,
                 InstanceType = instanceType
             };
 
@@ -242,12 +240,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 1, summary.TotalNumberOfTrades);
-
-            //REMARK: Change lines below as soon as new math is done
-            //Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
-            //Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
-            //Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
-            //Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
+            Assert.AreEqual(8, summary.AssetOneBalance);
+            Assert.AreEqual(14, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            Assert.AreEqual(22, summary.LastWalletBalance);
 
         }
 

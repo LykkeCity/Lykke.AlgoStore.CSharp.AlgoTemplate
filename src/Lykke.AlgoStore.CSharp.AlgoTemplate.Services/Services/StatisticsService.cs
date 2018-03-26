@@ -50,7 +50,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _statisticsRepository.CreateAsync(data).Wait();
         }
 
-        public void OnAlgoStarted(decimal initialWalletBalance, decimal assetOneBalance, decimal assetTwoBalance)
+        public void OnAlgoStarted(double initialWalletBalance, double assetOneBalance, double assetTwoBalance)
         {
             var summaryData = new StatisticsSummary
             {

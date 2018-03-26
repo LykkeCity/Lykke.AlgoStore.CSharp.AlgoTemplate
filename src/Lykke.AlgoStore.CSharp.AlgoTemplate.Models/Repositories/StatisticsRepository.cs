@@ -45,11 +45,32 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             if (entitySummary == null)
                 throw new ArgumentException("Statistics summary row not found");
 
-            if (data.IsBuy.HasValue)
-                entitySummary.TotalNumberOfTrades++;
-
             if (data.IsStarted.HasValue && data.IsStarted.Value)
                 entitySummary.TotalNumberOfStarts++;
+
+            if (data.IsBuy.HasValue)
+            {
+                entitySummary.TotalNumberOfTrades++;
+
+                if(!entity.Amount.HasValue)
+                    throw new ArgumentException("Amount for statistics not provided");
+
+                if (!entity.Price.HasValue)
+                    throw new ArgumentException("Price for statistics not provided");
+
+                if (data.IsBuy.Value)
+                {
+                    entitySummary.AssetOneBalance = entitySummary.AssetOneBalance + entity.Amount.Value;
+                    entitySummary.AssetTwoBalance = entitySummary.AssetTwoBalance - (entity.Amount.Value * entity.Price.Value);
+                    entitySummary.LastWalletBalance = entitySummary.AssetOneBalance + entitySummary.AssetTwoBalance;
+                }
+                else
+                {
+                    entitySummary.AssetOneBalance = entitySummary.AssetOneBalance - entity.Amount.Value;
+                    entitySummary.AssetTwoBalance = entitySummary.AssetTwoBalance + (entity.Amount.Value * entity.Price.Value);
+                    entitySummary.LastWalletBalance = entitySummary.AssetOneBalance + entitySummary.AssetTwoBalance;
+                }
+            }
 
             var batch = new TableBatchOperation();
             batch.Insert(entity);
