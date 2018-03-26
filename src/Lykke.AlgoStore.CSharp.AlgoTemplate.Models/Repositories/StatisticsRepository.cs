@@ -99,7 +99,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _table.DeleteAsync(dataToDelete);
         }
 
-        public async Task<StatisticsSummary> GetSummary(string instanceId, AlgoInstanceType instanceType)
+        public async Task<StatisticsSummary> GetSummaryAsync(string instanceId, AlgoInstanceType instanceType)
         {
             var partitionKey = GeneratePartitionKey(instanceId, instanceType);
             var rowKey = GenerateSummaryRowKey();
@@ -109,7 +109,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             return AutoMapper.Mapper.Map<StatisticsSummary>(result);
         }
 
-        public async Task CreateSummary(StatisticsSummary data)
+        public async Task CreateSummaryAsync(StatisticsSummary data)
         {
             var entity = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(data);
             entity.PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType);

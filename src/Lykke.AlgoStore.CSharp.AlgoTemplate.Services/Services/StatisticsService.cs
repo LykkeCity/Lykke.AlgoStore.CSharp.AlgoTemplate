@@ -64,7 +64,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 LastWalletBalance = initialWalletBalance
             };
 
-            _statisticsRepository.CreateSummary(summaryData).Wait();
+            _statisticsRepository.CreateSummaryAsync(summaryData).Wait();
 
             var data = new Statistics
             {
@@ -90,7 +90,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public StatisticsSummary GetSummary()
         {
-            return _statisticsRepository.GetSummary(_instanceId, _instanceType).Result;
+            return _statisticsRepository.GetSummaryAsync(_instanceId, _instanceType).Result;
         }
     }
 }

@@ -257,12 +257,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             string instanceId,
             AlgoInstanceType instanceType)
         {
-            return repository.GetSummary(instanceId, instanceType).Result;
+            return repository.GetSummaryAsync(instanceId, instanceType).Result;
         }
 
         private static void WhenInvokeCreateSummaryEntity(StatisticsRepository repository, StatisticsSummary entitySummary)
         {
-            repository.CreateSummary(entitySummary).Wait();
+            repository.CreateSummaryAsync(entitySummary).Wait();
         }
 
         private static StatisticsRepository GivenStatisticsRepository()

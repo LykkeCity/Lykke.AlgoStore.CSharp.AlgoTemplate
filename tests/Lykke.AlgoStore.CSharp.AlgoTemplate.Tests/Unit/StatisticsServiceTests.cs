@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
@@ -52,15 +53,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Then_Exception_ShouldNotBe_Null(exception);
         }
 
-        //[Test]
-        //public void GetSummary_Returns_Data()
-        //{
-        //    var repo = Given_Correct_StatisticsRepositoryMock();
-        //    var service = Given_StatisticsService(repo);
-        //    When_Invoke_GetSummary(service, out var exception);
+        [Test]
+        public void GetSummary_Returns_Data()
+        {
+            var repo = Given_Correct_StatisticsRepositoryMock();
+            var service = Given_StatisticsService(repo);
+            When_Invoke_GetSummary(service, out var exception);
 
-        //    Then_Exception_ShouldBe_Null(exception);
-        //}
+            Then_Exception_ShouldBe_Null(exception);
+        }
 
         [Test]
         public void GetSummary_Throws_Exception()
@@ -127,7 +128,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var result = new Mock<IStatisticsRepository>();
 
             result.Setup(repo => repo.CreateAsync(new Statistics()));
-            result.Setup(repo => repo.GetSummary(_instanceId, _instanceType));
+            result.Setup(repo => repo.GetSummaryAsync(_instanceId, _instanceType))
+                .Returns(Task.FromResult(new StatisticsSummary()));
 
             return result.Object;
         }
@@ -137,7 +139,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var result = new Mock<IStatisticsRepository>();
 
             result.Setup(repo => repo.CreateAsync(It.IsAny<Statistics>())).ThrowsAsync(new Exception("CreateAsync"));
-            result.Setup(repo => repo.GetSummary(It.IsAny<string>(), It.IsAny<AlgoInstanceType>())).ThrowsAsync(new Exception("GetSummary"));
+            result.Setup(repo => repo.GetSummaryAsync(It.IsAny<string>(), It.IsAny<AlgoInstanceType>())).ThrowsAsync(new Exception("GetSummary"));
 
             return result.Object;
         }
