@@ -72,6 +72,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 var existingSummaryData = _statisticsRepository.GetSummaryAsync(_instanceId, _instanceType).Result;
 
+                //Update start values for statistics summary that already exists
                 existingSummaryData.AssetOneBalance = assetOneBalance;
                 existingSummaryData.AssetTwoBalance = assetTwoBalance;
                 existingSummaryData.InitialWalletBalance = initialWalletBalance;
