@@ -78,9 +78,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
-                InitialWalletBalance = 0,
-                AssetTwoBalance = 0,
-                AssetOneBalance = 0
+                InitialWalletBalance = 20,
+                LastWalletBalance = 20,
+                AssetTwoBalance = 10,
+                AssetOneBalance = 10
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -95,6 +96,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
+            Assert.AreEqual(0, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -111,9 +113,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
-                InitialWalletBalance = 0,
-                AssetTwoBalance = 0,
-                AssetOneBalance = 0
+                InitialWalletBalance = 20,
+                LastWalletBalance = 20,
+                AssetTwoBalance = 10,
+                AssetOneBalance = 10
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -137,6 +140,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
+            Assert.AreEqual(0, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -154,6 +158,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
+                LastWalletBalance = 20,
                 AssetTwoBalance = 10,
                 AssetOneBalance = 10
             };
@@ -190,7 +195,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(6, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(18, summary.LastWalletBalance);
-
+            Assert.AreEqual((20d - 18d) / 20d, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -207,7 +212,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
-                InitialWalletBalance = 10,
+                InitialWalletBalance = 20,
+                LastWalletBalance = 20,
                 AssetTwoBalance = 10,
                 AssetOneBalance = 10
             };
@@ -244,7 +250,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(14, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(22, summary.LastWalletBalance);
-
+            Assert.AreEqual((20d - 22d) / 20d, summary.NetProfit);
         }
 
         private static void WhenInvokeCreateEntity(StatisticsRepository repository, Statistics entity)

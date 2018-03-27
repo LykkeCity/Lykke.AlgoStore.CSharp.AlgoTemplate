@@ -22,5 +22,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public double AssetOneBalance { get; set; }
 
         public double AssetTwoBalance { get; set; }
+
+        public double NetProfit => (InitialWalletBalance - LastWalletBalance) / InitialWalletBalance;
     }
 }
