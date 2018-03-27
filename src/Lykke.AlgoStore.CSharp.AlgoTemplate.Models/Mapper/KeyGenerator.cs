@@ -8,11 +8,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
         private const string AlgoPartitionKeyStatic = "algo";
         private const string ClientPartitionKeyStatic = "client";
         private const string PartitionKeySeparator = "_";
-        private const string PartitionKeyPattern = "{0}{1}{2}";       
+        private const string PartitionKeyPattern = "{0}{1}{2}";
+        private const string WalletPartitionKeyStatic = "wallet";
 
         public static string GenerateClientIdPartitionKey(string clientId)
         {
             return string.Format(PartitionKeyPattern, ClientPartitionKeyStatic, PartitionKeySeparator, clientId);
+        }
+
+        public static string GenerateWalletIdPartitionKey(string walletId)
+        {
+            return string.Format(PartitionKeyPattern, WalletPartitionKeyStatic, PartitionKeySeparator, walletId);
         }
 
         public static string GenerateAlgoIdPartitionKey(string algoId)

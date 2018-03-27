@@ -70,6 +70,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             return entitiy.ToModel();
         }
 
+        public async Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByWalletIdAsync(string walletId)
+        {
+            var entities = await _table.GetDataAsync(KeyGenerator.GenerateWalletIdPartitionKey(walletId));
+            var result = entities.Select(entity => entity.ToModel());
+            return result;
+        }
+
         public async Task<bool> ExistsAlgoInstanceDataWithAlgoIdAsync(string algoId, string instanceId)
         {
             var entity = new AlgoClientInstanceEntity
@@ -99,6 +106,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
             var algoIdAndInstanceTypePartitionKeyEntity = data.ToEntityWithAlgoIdAndInstanceTypePartitionKey();
 
+            if (!string.IsNullOrEmpty(data.WalletId))
+            {
+                var walletIdPartitionKeyEntity = data.ToEntityWithWalletIdPartitionKey();
+                await _table.InsertOrMergeAsync(walletIdPartitionKeyEntity);
+            }
             await _table.InsertOrMergeAsync(algoIdPartitionKeyEntity);
             await _table.InsertOrMergeAsync(clientIdPartitionKeyEntity);
             await _table.InsertOrMergeAsync(algoIdAndClientIdPartitionKeyEntity);
@@ -112,10 +124,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
             var algoIdAndInstanceTypePartitionKeyEntity = data.ToEntityWithAlgoIdAndInstanceTypePartitionKey();
 
-            await _table.DeleteAsync(algoIdPartitionKeyEntity);
-            await _table.DeleteAsync(clientIdPartitionKeyEntity);
-            await _table.DeleteAsync(algoIdAndClientIdPartitionKeyEntity);
-            await _table.DeleteAsync(algoIdAndInstanceTypePartitionKeyEntity);
+            if (!string.IsNullOrEmpty(data.WalletId))
+            {
+                var walletIdPartitionKeyEntity = data.ToEntityWithWalletIdPartitionKey();
+                await _table.DeleteIfExistAsync(walletIdPartitionKeyEntity.PartitionKey, walletIdPartitionKeyEntity.RowKey);
+            }
+
+            await _table.DeleteIfExistAsync(algoIdPartitionKeyEntity.PartitionKey, algoIdPartitionKeyEntity.RowKey);
+            await _table.DeleteIfExistAsync(clientIdPartitionKeyEntity.PartitionKey, clientIdPartitionKeyEntity.RowKey);
+            await _table.DeleteIfExistAsync(algoIdAndClientIdPartitionKeyEntity.PartitionKey, algoIdAndClientIdPartitionKeyEntity.RowKey);
+            await _table.DeleteIfExistAsync(algoIdAndInstanceTypePartitionKeyEntity.PartitionKey, algoIdAndClientIdPartitionKeyEntity.RowKey);
         }
 
         public async Task<string> GetAlgoInstanceMetadataSetting(string algoId, string instanceId, string key)
