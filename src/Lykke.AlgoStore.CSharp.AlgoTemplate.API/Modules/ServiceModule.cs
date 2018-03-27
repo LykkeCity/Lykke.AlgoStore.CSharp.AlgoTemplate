@@ -14,6 +14,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.Service.Assets.Client;
 using Lykke.Service.FeeCalculator.Client;
 using Lykke.SettingsReader;
+using Lykke.Service.CandlesHistory.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -133,7 +134,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<FunctionInitializationService>()
                 .As<IFunctionInitializationService>();
 
-            builder.RegisterType<PredefinedHistoryDataService>()
+            builder.RegisterType<Candleshistoryservice>()
+                .As<ICandleshistoryservice>()
+                .WithParameter(TypedParameter.From(new Uri(_settings.CurrentValue.CandlesHistoryClient.ServiceUrl)));
+
+            builder.RegisterType<HistoryDataService>()
                 .As<IHistoryDataService>();
 
             builder.RegisterType<TaskAsyncExecutor>()
