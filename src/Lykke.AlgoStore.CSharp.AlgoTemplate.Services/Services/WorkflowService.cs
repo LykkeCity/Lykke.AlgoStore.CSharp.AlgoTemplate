@@ -92,7 +92,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             
             //Update algo statistics
             //TODO: Get asset one and two balance and get initial wallet balance before statistics is started
-            _statisticsService.OnAlgoStarted(0, 0, 0);
+            _statisticsService.OnAlgoStarted(10000, 5000, 5000);
 
             if (algoInstance != null)
             {

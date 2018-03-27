@@ -24,7 +24,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _instanceId;
         private string _algoId;
         private string _tradedAsset;
-        private string _instanceType;
 
         public string GetAlgoId() => _algoId;
         public string GetInstanceId() => _instanceId;
@@ -32,10 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public AlgoInstanceType GetInstanceType()
         {
-            if(!Enum.TryParse(_instanceType, out AlgoInstanceType instanceType))
-                throw new ArgumentException("InstanceType is not of valid type");
-
-            return instanceType;
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AlgoInstanceType;
         }
 
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
@@ -56,7 +52,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = GetSetting("InstanceId");
             _algoId = GetSetting("AlgoId");
             _tradedAsset = GetAlgoInstanceTradedAsset();
-            _instanceType = GetSetting("InstanceType");
 
             _isAlive = true;
         }

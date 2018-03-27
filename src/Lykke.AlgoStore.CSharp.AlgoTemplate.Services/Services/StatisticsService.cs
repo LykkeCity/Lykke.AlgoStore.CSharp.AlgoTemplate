@@ -14,16 +14,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly IAlgoSettingsService _algoSettings;
-        private readonly string _instanceId;
-        private readonly AlgoInstanceType _instanceType;
+        private string _instanceId;
+        private AlgoInstanceType _instanceType;
 
         public StatisticsService(IStatisticsRepository statisticsRepository, IAlgoSettingsService algoSettings)
         {
             _statisticsRepository = statisticsRepository;
             _algoSettings = algoSettings;
-
-            _instanceId = _algoSettings.GetInstanceId();
-            _instanceType = _algoSettings.GetInstanceType();
         }
 
         public IAlgoQuote GetQuote()
@@ -52,6 +49,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnAlgoStarted(double initialWalletBalance, double assetOneBalance, double assetTwoBalance)
         {
+            _instanceId = _algoSettings.GetInstanceId();
+            _instanceType = _algoSettings.GetInstanceType();
+
             var summaryData = new StatisticsSummary
             {
                 InstanceId = _instanceId,

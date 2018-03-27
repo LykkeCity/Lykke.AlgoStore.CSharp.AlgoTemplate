@@ -115,7 +115,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             entity.PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType);
             entity.RowKey = GenerateSummaryRowKey();
 
-            await _tableSummary.InsertAsync(entity);
+            var existingEntitySummary = new StatisticsSummaryEntity
+            {
+                PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType),
+                RowKey = GenerateSummaryRowKey()
+            };
+
+            if (!await _tableSummary.RecordExistsAsync(existingEntitySummary))
+                await _tableSummary.InsertAsync(entity);
         }
     }
 }

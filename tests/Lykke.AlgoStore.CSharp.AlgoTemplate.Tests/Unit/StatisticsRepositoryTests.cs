@@ -144,6 +144,59 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void AlgoStartedMultipleTimesWillReturnValidSummary()
+        {
+            var instanceId = SettingsMock.GetInstanceId();
+            var instanceType = AlgoInstanceType.Test;
+
+            var repo = GivenStatisticsRepository();
+
+            _entitySummary = new StatisticsSummary
+            {
+                InstanceId = instanceId,
+                InstanceType = instanceType,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0,
+                InitialWalletBalance = 20,
+                LastWalletBalance = 20,
+                AssetTwoBalance = 10,
+                AssetOneBalance = 10
+            };
+
+            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                IsStarted = true,
+                InstanceType = AlgoInstanceType.Test
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                IsStarted = true,
+                InstanceType = AlgoInstanceType.Test
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+
+            Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
+            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
+            Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 2, summary.TotalNumberOfStarts);
+            Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
+            Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
+            Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
+            Assert.AreEqual(0, summary.NetProfit);
+        }
+
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         public void AlgoStartedWithOneBuyWillReturnValidSummary()
         {
             var instanceId = SettingsMock.GetInstanceId();
