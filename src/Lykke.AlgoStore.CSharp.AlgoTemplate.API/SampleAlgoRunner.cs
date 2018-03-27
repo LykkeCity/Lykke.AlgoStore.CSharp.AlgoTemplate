@@ -37,7 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             // Initialize eagerly the class for the algo assembly so
             // that the runtime loads the algos assembly prior to
             // tunning the main
-            DEFAULT_ALGO_CLASS_TO_RUN = typeof(DummyAlgo);
+            DEFAULT_ALGO_CLASS_TO_RUN = typeof(MacdTrendAlgo);// DummyAlgo);
         }
 
         public static async Task Main(string[] args)

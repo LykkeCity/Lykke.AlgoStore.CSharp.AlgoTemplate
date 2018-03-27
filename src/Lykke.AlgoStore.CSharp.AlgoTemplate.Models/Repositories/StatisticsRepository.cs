@@ -115,14 +115,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             entity.PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType);
             entity.RowKey = GenerateSummaryRowKey();
 
-            var existingEntitySummary = new StatisticsSummaryEntity
-            {
-                PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType),
-                RowKey = GenerateSummaryRowKey()
-            };
+            //If this is not first time algo instance is started
+            //we need to update existing statistics summary
+            var existingEntitySummary =
+                await _tableSummary.GetDataAsync(GeneratePartitionKey(data.InstanceId, data.InstanceType),
+                    GenerateSummaryRowKey());
 
-            if (!await _tableSummary.RecordExistsAsync(existingEntitySummary))
+            if(existingEntitySummary == null)
+            {
                 await _tableSummary.InsertAsync(entity);
+                return;
+            }
+
+            existingEntitySummary.AssetOneBalance = entity.AssetOneBalance;
+            existingEntitySummary.AssetTwoBalance = entity.AssetTwoBalance;
+            existingEntitySummary.InitialWalletBalance = entity.InitialWalletBalance;
+            existingEntitySummary.LastWalletBalance = entity.LastWalletBalance;
+
+            await _tableSummary.InsertOrMergeAsync(existingEntitySummary);
         }
     }
 }
