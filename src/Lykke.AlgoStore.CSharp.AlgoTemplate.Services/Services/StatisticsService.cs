@@ -52,19 +52,33 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = _algoSettings.GetInstanceId();
             _instanceType = _algoSettings.GetInstanceType();
 
-            var summaryData = new StatisticsSummary
+            if (!_statisticsRepository.SummaryExistsAsync(_instanceId, _instanceType).Result)
             {
-                InstanceId = _instanceId,
-                TotalNumberOfTrades = 0,
-                InstanceType = _instanceType,
-                TotalNumberOfStarts = 0,
-                AssetOneBalance = assetOneBalance, 
-                AssetTwoBalance = assetTwoBalance,
-                InitialWalletBalance = initialWalletBalance,
-                LastWalletBalance = initialWalletBalance
-            };
+                var summaryData = new StatisticsSummary
+                {
+                    InstanceId = _instanceId,
+                    TotalNumberOfTrades = 0,
+                    InstanceType = _instanceType,
+                    TotalNumberOfStarts = 0,
+                    AssetOneBalance = assetOneBalance,
+                    AssetTwoBalance = assetTwoBalance,
+                    InitialWalletBalance = initialWalletBalance,
+                    LastWalletBalance = initialWalletBalance
+                };
 
-            _statisticsRepository.CreateSummaryAsync(summaryData).Wait();
+                _statisticsRepository.CreateOrUpdateSummaryAsync(summaryData).Wait();
+            }
+            else
+            {
+                var existingSummaryData = _statisticsRepository.GetSummaryAsync(_instanceId, _instanceType).Result;
+
+                existingSummaryData.AssetOneBalance = assetOneBalance;
+                existingSummaryData.AssetTwoBalance = assetTwoBalance;
+                existingSummaryData.InitialWalletBalance = initialWalletBalance;
+                existingSummaryData.LastWalletBalance = initialWalletBalance;
+
+                _statisticsRepository.CreateOrUpdateSummaryAsync(existingSummaryData).Wait();
+            }
 
             var data = new Statistics
             {

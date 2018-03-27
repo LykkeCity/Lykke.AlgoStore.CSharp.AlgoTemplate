@@ -453,7 +453,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
         private static void WhenInvokeCreateSummaryEntity(StatisticsRepository repository, StatisticsSummary entitySummary)
         {
-            repository.CreateSummaryAsync(entitySummary).Wait();
+            repository.CreateOrUpdateSummaryAsync(entitySummary).Wait();
         }
 
         private static StatisticsRepository GivenStatisticsRepository()

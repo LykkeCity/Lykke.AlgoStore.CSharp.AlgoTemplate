@@ -109,30 +109,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             return AutoMapper.Mapper.Map<StatisticsSummary>(result);
         }
 
-        public async Task CreateSummaryAsync(StatisticsSummary data)
+        public async Task CreateOrUpdateSummaryAsync(StatisticsSummary data)
         {
             var entity = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(data);
             entity.PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType);
             entity.RowKey = GenerateSummaryRowKey();
 
-            //If this is not first time algo instance is started
-            //we need to update existing statistics summary
-            var existingEntitySummary =
-                await _tableSummary.GetDataAsync(GeneratePartitionKey(data.InstanceId, data.InstanceType),
-                    GenerateSummaryRowKey());
+            await _tableSummary.InsertOrMergeAsync(entity);
+        }
 
-            if(existingEntitySummary == null)
+        public async Task<bool> SummaryExistsAsync(string instanceId, AlgoInstanceType instanceType)
+        {
+            return await _tableSummary.RecordExistsAsync(new StatisticsSummaryEntity
             {
-                await _tableSummary.InsertAsync(entity);
-                return;
-            }
-
-            existingEntitySummary.AssetOneBalance = entity.AssetOneBalance;
-            existingEntitySummary.AssetTwoBalance = entity.AssetTwoBalance;
-            existingEntitySummary.InitialWalletBalance = entity.InitialWalletBalance;
-            existingEntitySummary.LastWalletBalance = entity.LastWalletBalance;
-
-            await _tableSummary.InsertOrMergeAsync(existingEntitySummary);
+                PartitionKey = GeneratePartitionKey(instanceId, instanceType),
+                RowKey = GenerateSummaryRowKey()
+            });
         }
     }
 }
