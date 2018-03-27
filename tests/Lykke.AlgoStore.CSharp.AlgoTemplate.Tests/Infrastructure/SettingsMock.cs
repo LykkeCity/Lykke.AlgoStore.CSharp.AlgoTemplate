@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using System.Threading.Tasks;
 using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;

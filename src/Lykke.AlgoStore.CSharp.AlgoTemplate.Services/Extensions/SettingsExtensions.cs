@@ -6,7 +6,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
 {
     internal static class SettingsExtensions
     {
-        public static RabbitMqSubscriptionSettings ToRabbitMqSettings(this QuoteRabbitMqSubscriptionSettings quoteSettings)
+        public static RabbitMqSubscriptionSettings ToRabbitMqSettings(this QuoteRabbitMqSubscriptionSettings quoteSettings, string algoInstanceId)
         {
             if (quoteSettings == null)
                 return null;
@@ -16,11 +16,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
                 quoteSettings.NamespaceOfSourceEndpoint,
                 quoteSettings.NameOfSourceEndpoint,
                 quoteSettings.NamespaceOfEndpoint,
-                quoteSettings.NameOfEndpoint);
+                $"{quoteSettings.NameOfEndpoint}-{algoInstanceId}");
 
             if (quoteSettings.IsDurable)
                 result.MakeDurable();
 
+            result.DeadLetterExchangeName = null;
             result.ReconnectionsCountToAlarm = quoteSettings.ReconnectionsCountToAlarm;
             result.ReconnectionDelay = TimeSpan.FromMilliseconds(quoteSettings.ReconnectionDelayInMSec);
 

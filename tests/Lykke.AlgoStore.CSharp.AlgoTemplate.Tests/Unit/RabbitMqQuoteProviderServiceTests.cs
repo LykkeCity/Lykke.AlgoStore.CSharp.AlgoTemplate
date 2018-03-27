@@ -5,6 +5,7 @@ using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
+using Moq;
 using NUnit.Framework;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
@@ -12,18 +13,28 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     [TestFixture]
     public class RabbitMqQuoteProviderServiceTests
     {
+        private string _assetPair = "BTCUSD";
+
+        private IAlgoSettingsService AlgoSettingsService()
+        {
+            var algoSettings = new Mock<IAlgoSettingsService>();
+            algoSettings.Setup(a => a.GetInstanceId()).Returns(Guid.NewGuid().ToString());
+            return algoSettings.Object;
+        }
+
         [Test, Explicit("Test real connection to RabbitMq")]
         public void RabbitMq_Success_Test()
         {
+            var algoSettings = AlgoSettingsService();
             var settings = SettingsMock.GetQuoteSettings();
             Assert.IsNotNull(settings);
 
-            IQuoteProviderService quoteProviderService = new RabbitMqQuoteProviderService(settings, new LogMock());
+            IQuoteProviderService quoteProviderService = new RabbitMqQuoteProviderService(settings, new LogMock(), algoSettings);
             quoteProviderService.Initialize().Wait();
 
-            quoteProviderService.Subscribe(CorrectSubscriber);
+            quoteProviderService.Subscribe(_assetPair, CorrectSubscriber);
 
-            quoteProviderService.Subscribe(ExceptionSubscriber);
+            quoteProviderService.Subscribe(_assetPair, ExceptionSubscriber);
 
             quoteProviderService.Start();
 

@@ -6,6 +6,10 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using AutoMapper;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
+using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -15,16 +19,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private string _algoId;
         private string _clientId;
         private string _walletId;
+        private string _algoClientId;
         private AlgoClientInstanceData _entity;
         private static bool _entitySaved;
 
         [SetUp]
         public void SetUp()
         {
+            Mapper.Reset();
+
+            Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperModelProfile>());
+            Mapper.AssertConfigurationIsValid();
+
             _instanceId = SettingsMock.GetInstanceId();
             _algoId = SettingsMock.GetAlgoId();
             _clientId = "123456clientId";
             _walletId = "123456walletId";
+            _algoClientId = "9d66eed3-7b54-431e-970e-979d0d735426";
+
 
             _entity = new AlgoClientInstanceData
             {
@@ -37,6 +49,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 Volume = 1,
                 ClientId = _clientId,
                 WalletId = _walletId,
+                AlgoInstanceType = AlgoInstanceType.Test,
+                IsStraight = true,
+                AlgoClientId = _algoClientId,
+                AlgoInstanceStatus = AlgoInstanceStatus.Started,
+                InstanceName = "Unit test",
                 AlgoMetaDataInformation = new AlgoMetaDataInformation()
                 {
                     Parameters = new[] {new  AlgoMetaDataParameter()
@@ -47,7 +64,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                         //ParameterType = "Lykke.AlgoStore.CSharp.Funct.SimpleMovingAverage"
                     }}
                 }
-            };
+            };          
         }
 
         [TearDown]
@@ -115,16 +132,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var retrievedByAlgoId = repository.GetAlgoInstanceDataByAlgoIdAsync(data.AlgoId, data.InstanceId).Result;
             var retrievedByClientId = repository.GetAlgoInstanceDataByClientIdAsync(data.ClientId, data.InstanceId).Result;
+            var retrievedByAlgoIdAndInstanceType =
+                repository.GetAllAlgoInstancesByAlgoIdAndInstanceTypeAsync(data.AlgoId, data.AlgoInstanceType).Result;
 
             Assert.NotNull(retrievedByAlgoId);
             Assert.NotNull(retrievedByClientId);
+            Assert.NotNull(retrievedByAlgoIdAndInstanceType);
 
             var expectedJson = JsonConvert.SerializeObject(data);
             var actualRetrievedByAlgoIdJson = JsonConvert.SerializeObject(retrievedByAlgoId);
             var actualRetrievedByClientId = JsonConvert.SerializeObject(retrievedByClientId);
+            var actualRetrievedByAlgoIdAndInstanceType = JsonConvert.SerializeObject(retrievedByAlgoIdAndInstanceType.FirstOrDefault());
 
             Assert.AreEqual(expectedJson, actualRetrievedByAlgoIdJson);
             Assert.AreEqual(expectedJson, actualRetrievedByClientId);
+            Assert.AreEqual(expectedJson, actualRetrievedByAlgoIdAndInstanceType);
         }
 
         #endregion Private Methods

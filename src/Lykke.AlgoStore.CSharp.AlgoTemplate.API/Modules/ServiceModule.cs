@@ -9,7 +9,6 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.Service.Assets.Client;
@@ -31,6 +30,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
         /// <summary>
         /// Initializes new instance of the <see cref="ServiceModule"/>
         /// </summary>
+        /// <param name="settings">The <see cref="IReloadingManager{T}"/> implementation to be used</param>
         /// <param name="log">The <see cref="ILog"/> implementation to be used</param>
         public ServiceModule(IReloadingManager<AppSettings> settings, ILog log)
         {
@@ -99,12 +99,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<ActionsService>()
                 .As<IActions>();
 
-            builder.RegisterType<RandomDataQuoteProviderService>()
-                .As<IQuoteProviderService>();
-
             builder.RegisterType<RabbitMqCandleProviderService>()
                 .As<ICandleProviderService>()
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.CandleRabbitMqSettings)));
+
+            builder.RegisterType<RabbitMqQuoteProviderService>()
+                .As<IQuoteProviderService>()
+                .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.QuoteRabbitMqSettings)));
 
             builder.RegisterType<AssetServiceDecorator>()
                 .As<IAssetServiceDecorator>()
@@ -125,9 +126,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();
-
-            //builder.RegisterType<PredefinedDataFeedCandleService>()
-            //    .As<ICandlesService>();
 
             builder.RegisterType<CandlesService>()
                 .As<ICandlesService>();

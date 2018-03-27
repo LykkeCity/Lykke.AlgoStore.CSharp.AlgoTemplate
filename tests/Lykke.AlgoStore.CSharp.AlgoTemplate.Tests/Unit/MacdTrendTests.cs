@@ -3,9 +3,6 @@ using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {

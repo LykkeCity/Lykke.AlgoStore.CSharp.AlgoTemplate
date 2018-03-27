@@ -9,14 +9,14 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.2" />
-    <PackageReference Include="Lykke.Common" Version="4.5.0" />
+    <PackageReference Include="Lykke.Common" Version="5.0.0" />
     <PackageReference Include="Lykke.Job.CandlesProducer.Contract" Version="4.0.0" />
     <PackageReference Include="Lykke.Job.QuotesProducer.Contract" Version="1.0.0" />
-    <PackageReference Include="Lykke.MatchingEngineConnector" Version="2.2.0" />
+    <PackageReference Include="Lykke.MatchingEngineConnector" Version="3.0.2" />
     <PackageReference Include="Lykke.RabbitMqBroker" Version="7.0.0" />
     <PackageReference Include="Lykke.Service.Assets.Client" Version="3.3.2" />
-    <PackageReference Include="Lykke.Service.FeeCalculator.Client" Version="1.7.0" />
-    <PackageReference Include="Lykke.SettingsReader" Version="1.0.45" />
+    <PackageReference Include="Lykke.Service.FeeCalculator.Client" Version="1.8.4" />
+    <PackageReference Include="Lykke.SettingsReader" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

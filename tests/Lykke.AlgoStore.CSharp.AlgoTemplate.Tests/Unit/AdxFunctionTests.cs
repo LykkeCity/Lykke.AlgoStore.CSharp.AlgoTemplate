@@ -1,12 +1,10 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -192,7 +190,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             double? dmiPlues = 0.0d;
 
             dmiPlues = function.WarmUp(values);
-            Assert.IsNull(dmiPlues);
+            Assert.AreEqual(0.0d, dmiPlues.Value);
         }
 
         [Test]

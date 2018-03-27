@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
@@ -8,7 +9,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
     public interface ITradingService
     {
         void Initialize();
-        Task<double> BuyStraight(double volume);
-        Task<double> SellStraight(double volume);
+        Task<ResponseModel<double>> Buy(double volume);
+        Task<ResponseModel<double>> Sell(double volume);
     }
 }

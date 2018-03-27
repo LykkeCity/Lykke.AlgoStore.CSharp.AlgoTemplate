@@ -1,4 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
 {
@@ -17,6 +18,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
         public static string GenerateAlgoIdPartitionKey(string algoId)
         {
             return string.Format(PartitionKeyPattern, AlgoPartitionKeyStatic, PartitionKeySeparator, algoId);
+        }
+
+        public static string GenerateAlgoIdAndClientIdPartitionKey(string algoId, string clientId)
+        {
+            return string.Format(PartitionKeyPattern, algoId, PartitionKeySeparator, clientId);
+        }
+
+        public static string GenerateAlgoIdAndInstanceTypePartitionKey(string algoId, AlgoInstanceType instanceType)
+        {
+            return string.Format(PartitionKeyPattern, algoId, PartitionKeySeparator, instanceType.GetDisplayName());
         }
 
         public static BaseAlgoData ParseKey(string partitionKey)

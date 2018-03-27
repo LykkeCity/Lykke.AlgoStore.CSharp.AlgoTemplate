@@ -9,6 +9,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
     public interface IQuoteProviderService : IStopable, IStartable
     {
         Task Initialize();
-        void Subscribe(Func<IAlgoQuote, Task> action);
+        void Subscribe(string assetPair, Func<IAlgoQuote, Task> action);
     }
 }

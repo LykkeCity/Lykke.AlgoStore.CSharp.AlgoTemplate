@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
 using System.Threading;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -24,6 +25,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ITradingService _tradingService;
         private readonly ICandlesService _candlesService;
         private readonly IStatisticsService _statisticsService;
+        private readonly IUserLogService _logService;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
         private readonly object _sync = new object();
@@ -36,6 +38,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             ITradingService tradingService,
             ICandlesService candlesService,
             IStatisticsService statisticsService,
+            IUserLogService logService,
             IAlgo algo)
         {
             _algoSettingsService = algoSettingsService;
@@ -43,9 +46,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _historyDataService = historyDataService;
             _functionsService = functionsService;
             _statisticsService = statisticsService;
+            _logService = logService;
             _tradingService = tradingService;
             _candlesService = candlesService;
-            actions = new ActionsService(_tradingService, _statisticsService, this.OnErrorHandler);
+            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler);
             _algo = algo;
         }
 
@@ -54,8 +58,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // read settings/metadata/env. var
             _algoSettingsService.Initialize();
 
+            var algoInstance = _algoSettingsService.GetAlgoInstance();
+
             //get algo parameters
-            SetUpAlgoParameters();
+            SetUpAlgoParameters(algoInstance);
 
             // Function service initialization.
             _functionsService.Initialize();
@@ -81,12 +87,36 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // pass _algoSettingsService in constructor
             _candlesService.StartProducing();
             var quoteGeneration = _quoteProviderService.Initialize();
-            _quoteProviderService.Subscribe(OnQuote);
-
+            _quoteProviderService.Subscribe(_algo.AssetPair, OnQuote);
+            _quoteProviderService.Start();
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
 
+            if (algoInstance != null)
+            {
+                algoInstance.AlgoInstanceStatus = Models.Enumerators.AlgoInstanceStatus.Started;
+                algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
+                _algoSettingsService.UpdateAlgoInstance(algoInstance);
+            }
+
             return Task.WhenAll(quoteGeneration);
+        }
+
+        public Task StopAsync()
+        {
+            actions.Log("Executing 'StopAsync' event started");
+
+            //TODO: We should reconsider what to do with initialized services in here
+
+            actions.Log("Executing 'StopAsync' event finished");
+
+            return Task.CompletedTask;
+        }
+
+        public void OnErrorHandler(Exception e, string message)
+        {
+            actions.Log(e.ToString());
+            actions.Log(message);
         }
 
         private void OnInitialFunctionServiceData(IList<MultipleCandlesResponse> warmupData)
@@ -141,7 +171,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnErrorHandler(TradingServiceException e)
         {
-            Console.WriteLine(e);
+            _logService.Write(_algoSettingsService.GetInstanceId(), e);
         }
 
         private IQuoteContext CreateQuoteContext(IAlgoQuote quote)
@@ -173,23 +203,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             context.Actions = actions;
         }
 
-        public Task StopAsync()
+        public void SetUpAlgoParameters(AlgoClientInstanceData algoInstance)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnErrorHandler(Exception e, string message)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void SetUpAlgoParameters()
-        {
-            var algoInstance = _algoSettingsService.GetAlgoInstance();
-
             if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Parameters == null)
                 return;
-
 
             Type parameterType = _algo.GetType();
 

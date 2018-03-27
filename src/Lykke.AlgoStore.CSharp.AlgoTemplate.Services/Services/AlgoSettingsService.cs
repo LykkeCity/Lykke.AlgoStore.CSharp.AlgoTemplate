@@ -5,6 +5,7 @@ using System.Dynamic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -21,9 +22,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IAlgoClientInstanceRepository _algoClientInstanceMetadataRepository;
         private string _instanceId;
         private string _algoId;
+        private string _tradedAsset;
 
         public string GetAlgoId() => _algoId;
         public string GetInstanceId() => _instanceId;
+        public string GetTradedAsset() => _tradedAsset;
 
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
         {
@@ -34,8 +37,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             _settingsJson = Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS");
 
-            Console.WriteLine($"ALGO_INSTANCE_PARAMS: {_settingsJson}");
-
             if (String.IsNullOrEmpty(_settingsJson))
                 throw new ArgumentException("Environment variable 'ALGO_INSTANCE_PARAMS' does not contain settings");
 
@@ -44,9 +45,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             _instanceId = GetSetting("InstanceId");
             _algoId = GetSetting("AlgoId");
+            _tradedAsset = GetAlgoInstanceTradedAsset();
 
             _isAlive = true;
-
         }
 
         public string GetSetting(string key)
@@ -55,6 +56,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 return string.Empty;
 
             return _settings[key] as string;
+        }
+
+        public async Task UpdateAlgoInstance(AlgoClientInstanceData data)
+        {
+            await _algoClientInstanceMetadataRepository.SaveAlgoInstanceDataAsync(data);
         }
 
         public AlgoClientInstanceData GetAlgoInstance()
@@ -72,7 +78,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.WalletId;
         }
 
-        public string GetAlgoInstanceTradedAsset()
+        private string GetAlgoInstanceTradedAsset()
         {
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAsset;
         }
@@ -80,6 +86,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public string GetAlgoInstanceAssetPair()
         {
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPair;
+        }
+
+        public bool IsAlgoInstanceMarketOrderStraight()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.IsStraight;
         }
 
         public string GetAlgoInstanceClientId()

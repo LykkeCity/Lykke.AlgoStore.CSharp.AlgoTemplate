@@ -1,8 +1,7 @@
 ﻿using System;
-using AutoMapper;
 using AzureStorage.Tables;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
@@ -21,7 +20,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             //Reset should not be used in production code. It is intended to support testing scenarios only.
             Mapper.Reset();
 
-            Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile>());
+            Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperModelProfile>());
             Mapper.AssertConfigurationIsValid();
         }
 

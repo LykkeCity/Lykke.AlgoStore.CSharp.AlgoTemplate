@@ -21,6 +21,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         public override void OnQuoteReceived(IQuoteContext context)
         {
+            context.Actions.Log($"Volume value: {Volume}");
+
             var quote = context.Data.Quote;
             context.Actions.Log($"Receiving quote at {DateTime.UtcNow} " +
                 $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
@@ -29,17 +31,17 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             var smaShort = _shortSma.GetValue();
             var smaLong = _longSma.GetValue();
             context.Actions.Log($"Function values are: SMA_Short: {smaShort}, SMA_Long: {smaLong}");
-            
-            //var buyOrder = context.Actions.Buy(0.2);
-            //context.Actions.Log($"Buying {buyOrder} at {DateTime.UtcNow}");
+
+            //if (quote.Price < 10000)
+            //{
+            //    context.Actions.Buy(Volume);
+            //}
+
+            //if (quote.Price > 8000)
+            //{
+            //    context.Actions.Sell(Volume);
+            //}
         }
 
-        public override void OnCandleReceived(ICandleContext context)
-        {
-            var candle = context.Data.Candle;
-
-            context.Actions.Log($"Receiving candle at {DateTime.UtcNow} " +
-                $"{{candle O,H,L,C: {candle.Open}, {candle.High}, {candle.Low}, {candle.Close}}}, {{candle.Timestamp: {candle.DateTime}}}");
-        }
     }
 }

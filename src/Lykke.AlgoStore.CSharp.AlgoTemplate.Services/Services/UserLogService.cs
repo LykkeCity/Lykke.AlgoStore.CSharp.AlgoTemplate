@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
