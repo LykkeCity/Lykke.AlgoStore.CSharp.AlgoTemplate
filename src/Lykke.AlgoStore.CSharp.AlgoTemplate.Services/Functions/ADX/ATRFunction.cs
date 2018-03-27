@@ -48,20 +48,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             currentATRValue = 0.0d;
         }
 
-        public double? WarmUp(IList<Candle> values)
+        public double? WarmUp(IEnumerable<Candle> values)
         {
             if (values == null)
                 throw new ArgumentException();
+
+            var isFirstElement = true;
 
             foreach (var value in values)
             {
                 _samples++;
 
                 TrueRange = ComputeTrueRange(value);
-                if (values.IndexOf(value) > 0)
+                if (!isFirstElement)
                 {
                     TrueRanges.Enqueue(TrueRange);
                 }
+
+                isFirstElement = false;
 
                 currentATRValue = CalculateAverageTrueRange();
                 _previousInput = value;

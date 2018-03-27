@@ -41,14 +41,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
                 return value;
             }
 
-            public override double? WarmUp(double[] values)
+            public override double? WarmUp(IEnumerable<double> values)
             {
-                _latestWarmUp = values;
+                var valuesArray = values.ToArray();
+
+                _latestWarmUp = valuesArray;
                 _latestValue = Value;
 
-                WarmupAction?.Invoke(values);
+                WarmupAction?.Invoke(valuesArray);
 
-                return values.Length;
+                return valuesArray.Length;
             }
         }
 
