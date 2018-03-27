@@ -253,6 +253,138 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual((20d - 22d) / 20d, summary.NetProfit);
         }
 
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void AlgoStartedWithMultipleBuysWillReturnValidSummary()
+        {
+            var instanceId = SettingsMock.GetInstanceId();
+            var instanceType = AlgoInstanceType.Test;
+
+            var repo = GivenStatisticsRepository();
+
+            _entitySummary = new StatisticsSummary
+            {
+                InstanceId = instanceId,
+                InstanceType = instanceType,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0,
+                InitialWalletBalance = 20,
+                LastWalletBalance = 20,
+                AssetTwoBalance = 10,
+                AssetOneBalance = 10
+            };
+
+            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                IsStarted = true,
+                InstanceType = AlgoInstanceType.Test
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                Amount = 2,
+                IsBuy = true,
+                Price = 2,
+                InstanceType = instanceType
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                Amount = 2,
+                IsBuy = true,
+                Price = 2,
+                InstanceType = instanceType
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+
+            Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
+            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
+            Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
+            Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 2, summary.TotalNumberOfTrades);
+            Assert.AreEqual(14, summary.AssetOneBalance);
+            Assert.AreEqual(2, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            Assert.AreEqual(16, summary.LastWalletBalance);
+            Assert.AreEqual((20d - 16d) / 20d, summary.NetProfit);
+        }
+
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void AlgoStartedWithMultipleSellsWillReturnValidSummary()
+        {
+            var instanceId = SettingsMock.GetInstanceId();
+            var instanceType = AlgoInstanceType.Test;
+
+            var repo = GivenStatisticsRepository();
+
+            _entitySummary = new StatisticsSummary
+            {
+                InstanceId = instanceId,
+                InstanceType = instanceType,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0,
+                InitialWalletBalance = 20,
+                LastWalletBalance = 20,
+                AssetTwoBalance = 10,
+                AssetOneBalance = 10
+            };
+
+            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                IsStarted = true,
+                InstanceType = AlgoInstanceType.Test
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                Amount = 2,
+                IsBuy = false,
+                Price = 2,
+                InstanceType = instanceType
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                Amount = 2,
+                IsBuy = false,
+                Price = 2,
+                InstanceType = instanceType
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+
+            Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
+            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
+            Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
+            Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 2, summary.TotalNumberOfTrades);
+            Assert.AreEqual(6, summary.AssetOneBalance);
+            Assert.AreEqual(18, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
+            Assert.AreEqual(24, summary.LastWalletBalance);
+            Assert.AreEqual((20d - 24d) / 20d, summary.NetProfit);
+        }
+
         private static void WhenInvokeCreateEntity(StatisticsRepository repository, Statistics entity)
         {
             repository.CreateAsync(entity).Wait();
