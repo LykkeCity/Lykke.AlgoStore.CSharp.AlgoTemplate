@@ -49,7 +49,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Price = price
                 };
 
-                _statisticsRepository.CreateAsync(data).Wait();
+                var summary = GetSummary();
+
+                summary.TotalNumberOfTrades++;
+
+                //TODO: Update other summary properties from external service(s) before save
+
+                _statisticsRepository.CreateAsync(data, summary).Wait();
             }
             catch (Exception ex)
             {
@@ -59,7 +65,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
         }
 
-        public void OnAlgoStarted(double initialWalletBalance, double assetOneBalance, double assetTwoBalance)
+        public void OnAlgoStarted()
         {
             _instanceId = _algoSettings.GetInstanceId();
 
@@ -71,7 +77,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     IsStarted = true
                 };
 
-                _statisticsRepository.CreateAsync(data).Wait();
+                var summary = GetSummary();
+
+                summary.TotalNumberOfStarts++;
+
+                _statisticsRepository.CreateAsync(data, summary).Wait();
             }
             catch (Exception ex)
             {

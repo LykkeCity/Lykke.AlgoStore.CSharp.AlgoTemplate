@@ -40,8 +40,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var repo = Given_Correct_StatisticsRepositoryMock();
             var userLogRepo = Given_Correct_UserLog_Repository();
             var service = Given_StatisticsService(repo, userLogRepo);
-            When_Invoke_Create(service, out var exception);
 
+            When_Invoke_OnStart(service, out var exception);
+            Then_Exception_ShouldBe_Null(exception);
+
+            When_Invoke_Create(service, out exception);
             Then_Exception_ShouldBe_Null(exception);
         }
 
@@ -105,7 +108,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             exception = null;
             try
             {
-                service.OnAlgoStarted(0, 0, 0);
+                service.OnAlgoStarted();
             }
             catch (Exception ex)
             {
