@@ -38,8 +38,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void Create_Returns_Data()
         {
             var repo = Given_Correct_StatisticsRepositoryMock();
-            var userLogRepo = Given_Correct_UserLog_Repository();
-            var service = Given_StatisticsService(repo, userLogRepo);
+            var service = Given_StatisticsService(repo);
 
             When_Invoke_OnStart(service, out var exception);
             Then_Exception_ShouldBe_Null(exception);
@@ -52,8 +51,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void Create_Throws_Exception()
         {
             var repo = Given_Error_StatisticsRepositoryMock();
-            var userLogRepo = Given_Correct_UserLog_Repository();
-            var service = Given_StatisticsService(repo, userLogRepo);
+            var service = Given_StatisticsService(repo);
             When_Invoke_Create(service, out var exception);
 
             Then_Exception_ShouldNotBe_Null(exception);
@@ -63,8 +61,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void GetSummary_Returns_Data()
         {
             var repo = Given_Correct_StatisticsRepositoryMock();
-            var userLogRepo = Given_Correct_UserLog_Repository();
-            var service = Given_StatisticsService(repo, userLogRepo);
+            var service = Given_StatisticsService(repo);
             When_Invoke_GetSummary(service, out var exception);
 
             Then_Exception_ShouldBe_Null(exception);
@@ -74,8 +71,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void GetSummary_Throws_Exception()
         {
             var repo = Given_Error_StatisticsRepositoryMock();
-            var userLogRepo = Given_Correct_UserLog_Repository();
-            var service = Given_StatisticsService(repo, userLogRepo);
+            var service = Given_StatisticsService(repo);
             When_Invoke_GetSummary(service, out var exception);
 
             Then_Exception_ShouldNotBe_Null(exception);
@@ -85,8 +81,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void OnStart_Returns_Data()
         {
             var repo = Given_Correct_StatisticsRepositoryMock();
-            var userLogRepo = Given_Correct_UserLog_Repository();
-            var service = Given_StatisticsService(repo, userLogRepo);
+            var service = Given_StatisticsService(repo);
             When_Invoke_OnStart(service, out var exception);
 
             Then_Exception_ShouldBe_Null(exception);
@@ -96,8 +91,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void OnStart_Throws_Exception()
         {
             var repo = Given_Error_StatisticsRepositoryMock();
-            var userLogRepo = Given_Correct_UserLog_Repository();
-            var service = Given_StatisticsService(repo, userLogRepo);
+            var service = Given_StatisticsService(repo);
             When_Invoke_OnStart(service, out var exception);
 
             Then_Exception_ShouldNotBe_Null(exception);
@@ -126,9 +120,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.Null(exception);
         }
 
-        private static IStatisticsService Given_StatisticsService(IStatisticsRepository repo, IUserLogRepository userLogRepo)
+        private static IStatisticsService Given_StatisticsService(IStatisticsRepository repo)
         {
-            var statisticsService = new StatisticsService(repo, SettingsMock.InitSettingsService(), userLogRepo);
+            var statisticsService = new StatisticsService(repo, SettingsMock.InitSettingsService());
 
             return statisticsService;
         }

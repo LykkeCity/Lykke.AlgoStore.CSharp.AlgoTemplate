@@ -38,6 +38,28 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void CreateSummaryRow()
+        {
+            //REMARK: Use only when you need to insert new summary row for some reason :)
+            var instanceId = "f2441730-8afa-4796-8b1e-8116b26d7e17";
+
+            var repo = GivenStatisticsRepository();
+
+            _entitySummary = new StatisticsSummary
+            {
+                InstanceId = instanceId,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0,
+                InitialWalletBalance = 10000,
+                LastWalletBalance = 10000,
+                AssetTwoBalance = 5000,
+                AssetOneBalance = 5000
+            };
+
+            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+        }
+
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         public void InitializeSummaryWillReturnValidSummary()
         {
             var instanceId = SettingsMock.GetInstanceId();

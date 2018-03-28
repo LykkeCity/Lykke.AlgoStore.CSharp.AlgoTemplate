@@ -14,17 +14,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly IAlgoSettingsService _algoSettings;
-        private readonly IUserLogRepository _userLogRepository;
         private string _instanceId;
 
         public StatisticsService(
-            IStatisticsRepository statisticsRepository, 
-            IAlgoSettingsService algoSettings,
-            IUserLogRepository userLogRepository)
+            IStatisticsRepository statisticsRepository,
+            IAlgoSettingsService algoSettings)
         {
             _statisticsRepository = statisticsRepository;
             _algoSettings = algoSettings;
-            _userLogRepository = userLogRepository;
         }
 
         public IAlgoQuote GetQuote()
@@ -39,91 +36,74 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnAction(bool isBuy, double volume, double price)
         {
-            try
+            var data = new Statistics
             {
-                var data = new Statistics
-                {
-                    InstanceId = _instanceId,
-                    Amount = volume,
-                    IsBuy = isBuy,
-                    Price = price
-                };
+                InstanceId = _instanceId,
+                Amount = volume,
+                IsBuy = isBuy,
+                Price = price
+            };
 
-                var summary = GetSummary();
+            var summary = GetSummary();
 
-                summary.TotalNumberOfTrades++;
+            summary.TotalNumberOfTrades++;
 
-                //TODO: Update other summary properties from external service(s) before save
-                //In case of a back-test we have to update summary in here (AL-335)
+            //TODO: Update other summary properties from external service(s) before save
+            //In case of a back-test we have to update summary in here (AL-335)
 
-                _statisticsRepository.CreateAsync(data, summary).Wait();
-            }
-            catch (Exception ex)
-            {
-                _userLogRepository.WriteAsync(_instanceId, ex).Wait();
-                
-                throw new Exception("Saving statistics failed", ex);
-            }
+            _statisticsRepository.CreateAsync(data, summary).Wait();
         }
 
         public void OnAlgoStarted()
         {
             _instanceId = _algoSettings.GetInstanceId();
 
-            try
+            var data = new Statistics
             {
-                var data = new Statistics
-                {
-                    InstanceId = _instanceId,
-                    IsStarted = true
-                };
+                InstanceId = _instanceId,
+                IsStarted = true
+            };
 
-                var summary = GetSummary();
+            var summary = GetSummary();
 
-                summary.TotalNumberOfStarts++;
-
-                _statisticsRepository.CreateAsync(data, summary).Wait();
-            }
-            catch (Exception ex)
+            //REMARK: This should never happen when we implement summary math (before algo instance is created)
+            if (summary == null)
             {
-                _userLogRepository.WriteAsync(_instanceId, ex).Wait();
-
-                throw new Exception("Saving statistics failed", ex);
+                CreateDefaultSummary();
+                summary = GetSummary();
             }
+
+            summary.TotalNumberOfStarts++;
+
+            _statisticsRepository.CreateAsync(data, summary).Wait();
         }
 
         public void OnAlgoStopped()
         {
-            try
+            var data = new Statistics
             {
-                var data = new Statistics
-                {
-                    InstanceId = _instanceId,
-                    IsStarted = false
-                };
+                InstanceId = _instanceId,
+                IsStarted = false
+            };
 
-                _statisticsRepository.CreateAsync(data).Wait();
-            }
-            catch (Exception ex)
-            {
-                _userLogRepository.WriteAsync(_instanceId, ex).Wait();
-
-                throw new Exception("Saving statistics failed", ex);
-            }
+            _statisticsRepository.CreateAsync(data).Wait();
         }
 
         public StatisticsSummary GetSummary()
         {
-            try
-            {
-                return _statisticsRepository.GetSummaryAsync(_instanceId).Result;
-            }
-            catch (Exception ex)
-            {
-                _userLogRepository.WriteAsync(_instanceId, ex).Wait();
+            return _statisticsRepository.GetSummaryAsync(_instanceId).Result;
+        }
 
-                throw new Exception("Get statistics summary failed", ex);
-            }
+        private void CreateDefaultSummary()
+        {
+            var summary = new StatisticsSummary
+            {
+                InstanceId = _instanceId,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0
+            };
+
+            _statisticsRepository.CreateOrUpdateSummaryAsync(summary).Wait();
         }
     }
 }
