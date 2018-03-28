@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         private readonly INoSQLTableStorage<StatisticsEntity> _table;
         private readonly INoSQLTableStorage<StatisticsSummaryEntity> _tableSummary;
 
-        public static readonly string TableName = "AlgoStatistics";
+        public static readonly string TableName = "AlgoInstanceStatistics";
 
         public StatisticsRepository(
             INoSQLTableStorage<StatisticsEntity> table,
