@@ -52,7 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             _atrFunction = new ATRFunction(new AtrParameters() { Period = _period });
         }
 
-        public double? WarmUp(IList<Candle> values)
+        public double? WarmUp(IEnumerable<Candle> values)
         {
             if (values == null)
                 throw new ArgumentException();

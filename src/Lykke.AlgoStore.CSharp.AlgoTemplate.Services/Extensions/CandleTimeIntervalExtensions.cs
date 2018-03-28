@@ -11,14 +11,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
         /// <param name="interval">The <see cref="CandleTimeInterval"/></param>
         /// <param name="timestamp">The <see cref="DateTime"/> to increment</param>
         /// <returns>A new <see cref="DateTime"/> containing the incremented time</returns>
-        public static DateTime IncrementTimestamp(this CandleTimeInterval interval, DateTime timestamp)
+        public static DateTime IncrementTimestamp(this CandleTimeInterval interval, DateTime timestamp, int times = 1)
         {
             if (interval == CandleTimeInterval.Month) // Month can't be accurate because of the different month lenghts, so add it manually instead
-                return timestamp.AddMonths(1);
+                return timestamp.AddMonths(1 * times);
             else if (interval == CandleTimeInterval.Hour4) // Hour4 is defined as 7200 seconds, which is 2 hours, so add 4 hours manually instead
-                return timestamp.AddHours(4);
+                return timestamp.AddHours(4 * times);
             else
-                return timestamp.AddSeconds((int)interval);
+                return timestamp.AddSeconds((int)interval * times);
         }
 
         /// <summary>
@@ -27,14 +27,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
         /// <param name="interval">The <see cref="CandleTimeInterval"/></param>
         /// <param name="timestamp">The <see cref="DateTime"/> to decrement</param>
         /// <returns>A new <see cref="DateTime"/> containing the decremented time</returns>
-        public static DateTime DecrementTimestamp(this CandleTimeInterval interval, DateTime timestamp)
+        public static DateTime DecrementTimestamp(this CandleTimeInterval interval, DateTime timestamp, int times = 1)
         {
             if (interval == CandleTimeInterval.Month) // Month can't be accurate because of the different month lenghts, so add it manually instead
-                return timestamp.AddMonths(-1);
+                return timestamp.AddMonths(-1 * times);
             else if (interval == CandleTimeInterval.Hour4) // Hour4 is defined as 7200 seconds, which is 2 hours, so add 4 hours manually instead
-                return timestamp.AddHours(-4);
+                return timestamp.AddHours(-4 * times);
             else
-                return timestamp.AddSeconds(-(int)interval);
+                return timestamp.AddSeconds(-(int)interval * times);
         }
     }
 }

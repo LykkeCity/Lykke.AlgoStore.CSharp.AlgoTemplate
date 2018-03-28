@@ -45,10 +45,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
             _samples = 0;
         }
 
-        public double? WarmUp(IList<Candle> values)
+        public double? WarmUp(IEnumerable<Candle> values)
         {
             if (values == null)
                 throw new ArgumentException();
+
+            var isFirstElement = true;
 
             foreach (var value in values)
             {
@@ -61,10 +63,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
 
                 DirectionalMovementPlus = ComputePositiveDirectionalMovement(value);
 
-                if (values.IndexOf(value) > 0 && !IsReady)
+                if (!isFirstElement && !IsReady)
                 {
                     DirectionalMovementPluses.Enqueue(DirectionalMovementPlus);
                 }
+
+                isFirstElement = false;
 
                 SmoothedDirectionalMovementPlus = ComputeSmoothedDirectionalMovementPlus();
                 _currentDMIPlusValue = ComputePositiveDirectionalIndex();
