@@ -33,7 +33,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CleanUp()
         {
             var instanceId = SettingsMock.GetInstanceId();
-            var instanceType = AlgoInstanceType.Test;
 
             var repo = GivenStatisticsRepository();
 
@@ -82,7 +81,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
 
-            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+            var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
@@ -126,7 +125,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             WhenInvokeCreateEntity(repo, _entity);
 
-            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+            var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
@@ -179,7 +178,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             WhenInvokeCreateEntity(repo, _entity);
 
-            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+            var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
@@ -234,7 +233,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             WhenInvokeCreateEntity(repo, _entity);
 
-            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+            var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
@@ -289,7 +288,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             WhenInvokeCreateEntity(repo, _entity);
 
-            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+            var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
@@ -355,7 +354,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             WhenInvokeCreateEntity(repo, _entity);
 
-            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+            var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
@@ -421,7 +420,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             WhenInvokeCreateEntity(repo, _entity);
 
-            var summary = WhenInvokeGetSummary(repo, instanceId, instanceType);
+            var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
@@ -441,8 +440,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
         private static StatisticsSummary WhenInvokeGetSummary(
             StatisticsRepository repository,
-            string instanceId,
-            AlgoInstanceType instanceType)
+            string instanceId)
         {
             return repository.GetSummaryAsync(instanceId).Result;
         }

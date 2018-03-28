@@ -17,7 +17,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     public class StatisticsServiceTests
     {
         private string _instanceId;
-        private AlgoInstanceType _instanceType;
 
         [SetUp]
         public void SetUp()
@@ -30,7 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Mapper.AssertConfigurationIsValid();
 
             _instanceId = SettingsMock.GetInstanceId();
-            _instanceType = SettingsMock.GetInstanceType();
+            SettingsMock.GetInstanceType();
         }
 
         [Test]
