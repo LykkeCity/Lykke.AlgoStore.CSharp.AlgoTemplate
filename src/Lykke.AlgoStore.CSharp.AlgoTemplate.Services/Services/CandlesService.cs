@@ -2,15 +2,21 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     public class CandlesService : ICandlesService
     {
+        public class SubscriptionData
+        {
+            public Queue<SingleCandleResponse> ResponseQueue { get; } = new Queue<SingleCandleResponse>();
+            public bool IsHistoryDone { get; set; }
+            public object Sync { get; } = new object();
+        }
+
         private readonly ICandleProviderService _candleProvider;
         private readonly IHistoryDataService _historyService;
         
@@ -18,9 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly List<CandleServiceRequest> _candleRequests = new List<CandleServiceRequest>();
         private Action<IList<MultipleCandlesResponse>> _initialDataConsumer;
 
-        private bool _isHistoryDone;
-        private readonly Queue<SingleCandleResponse> _responseQueue = new Queue<SingleCandleResponse>();
-        private readonly object _queueSync = new object();
+        private readonly Dictionary<string, SubscriptionData> _subscriptions = new Dictionary<string, SubscriptionData>();
 
         public CandlesService(ICandleProviderService candleProvider, IHistoryDataService historyService)
         {
@@ -35,8 +39,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             if (_isProducing)
                 throw new InvalidOperationException("The candle service has already started producing");
-
-            _isHistoryDone = false;
 
             _candleProvider.Initialize().Wait();
             _candleProvider.Start();
@@ -54,14 +56,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 };
 
                 var result = _historyService.GetHistory(historyRequest);
+                var subscriptionData = _subscriptions[request.RequestId];
+
                 resultList.Add(new MultipleCandlesResponse
                 {
                     RequestId = request.RequestId,
-                    Candles = result
+                    Candles = new HistoryResultWrapperEnumerable(result, _candleProvider, historyRequest, subscriptionData)
                 });
             }
 
-            FillFromHistory(resultList, _candleRequests);
             _initialDataConsumer(resultList);
         }
 
@@ -89,14 +92,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void CreateSubscription(CandleServiceRequest serviceRequest, Action<IList<SingleCandleResponse>> candleUpdateConsumer)
         {
-            Action<Candle> callback = (candle) => ProcessCandle(serviceRequest.RequestId, candle, candleUpdateConsumer);
+            var subscriptionData = new SubscriptionData();
+            Action<Candle> callback = (candle) => ProcessCandle(serviceRequest.RequestId, candle, subscriptionData, candleUpdateConsumer);
+
+            _subscriptions.Add(serviceRequest.RequestId, subscriptionData);
 
             _candleProvider.Subscribe(serviceRequest.AssetPair, serviceRequest.CandleInterval, callback);
         }
 
-        private void ProcessCandle(string requestId, Candle candle, Action<IList<SingleCandleResponse>> candleUpdateConsumer)
+        private void ProcessCandle(string requestId, Candle candle, SubscriptionData subscriptionData,
+                                   Action<IList<SingleCandleResponse>> candleUpdateConsumer)
         {
-            lock (_queueSync)
+            lock (subscriptionData.Sync)
             {
                 var response = new SingleCandleResponse
                 {
@@ -104,59 +111,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Candle = candle
                 };
 
-                if (!_isHistoryDone)
+                if (!subscriptionData.IsHistoryDone)
                 {
-                    _responseQueue.Enqueue(response);
+                    subscriptionData.ResponseQueue.Enqueue(response);
                     return;
                 }
 
                 candleUpdateConsumer(new List<SingleCandleResponse> { response });
-            }
-        }
-
-        private void FillFromHistory(List<MultipleCandlesResponse> candles, List<CandleServiceRequest> requests)
-        {
-            lock (_queueSync)
-            {
-                for (var i = 0; i < candles.Count; i++)
-                {
-                    var response = candles[i];
-                    var lastCandleInHistory = response.Candles[response.Candles.Count - 1];
-                    var candlesForResponse = _responseQueue.Where(r => r.RequestId == response.RequestId && r.Candle.DateTime > lastCandleInHistory.DateTime).ToList();
-                    var candleInterval = requests[i].CandleInterval;
-
-                    DateTime targetDate;
-
-                    if (candlesForResponse.Count > 0)
-                        targetDate = candlesForResponse[0].Candle.DateTime;
-                    else
-                        targetDate = candleInterval.DecrementTimestamp(DateTime.UtcNow);
-
-                    var nextDate = candleInterval.IncrementTimestamp(lastCandleInHistory.DateTime);
-
-                    while (nextDate < targetDate)
-                    {
-                        var candle = new Candle();
-
-                        candle.Open = candle.Close = candle.Low = candle.High = candle.LastTradePrice = lastCandleInHistory.Close;
-                        candle.DateTime = nextDate;
-
-                        nextDate = candleInterval.IncrementTimestamp(candle.DateTime);
-                        response.Candles.Add(candle);
-                    }
-
-                    foreach (var candle in candlesForResponse)
-                    {
-                        response.Candles.Add(candle.Candle);
-                    }
-
-                    if (candlesForResponse.Count == 0)
-                    {
-                        _candleProvider.SetPrevCandleFromHistory(requests[i].AssetPair, candleInterval, response.Candles[response.Candles.Count - 1]);
-                    }
-                }
-
-                _isHistoryDone = true;
             }
         }
     }

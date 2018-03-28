@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
@@ -13,26 +14,48 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
     public class StatisticsRepository : IStatisticsRepository
     {
         private readonly INoSQLTableStorage<StatisticsEntity> _table;
+        private readonly INoSQLTableStorage<StatisticsSummaryEntity> _tableSummary;
 
-        public static readonly string TableName = "Statistics";
+        public static readonly string TableName = "AlgoInstanceStatistics";
 
-        public StatisticsRepository(INoSQLTableStorage<StatisticsEntity> table)
+        public StatisticsRepository(
+            INoSQLTableStorage<StatisticsEntity> table,
+            INoSQLTableStorage<StatisticsSummaryEntity> tableSummary)
         {
             _table = table;
+            _tableSummary = tableSummary;
         }
 
-        public static string GeneratePartitionKey(string key) => key;
+        public static string GeneratePartitionKey(string instanceId) => instanceId;
 
         public static string GenerateRowKey(string key) => String.IsNullOrEmpty(key) ? DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'") : key;
+
+        public static string GenerateSummaryRowKey() => "Summary";
 
         public async Task CreateAsync(Statistics data)
         {
             var entity = AutoMapper.Mapper.Map<StatisticsEntity>(data);
-
             entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
             entity.RowKey = GenerateRowKey(data.Id);
 
             await _table.InsertAsync(entity);
+        }
+
+        public async Task CreateAsync(Statistics data, StatisticsSummary summary)
+        {
+            var entity = AutoMapper.Mapper.Map<StatisticsEntity>(data);
+            entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
+            entity.RowKey = GenerateRowKey(data.Id);
+
+            var entitySummary = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(summary);
+            entitySummary.PartitionKey = GeneratePartitionKey(summary.InstanceId);
+            entitySummary.RowKey = GenerateSummaryRowKey();
+
+            var batch = new TableBatchOperation();
+            batch.Insert(entity);
+            batch.InsertOrMerge(entitySummary);
+
+            await _table.DoBatchAsync(batch);
         }
 
         public async Task DeleteAsync(string instanceId, string id)
@@ -55,54 +78,32 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _table.DeleteAsync(dataToDelete);
         }
 
-        public async Task<double> GetBoughtAmountAsync(string instanceId)
+        public async Task<StatisticsSummary> GetSummaryAsync(string instanceId)
         {
             var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => x.IsBuy.HasValue && x.IsBuy.Value && x.Price.HasValue);
+            var rowKey = GenerateSummaryRowKey();
 
-            var result = data.Sum(x => x.Price);
+            var result = await _tableSummary.GetDataAsync(partitionKey, rowKey);
 
-            return result ?? 0;
+            return AutoMapper.Mapper.Map<StatisticsSummary>(result);
         }
 
-        public async Task<double> GetSoldAmountAsync(string instanceId)
+        public async Task CreateOrUpdateSummaryAsync(StatisticsSummary data)
         {
-            var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => x.IsBuy.HasValue && !x.IsBuy.Value);
+            var entity = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(data);
+            entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
+            entity.RowKey = GenerateSummaryRowKey();
 
-            var result = data.Sum(x => x.Price);
-
-            return result ?? 0;
+            await _tableSummary.InsertOrMergeAsync(entity);
         }
 
-        public async Task<double> GetBoughtQuantityAsync(string instanceId)
+        public async Task<bool> SummaryExistsAsync(string instanceId)
         {
-            var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => x.IsBuy.HasValue && x.IsBuy.Value);
-
-            var result = data.Sum(x => x.Amount);
-
-            return result ?? 0;
-        }
-
-        public async Task<double> GetSoldQuantityAsync(string instanceId)
-        {
-            var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => x.IsBuy.HasValue && !x.IsBuy.Value);
-
-            var result = data.Sum(x => x.Amount);
-
-            return result ?? 0;
-        }
-
-        public async Task<int> GetNumberOfRunnings(string instanceId)
-        {
-            var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(partitionKey, x => x.IsStarted.HasValue && x.IsStarted.Value);
-
-            var result = data.Count();
-
-            return result;
+            return await _tableSummary.RecordExistsAsync(new StatisticsSummaryEntity
+            {
+                PartitionKey = GeneratePartitionKey(instanceId),
+                RowKey = GenerateSummaryRowKey()
+            });
         }
     }
 }

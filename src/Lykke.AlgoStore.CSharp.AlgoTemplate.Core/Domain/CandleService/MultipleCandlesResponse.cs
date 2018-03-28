@@ -9,6 +9,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService
     {
         public string RequestId { get; set; }
 
-        public IList<Candle> Candles { get; set; }
+        public IEnumerable<Candle> Candles { get; set; }
     }
 }

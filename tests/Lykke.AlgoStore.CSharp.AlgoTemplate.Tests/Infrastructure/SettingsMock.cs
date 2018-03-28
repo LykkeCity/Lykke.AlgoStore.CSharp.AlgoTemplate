@@ -6,6 +6,7 @@ using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.SettingsReader;
@@ -76,6 +77,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
             return settingsService.GetSetting("InstanceId");
         }
 
+        public static AlgoInstanceType GetInstanceType()
+        {
+            var settingsService = InitSettingsService();
+
+            return settingsService.GetInstanceType();
+        }
+
         public static string GetAlgoId()
         {
             var settingsService = InitSettingsService();
@@ -117,7 +125,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
 
         public static IAlgoSettingsService InitSettingsService()
         {
-            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321_MJTEST\" }");
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456789\", \"InstanceId\": \"123456789\", \"InstanceType\": \"Test\" }");
 
             var result = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             result.Initialize();

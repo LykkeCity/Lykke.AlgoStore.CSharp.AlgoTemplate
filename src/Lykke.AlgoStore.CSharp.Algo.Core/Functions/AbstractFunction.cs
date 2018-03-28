@@ -40,7 +40,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         /// </summary>
         public class WarmUpException : FunctionInvocationException
         {
-            public IList<Candle> ValueInvokedWith { get; set; }
+            public IEnumerable<Candle> ValueInvokedWith { get; set; }
 
             public WarmUpException(string message, Exception innerException)
                 : base(message, innerException) { }
@@ -70,14 +70,14 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         /// </summary>
         /// <param name="values">The initial values to be 
         /// computed by the function</param>
-        public abstract double? WarmUp(double[] values);
+        public abstract double? WarmUp(IEnumerable<double> values);
 
-        public double? WarmUp(IList<Candle> values)
+        public double? WarmUp(IEnumerable<Candle> values)
         {
             try
             {
                 var candleProjection = _candleProjections[FunctionParameters.CandleOperationMode];
-                return WarmUp((values ?? new List<Candle>()).Select(candleProjection).ToArray());
+                return WarmUp((values ?? new List<Candle>()).Select(candleProjection));
             }
             catch (Exception e)
             {

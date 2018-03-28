@@ -18,6 +18,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         /// <param name="request">The request parameters as a <see cref="CandlesHistoryRequest"/></param>
         /// <param name="historyUpdateSubscriber"></param>
         /// <returns></returns>
-        IList<Candle> GetHistory(CandlesHistoryRequest request);
+        IEnumerable<Candle> GetHistory(CandlesHistoryRequest request);
     }
 }

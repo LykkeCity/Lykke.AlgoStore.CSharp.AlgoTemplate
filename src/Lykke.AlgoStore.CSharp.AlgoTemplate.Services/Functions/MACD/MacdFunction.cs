@@ -1,6 +1,7 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA;
 using System;
+using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD
 {
@@ -92,7 +93,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD
         /// <param name="values">The values to warm up the function with</param>
         /// <returns>The value of the function if the initial data was enough, null otherwise</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is null</exception>
-        public override double? WarmUp(double[] values)
+        public override double? WarmUp(IEnumerable<double> values)
         {
             if (values == null)
                 throw new ArgumentNullException(nameof(values));

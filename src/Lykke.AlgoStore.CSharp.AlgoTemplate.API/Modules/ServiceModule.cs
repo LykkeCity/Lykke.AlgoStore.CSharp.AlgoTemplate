@@ -14,6 +14,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.Service.Assets.Client;
 using Lykke.Service.FeeCalculator.Client;
 using Lykke.SettingsReader;
+using Lykke.Service.CandlesHistory.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -103,6 +104,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<ICandleProviderService>()
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.CandleRabbitMqSettings)));
 
+            // TODO: Register this when we are able to determine if the algo is running in backtest mode and retrieve the start date
+
+            //builder.RegisterType<HistoricalCandleProviderService>()
+            //    .As<ICandleProviderService>()
+            //    .WithParameter(TypedParameter.From(DateTime.UtcNow.AddMonths(-2)));
+
             builder.RegisterType<RabbitMqQuoteProviderService>()
                 .As<IQuoteProviderService>()
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.QuoteRabbitMqSettings)));
@@ -133,7 +140,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<FunctionInitializationService>()
                 .As<IFunctionInitializationService>();
 
-            builder.RegisterType<PredefinedHistoryDataService>()
+            builder.RegisterType<Candleshistoryservice>()
+                .As<ICandleshistoryservice>()
+                .WithParameter(TypedParameter.From(new Uri(_settings.CurrentValue.CandlesHistoryServiceClient.ServiceUrl)));
+
+            builder.RegisterType<HistoryDataService>()
                 .As<IHistoryDataService>();
 
             builder.RegisterType<TaskAsyncExecutor>()

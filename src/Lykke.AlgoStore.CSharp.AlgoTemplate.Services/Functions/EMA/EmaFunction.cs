@@ -42,7 +42,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
         /// Warm up function with data
         /// </summary>
         /// <param name="values">Values that will be used to warm up data</param>
-        public override double? WarmUp(double[] values)
+        public override double? WarmUp(IEnumerable<double> values)
         {
             if (values == null)
                 throw new ArgumentException();
