@@ -1,6 +1,6 @@
 ﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings
 {
-    public class CandlesHistoryClient
+    public class CandlesHistoryServiceClient
     {
         public string ServiceUrl { get; set; }
     }

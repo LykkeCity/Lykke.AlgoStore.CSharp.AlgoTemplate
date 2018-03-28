@@ -142,7 +142,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<Candleshistoryservice>()
                 .As<ICandleshistoryservice>()
-                .WithParameter(TypedParameter.From(new Uri(_settings.CurrentValue.CandlesHistoryClient.ServiceUrl)));
+                .WithParameter(TypedParameter.From(new Uri(_settings.CurrentValue.CandlesHistoryServiceClient.ServiceUrl)));
 
             builder.RegisterType<HistoryDataService>()
                 .As<IHistoryDataService>();
