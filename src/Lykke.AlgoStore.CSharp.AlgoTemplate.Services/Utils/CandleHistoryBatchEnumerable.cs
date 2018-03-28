@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
+    /// <summary>
+    /// Dummy class, needed to inherit from the <see cref="IEnumerable{T}"/> interface and 
+    /// provide access to the <see cref="CandleHistoryBatchEnumerator"/>
+    /// </summary>
     public class CandleHistoryBatchEnumerable : IEnumerable<Candle>
     {
         private readonly CandlesHistoryRequest _candlesHistoryRequest;

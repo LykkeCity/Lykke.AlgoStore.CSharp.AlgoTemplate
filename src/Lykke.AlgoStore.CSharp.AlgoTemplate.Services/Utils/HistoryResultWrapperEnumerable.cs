@@ -7,6 +7,10 @@ using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
+    /// <summary>
+    /// Dummy class which is needed to implement <see cref="IEnumerable{T}"/> and provide access to
+    /// <see cref="HistoryResultWrapperEnumerator"/>
+    /// </summary>
     public class HistoryResultWrapperEnumerable : IEnumerable<Candle>
     {
         private readonly IEnumerable<Candle> _originalEnumerable;

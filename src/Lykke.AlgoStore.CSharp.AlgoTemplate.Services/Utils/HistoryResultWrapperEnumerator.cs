@@ -6,6 +6,15 @@ using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
+    /// <summary>
+    /// Used when providing the initial data from <see cref="CandlesService"/>.
+    /// After the end of the wrapped enumerator, provides queued incoming candles from a <see cref="ICandleProviderService"/>
+    /// </summary>
+    /// <remarks>
+    /// This class handles the case when we receive new candles while we're processing historical data - incoming
+    /// candles are queued and passed as part of the warmup to prevent missing candles and thus preventing the algorithm
+    /// from entering an invalid state
+    /// </remarks>
     public class HistoryResultWrapperEnumerator : CandleGapFillEnumeratorBase
     {
         private readonly IEnumerator<Candle> _originalEnumerator;
@@ -42,6 +51,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             return _currentCandle;
         }
 
+        /// <summary>
+        /// Retrieves the next <see cref="Candle"/> from the incoming candles queue
+        /// </summary>
+        /// <returns>True if there are more <see cref="Candle"/>s in the queue, false otherwise</returns>
         protected override bool MoveNextIndex()
         {
             if(_originalEnumerator.MoveNext())

@@ -7,6 +7,10 @@ using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
+    /// <summary>
+    /// Used to retrieve candles from the history service in batches, thereby preventing
+    /// loading too many candles into memory at one time
+    /// </summary>
     public class CandleHistoryBatchEnumerator : CandleGapFillEnumeratorBase
     {
         private readonly CandlesHistoryRequest _candlesHistoryRequest;
@@ -27,6 +31,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             _candlesHistoryService = candlesHistoryService;
         }
 
+        /// <summary>
+        /// Returns the current <see cref="Candle"/>
+        /// </summary>
+        /// <returns>The current <see cref="Candle"/></returns>
         protected override Candle GetCurrent()
         {
             var candle = _buffer[_currentIndex];
@@ -44,6 +52,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             };
         }
 
+        /// <summary>
+        /// Moves the current <see cref="Candle"/> one index forward
+        /// </summary>
+        /// <returns>True if the next <see cref="Candle"/> has been loaded, false if there are no more candles to load</returns>
         protected override bool MoveNextIndex()
         {
             if (_currentIndex < _buffer.Count - 1)
@@ -69,6 +81,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             }
         }
 
+        /// <summary>
+        /// Sets the range and fetches the next buffer from the history service
+        /// </summary>
         private void IncrementBuffer()
         {
             if (_isLastBuffer) return;
@@ -90,6 +105,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             while ((_buffer == null || _buffer.Count == 0) && !_isLastBuffer);
         }
 
+        /// <summary>
+        /// Fills the buffer from the history service
+        /// </summary>
         private void FillBuffer()
         {
             var task = _candlesHistoryService.GetCandlesHistoryAsync(_candlesHistoryRequest.AssetPair, Service.CandlesHistory.Client.Models.CandlePriceType.Mid,

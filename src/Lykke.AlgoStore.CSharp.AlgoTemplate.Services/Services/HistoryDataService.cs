@@ -3,12 +3,14 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using Lykke.Service.CandlesHistory.Client;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
+    /// <summary>
+    /// Mostly dummy class, main logic of the history data service is 
+    /// in the <see cref="CandleHistoryBatchEnumerator"/>
+    /// </summary>
     public class HistoryDataService : IHistoryDataService
     {
         private readonly ICandleshistoryservice _candlesHistoryService;

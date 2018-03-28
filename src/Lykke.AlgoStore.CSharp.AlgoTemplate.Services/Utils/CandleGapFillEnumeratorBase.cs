@@ -7,6 +7,9 @@ using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
+    /// <summary>
+    /// Base class containing logic to generate missing candles from a provider
+    /// </summary>
     public abstract class CandleGapFillEnumeratorBase : IEnumerator<Candle>
     {
         private bool _isDisposed;
@@ -32,6 +35,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             Dispose(true);
         }
 
+        /// <summary>
+        /// Contains the main logic to fill the empty gaps between returned candles.
+        /// </summary>
+        /// <remarks>
+        /// For example, if we have two candles for an interval of one day, one on 2018-01-01 and the other on 2018-01-03,
+        /// this method will fill the gap between the two and generate an empty candle for 2018-01-02
+        /// </remarks>
+        /// <returns>True if the next <see cref="Candle"/> has been loaded, false if there aren't any more to load</returns>
         public bool MoveNext()
         {
             CheckDisposed();
@@ -88,6 +99,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             return SetCandlesAndMoveIndex();
         }
 
+        /// <summary>
+        /// Support for this method isn't required. See https://msdn.microsoft.com/en-us/library/78dfe2yb.aspx#Remarks
+        /// for more information
+        /// </summary>
         public void Reset()
         {
             throw new NotImplementedException();
@@ -98,6 +113,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             _isDisposed = true;
         }
 
+        /// <summary>
+        /// Verifies the state of the enumerator and returns the current <see cref="Candle"/>
+        /// </summary>
+        /// <returns>The current <see cref="Candle"/></returns>
         private Candle CheckStateAndGetCurrent()
         {
             CheckDisposed();
@@ -114,6 +133,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             return GetCurrent();
         }
 
+        /// <summary>
+        /// Updates the current and previous <see cref="Candle"/> and moves to next element
+        /// </summary>
+        /// <returns>True if the next <see cref="Candle"/> has been loaded, false if there aren't any more to load</returns>
         private bool SetCandlesAndMoveIndex()
         {
             _prevCandle = _currentCandle;
