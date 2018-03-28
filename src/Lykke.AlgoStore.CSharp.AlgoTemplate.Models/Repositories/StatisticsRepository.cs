@@ -26,7 +26,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             _tableSummary = tableSummary;
         }
 
-        public static string GeneratePartitionKey(string instanceId, AlgoInstanceType instanceType) => $"{instanceId}_{instanceType}";
+        public static string GeneratePartitionKey(string instanceId) => instanceId;
 
         public static string GenerateRowKey(string key) => String.IsNullOrEmpty(key) ? DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'") : key;
 
@@ -35,11 +35,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         public async Task CreateAsync(Statistics data)
         {
             var entity = AutoMapper.Mapper.Map<StatisticsEntity>(data);
-            entity.PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType);
+            entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
             entity.RowKey = GenerateRowKey(data.Id);
 
             var entitySummary = await _tableSummary.GetDataAsync(
-                GeneratePartitionKey(data.InstanceId, data.InstanceType),
+                GeneratePartitionKey(data.InstanceId),
                 GenerateSummaryRowKey());
 
             if (entitySummary == null)
@@ -79,17 +79,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _table.DoBatchAsync(batch);
         }
 
-        public async Task DeleteAsync(string instanceId, AlgoInstanceType instanceType, string id)
+        public async Task DeleteAsync(string instanceId, string id)
         {
-            var partitionKey = GeneratePartitionKey(instanceId, instanceType);
+            var partitionKey = GeneratePartitionKey(instanceId);
             var rowKey = id;
 
             await _table.DeleteAsync(partitionKey, rowKey);
         }
 
-        public async Task DeleteAllAsync(string instanceId, AlgoInstanceType instanceType)
+        public async Task DeleteAllAsync(string instanceId)
         {
-            var partitionKey = GeneratePartitionKey(instanceId, instanceType);
+            var partitionKey = GeneratePartitionKey(instanceId);
 
             //REMARK: This is potential problem due to large amount of data that can have same partition key
             //Maybe we should reconsider and have another approach and have one table per algo instance
@@ -99,9 +99,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _table.DeleteAsync(dataToDelete);
         }
 
-        public async Task<StatisticsSummary> GetSummaryAsync(string instanceId, AlgoInstanceType instanceType)
+        public async Task<StatisticsSummary> GetSummaryAsync(string instanceId)
         {
-            var partitionKey = GeneratePartitionKey(instanceId, instanceType);
+            var partitionKey = GeneratePartitionKey(instanceId);
             var rowKey = GenerateSummaryRowKey();
 
             var result = await _tableSummary.GetDataAsync(partitionKey, rowKey);
@@ -112,17 +112,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         public async Task CreateOrUpdateSummaryAsync(StatisticsSummary data)
         {
             var entity = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(data);
-            entity.PartitionKey = GeneratePartitionKey(data.InstanceId, data.InstanceType);
+            entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
             entity.RowKey = GenerateSummaryRowKey();
 
             await _tableSummary.InsertOrMergeAsync(entity);
         }
 
-        public async Task<bool> SummaryExistsAsync(string instanceId, AlgoInstanceType instanceType)
+        public async Task<bool> SummaryExistsAsync(string instanceId)
         {
             return await _tableSummary.RecordExistsAsync(new StatisticsSummaryEntity
             {
-                PartitionKey = GeneratePartitionKey(instanceId, instanceType),
+                PartitionKey = GeneratePartitionKey(instanceId),
                 RowKey = GenerateSummaryRowKey()
             });
         }

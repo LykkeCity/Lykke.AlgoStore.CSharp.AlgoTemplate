@@ -52,7 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = _algoSettings.GetInstanceId();
             _instanceType = _algoSettings.GetInstanceType();
 
-            if (!_statisticsRepository.SummaryExistsAsync(_instanceId, _instanceType).Result)
+            if (!_statisticsRepository.SummaryExistsAsync(_instanceId).Result)
             {
                 var summaryData = new StatisticsSummary
                 {
@@ -70,7 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
             else
             {
-                var existingSummaryData = _statisticsRepository.GetSummaryAsync(_instanceId, _instanceType).Result;
+                var existingSummaryData = _statisticsRepository.GetSummaryAsync(_instanceId).Result;
 
                 //Update start values for statistics summary that already exists
                 existingSummaryData.AssetOneBalance = assetOneBalance;
@@ -105,7 +105,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public StatisticsSummary GetSummary()
         {
-            return _statisticsRepository.GetSummaryAsync(_instanceId, _instanceType).Result;
+            return _statisticsRepository.GetSummaryAsync(_instanceId).Result;
         }
     }
 }

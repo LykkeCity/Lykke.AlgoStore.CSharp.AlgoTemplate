@@ -37,11 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var repo = GivenStatisticsRepository();
 
-            repo.DeleteAllAsync(instanceId, instanceType).Wait(); //This will test deletion by partition key ;)
-
-            instanceType = AlgoInstanceType.Demo;
-
-            repo.DeleteAllAsync(instanceId, instanceType).Wait();
+            repo.DeleteAllAsync(instanceId).Wait(); //This will test deletion by partition key ;)
         }
 
         [Test]
@@ -448,7 +444,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             string instanceId,
             AlgoInstanceType instanceType)
         {
-            return repository.GetSummaryAsync(instanceId, instanceType).Result;
+            return repository.GetSummaryAsync(instanceId).Result;
         }
 
         private static void WhenInvokeCreateSummaryEntity(StatisticsRepository repository, StatisticsSummary entitySummary)
