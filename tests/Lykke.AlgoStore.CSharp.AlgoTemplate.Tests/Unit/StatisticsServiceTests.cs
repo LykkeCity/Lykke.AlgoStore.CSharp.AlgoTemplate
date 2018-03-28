@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
@@ -28,6 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Mapper.AssertConfigurationIsValid();
 
             _instanceId = SettingsMock.GetInstanceId();
+            SettingsMock.GetInstanceType();
         }
 
         [Test]
@@ -35,8 +39,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var repo = Given_Correct_StatisticsRepositoryMock();
             var service = Given_StatisticsService(repo);
-            When_Invoke_Create(service, out var exception);
 
+            When_Invoke_OnStart(service, out var exception);
+            Then_Exception_ShouldBe_Null(exception);
+
+            When_Invoke_Create(service, out exception);
             Then_Exception_ShouldBe_Null(exception);
         }
 
@@ -51,126 +58,55 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test]
-        public void GetBoughtAmount_Returns_Data()
+        public void GetSummary_Returns_Data()
         {
             var repo = Given_Correct_StatisticsRepositoryMock();
             var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetBoughtAmount(service, out var exception);
+            When_Invoke_GetSummary(service, out var exception);
 
             Then_Exception_ShouldBe_Null(exception);
-            Then_Data_ShouldNotBe_Zero(data);
         }
 
         [Test]
-        public void GetBoughtAmount_Throws_Exception()
+        public void GetSummary_Throws_Exception()
         {
             var repo = Given_Error_StatisticsRepositoryMock();
             var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetBoughtAmount(service, out var exception);
+            When_Invoke_GetSummary(service, out var exception);
 
             Then_Exception_ShouldNotBe_Null(exception);
-            Then_Data_ShouldBe_Zero(data);
         }
 
         [Test]
-        public void GetSoldAmount_Returns_Data()
+        public void OnStart_Returns_Data()
         {
             var repo = Given_Correct_StatisticsRepositoryMock();
             var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetSoldAmount(service, out var exception);
+            When_Invoke_OnStart(service, out var exception);
 
             Then_Exception_ShouldBe_Null(exception);
-            Then_Data_ShouldNotBe_Zero(data);
         }
 
         [Test]
-        public void GetSoldAmount_Throws_Exception()
+        public void OnStart_Throws_Exception()
         {
             var repo = Given_Error_StatisticsRepositoryMock();
             var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetSoldAmount(service, out var exception);
+            When_Invoke_OnStart(service, out var exception);
 
             Then_Exception_ShouldNotBe_Null(exception);
-            Then_Data_ShouldBe_Zero(data);
         }
 
-        [Test]
-        public void GetBoughtQuantity_Returns_Data()
-        {
-            var repo = Given_Correct_StatisticsRepositoryMock();
-            var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetBoughtQuantity(service, out var exception);
-
-            Then_Exception_ShouldBe_Null(exception);
-            Then_Data_ShouldNotBe_Zero(data);
-        }
-
-        [Test]
-        public void GetBoughtQuantity_Throws_Exception()
-        {
-            var repo = Given_Error_StatisticsRepositoryMock();
-            var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetBoughtQuantity(service, out var exception);
-
-            Then_Exception_ShouldNotBe_Null(exception);
-            Then_Data_ShouldBe_Zero(data);
-        }
-
-        [Test]
-        public void GetSoldQuantity_Returns_Data()
-        {
-            var repo = Given_Correct_StatisticsRepositoryMock();
-            var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetSoldQuantity(service, out var exception);
-
-            Then_Exception_ShouldBe_Null(exception);
-            Then_Data_ShouldNotBe_Zero(data);
-        }
-
-        [Test]
-        public void GetSoldQuantity_Throws_Exception()
-        {
-            var repo = Given_Error_StatisticsRepositoryMock();
-            var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetSoldQuantity(service, out var exception);
-
-            Then_Exception_ShouldNotBe_Null(exception);
-            Then_Data_ShouldBe_Zero(data);
-        }
-
-        [Test]
-        public void GetNumberOfRunningsForAnAlgo_Returns_Data()
-        {
-            var repo = Given_Correct_StatisticsRepositoryMock();
-            var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetNumberOfRunningsForAnAlgo(service, out var exception);
-
-            Then_Exception_ShouldBe_Null(exception);
-            Then_Data_ShouldNotBe_Zero(data);
-        }
-
-        [Test]
-        public void GetNumberOfRunningsForAnAlgo_Throws_Exception()
-        {
-            var repo = Given_Error_StatisticsRepositoryMock();
-            var service = Given_StatisticsService(repo);
-            var data = When_Invoke_GetNumberOfRunningsForAnAlgo(service, out var exception);
-
-            Then_Exception_ShouldNotBe_Null(exception);
-            Then_Data_ShouldBe_Zero(data);
-        }
-
-        private static double When_Invoke_GetNumberOfRunningsForAnAlgo(IStatisticsService service, out Exception exception)
+        private static void When_Invoke_OnStart(IStatisticsService service, out Exception exception)
         {
             exception = null;
             try
             {
-                return service.GetNumberOfRunningsForAnAlgo();
+                service.OnAlgoStarted();
             }
             catch (Exception ex)
             {
                 exception = ex;
-                return 0;
             }
         }
 
@@ -179,82 +115,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.NotNull(exception);
         }
 
-        private static double When_Invoke_GetSoldQuantity(IStatisticsService service, out Exception exception)
-        {
-            exception = null;
-            try
-            {
-                return service.GetSoldQuantity();
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-                return 0;
-            }
-        }
-
-        private static double When_Invoke_GetBoughtQuantity(IStatisticsService service, out Exception exception)
-        {
-            exception = null;
-            try
-            {
-                return service.GetBoughtQuantity();
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-                return 0;
-            }
-        }
-
-        private static double When_Invoke_GetSoldAmount(IStatisticsService service, out Exception exception)
-        {
-            exception = null;
-            try
-            {
-                return service.GetSoldAmount();
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-                return 0;
-            }
-        }
-
-        private static void Then_Data_ShouldNotBe_Zero(double data)
-        {
-            Assert.Greater(data, 0);
-        }
-
-        private static void Then_Data_ShouldBe_Zero(double data)
-        {
-            Assert.AreEqual(data, 0);
-        }
-
         private static void Then_Exception_ShouldBe_Null(Exception exception)
         {
             Assert.Null(exception);
         }
 
-        private static double When_Invoke_GetBoughtAmount(IStatisticsService service, out Exception exception)
-        {
-            exception = null;
-            try
-            {
-                return service.GetBoughtAmount();
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-                return 0;
-            }
-        }
-
         private static IStatisticsService Given_StatisticsService(IStatisticsRepository repo)
         {
             var statisticsService = new StatisticsService(repo, SettingsMock.InitSettingsService());
-
-            statisticsService.OnAlgoStarted();
 
             return statisticsService;
         }
@@ -263,28 +131,27 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var result = new Mock<IStatisticsRepository>();
 
-            result.Setup(repo => repo.GetSoldQuantityAsync(_instanceId)).Returns(() => Task.FromResult<double>(5));
-            result.Setup(repo => repo.GetBoughtAmountAsync(_instanceId)).Returns(() => Task.FromResult<double>(5));
-            result.Setup(repo => repo.GetBoughtQuantityAsync(_instanceId)).Returns(() => Task.FromResult<double>(5));
-            result.Setup(repo => repo.GetSoldAmountAsync(_instanceId)).Returns(() => Task.FromResult<double>(5));
             result.Setup(repo => repo.CreateAsync(new Statistics()));
-            result.Setup(repo => repo.GetNumberOfRunnings(_instanceId)).Returns(() => Task.FromResult<int>(5));
+            result.Setup(repo => repo.GetSummaryAsync(_instanceId)).Returns(Task.FromResult(new StatisticsSummary()));
 
             return result.Object;
         }
 
-        private IStatisticsRepository Given_Error_StatisticsRepositoryMock()
+        private static IStatisticsRepository Given_Error_StatisticsRepositoryMock()
         {
             var result = new Mock<IStatisticsRepository>();
 
-            result.Setup(repo => repo.GetSoldQuantityAsync(_instanceId)).ThrowsAsync(new Exception("GetSoldQuantity"));
-            result.Setup(repo => repo.GetBoughtAmountAsync(_instanceId)).ThrowsAsync(new Exception("GetBoughtAmount"));
-            result.Setup(repo => repo.GetBoughtQuantityAsync(_instanceId)).ThrowsAsync(new Exception("GetBoughtQuantity"));
-            result.Setup(repo => repo.GetSoldAmountAsync(_instanceId)).ThrowsAsync(new Exception("GetSoldAmount"));
             result.Setup(repo => repo.CreateAsync(It.IsAny<Statistics>())).ThrowsAsync(new Exception("CreateAsync"));
-            result.Setup(repo => repo.GetNumberOfRunnings(_instanceId)).ThrowsAsync(new Exception("GetNumberOfRunnings"));
+            result.Setup(repo => repo.GetSummaryAsync(It.IsAny<string>())).ThrowsAsync(new Exception("GetSummary"));
 
             return result.Object;
+        }
+
+        private static UserLogRepository Given_Correct_UserLog_Repository()
+        {
+            return new UserLogRepository(
+                AzureTableStorage<UserLogEntity>.Create(SettingsMock.GetLogsConnectionString(), UserLogRepository.TableName, new LogMock())
+            );
         }
 
         private static void When_Invoke_Create(IStatisticsService service, out Exception exception)
@@ -293,6 +160,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             try
             {
                 service.OnAction(true, 1, 1);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+        }
+
+        private static void When_Invoke_GetSummary(IStatisticsService service, out Exception exception)
+        {
+            exception = null;
+            try
+            {
+                service.GetSummary();
             }
             catch (Exception ex)
             {

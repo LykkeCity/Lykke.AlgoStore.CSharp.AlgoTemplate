@@ -1,12 +1,12 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 {
     public class StatisticsEntity : TableEntity
     {
-        public string InstanceId => PartitionKey;
-
-        public string Id => RowKey;
+        public string InstanceId { get; set; }
 
         public bool? IsBuy { get; set; }
 

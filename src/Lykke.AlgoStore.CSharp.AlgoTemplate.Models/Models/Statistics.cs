@@ -1,7 +1,11 @@
-﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
+﻿using System.ComponentModel.DataAnnotations;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
     public class Statistics
     {
+        [Required]
         public string InstanceId { get; set; }
 
         public string Id { get; set; }

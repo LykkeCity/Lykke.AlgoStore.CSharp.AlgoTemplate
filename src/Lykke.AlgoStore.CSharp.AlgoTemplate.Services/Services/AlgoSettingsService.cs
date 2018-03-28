@@ -6,6 +6,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -27,6 +28,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public string GetAlgoId() => _algoId;
         public string GetInstanceId() => _instanceId;
         public string GetTradedAsset() => _tradedAsset;
+
+        public AlgoInstanceType GetInstanceType()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AlgoInstanceType;
+        }
 
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
         {

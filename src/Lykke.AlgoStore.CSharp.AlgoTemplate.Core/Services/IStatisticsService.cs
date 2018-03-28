@@ -10,5 +10,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         void OnQuote(IAlgoQuote quote);
         void OnAction(bool isBuy, double volume, double price);
         void OnAlgoStarted();
+        void OnAlgoStopped();
     }
 }

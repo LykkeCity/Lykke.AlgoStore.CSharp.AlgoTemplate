@@ -1,6 +1,7 @@
 ﻿using System;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 
@@ -15,7 +16,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IAlgoSettingsService _algoSettings;
         private string _instanceId;
 
-        public StatisticsService(IStatisticsRepository statisticsRepository, IAlgoSettingsService algoSettings)
+        public StatisticsService(
+            IStatisticsRepository statisticsRepository,
+            IAlgoSettingsService algoSettings)
         {
             _statisticsRepository = statisticsRepository;
             _algoSettings = algoSettings;
@@ -41,39 +44,66 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Price = price
             };
 
-            _statisticsRepository.CreateAsync(data).Wait();
+            var summary = GetSummary();
+
+            summary.TotalNumberOfTrades++;
+
+            //TODO: Update other summary properties from external service(s) before save
+            //In case of a back-test we have to update summary in here (AL-335)
+
+            _statisticsRepository.CreateAsync(data, summary).Wait();
         }
 
         public void OnAlgoStarted()
         {
-            //REMARK: No need to save any statistics here (for now)
+            _instanceId = _algoSettings.GetInstanceId();
 
-            _instanceId = _algoSettings.GetSetting("InstanceId");
+            var data = new Statistics
+            {
+                InstanceId = _instanceId,
+                IsStarted = true
+            };
+
+            var summary = GetSummary();
+
+            //REMARK: This should never happen when we implement summary math (before algo instance is created)
+            if (summary == null)
+            {
+                CreateDefaultSummary();
+                summary = GetSummary();
+            }
+
+            summary.TotalNumberOfStarts++;
+
+            _statisticsRepository.CreateAsync(data, summary).Wait();
         }
 
-        public double GetBoughtAmount()
+        public void OnAlgoStopped()
         {
-            return _statisticsRepository.GetBoughtAmountAsync(_instanceId).Result;
+            var data = new Statistics
+            {
+                InstanceId = _instanceId,
+                IsStarted = false
+            };
+
+            _statisticsRepository.CreateAsync(data).Wait();
         }
 
-        public double GetSoldAmount()
+        public StatisticsSummary GetSummary()
         {
-            return _statisticsRepository.GetSoldAmountAsync(_instanceId).Result;
+            return _statisticsRepository.GetSummaryAsync(_instanceId).Result;
         }
 
-        public double GetBoughtQuantity()
+        private void CreateDefaultSummary()
         {
-            return _statisticsRepository.GetBoughtQuantityAsync(_instanceId).Result;
-        }
+            var summary = new StatisticsSummary
+            {
+                InstanceId = _instanceId,
+                TotalNumberOfTrades = 0,
+                TotalNumberOfStarts = 0
+            };
 
-        public double GetSoldQuantity()
-        {
-            return _statisticsRepository.GetSoldQuantityAsync(_instanceId).Result;
-        }
-
-        public int GetNumberOfRunningsForAnAlgo()
-        {
-            return _statisticsRepository.GetNumberOfRunnings(_instanceId).Result;
+            _statisticsRepository.CreateOrUpdateSummaryAsync(summary).Wait();
         }
     }
 }
