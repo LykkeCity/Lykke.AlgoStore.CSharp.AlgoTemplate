@@ -104,6 +104,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<ICandleProviderService>()
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.CandleRabbitMqSettings)));
 
+            // TODO: Register this when we are able to determine if the algo is running in backtest mode and retrieve the start date
+
+            //builder.RegisterType<HistoricalCandleProviderService>()
+            //    .As<ICandleProviderService>()
+            //    .WithParameter(TypedParameter.From(DateTime.UtcNow.AddMonths(-2)));
+
             builder.RegisterType<RabbitMqQuoteProviderService>()
                 .As<IQuoteProviderService>()
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.QuoteRabbitMqSettings)));

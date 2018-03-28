@@ -48,9 +48,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             foreach(var request in _candleRequests)
             {
-                request.StartFrom = DateTime.UtcNow.AddDays(-1);
-                request.CandleInterval = Models.Enumerators.CandleTimeInterval.Sec;
-
                 var historyRequest = new CandlesHistoryRequest
                 {
                     AssetPair = request.AssetPair,
@@ -59,7 +56,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 };
 
                 var result = _historyService.GetHistory(historyRequest);
-                var subscriptionData = _subscriptions[request.AssetPair];
+                var subscriptionData = _subscriptions[request.RequestId];
 
                 resultList.Add(new MultipleCandlesResponse
                 {

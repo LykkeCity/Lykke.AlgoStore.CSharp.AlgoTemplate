@@ -57,7 +57,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 
             IncrementBuffer();
 
-            return true;
+            return !_isLastBuffer || _buffer.Count > 0;
         }
 
         protected override void Dispose(bool disposing)
@@ -83,10 +83,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 9999);
 
                 if (_nextTimestamp > DateTime.UtcNow)
-                {
-                    _nextTimestamp = DateTime.UtcNow;
                     _isLastBuffer = true;
-                }
 
                 FillBuffer();
             }

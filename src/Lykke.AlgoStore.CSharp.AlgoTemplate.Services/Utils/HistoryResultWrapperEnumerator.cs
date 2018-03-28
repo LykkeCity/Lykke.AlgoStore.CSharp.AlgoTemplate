@@ -70,7 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 {
                     _subscriptionData.IsHistoryDone = true;
 
-                    if(_queueEmpty)
+                    if(_queueEmpty && _currentCandle != null)
                         _candleProvider.SetPrevCandleFromHistory(_candlesHistoryRequest.AssetPair, _candlesHistoryRequest.Interval, _currentCandle);
                 }
             }
