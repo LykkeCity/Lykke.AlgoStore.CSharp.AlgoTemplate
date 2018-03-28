@@ -14,13 +14,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly IAlgoSettingsService _algoSettings;
+        private readonly IUserLogRepository _userLogRepository;
         private string _instanceId;
-        private AlgoInstanceType _instanceType;
 
-        public StatisticsService(IStatisticsRepository statisticsRepository, IAlgoSettingsService algoSettings)
+        public StatisticsService(
+            IStatisticsRepository statisticsRepository, 
+            IAlgoSettingsService algoSettings,
+            IUserLogRepository userLogRepository)
         {
             _statisticsRepository = statisticsRepository;
             _algoSettings = algoSettings;
+            _userLogRepository = userLogRepository;
         }
 
         public IAlgoQuote GetQuote()
@@ -35,77 +39,80 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnAction(bool isBuy, double volume, double price)
         {
-            var data = new Statistics
+            try
             {
-                InstanceId = _instanceId,
-                Amount = volume,
-                IsBuy = isBuy,
-                Price = price,
-                InstanceType = _instanceType
-            };
+                var data = new Statistics
+                {
+                    InstanceId = _instanceId,
+                    Amount = volume,
+                    IsBuy = isBuy,
+                    Price = price
+                };
 
-            _statisticsRepository.CreateAsync(data).Wait();
+                _statisticsRepository.CreateAsync(data).Wait();
+            }
+            catch (Exception ex)
+            {
+                _userLogRepository.WriteAsync(_instanceId, ex).Wait();
+                
+                throw new Exception("Saving statistics failed", ex);
+            }
         }
 
         public void OnAlgoStarted(double initialWalletBalance, double assetOneBalance, double assetTwoBalance)
         {
             _instanceId = _algoSettings.GetInstanceId();
-            _instanceType = _algoSettings.GetInstanceType();
 
-            if (!_statisticsRepository.SummaryExistsAsync(_instanceId).Result)
+            try
             {
-                var summaryData = new StatisticsSummary
+                var data = new Statistics
                 {
                     InstanceId = _instanceId,
-                    TotalNumberOfTrades = 0,
-                    InstanceType = _instanceType,
-                    TotalNumberOfStarts = 0,
-                    AssetOneBalance = assetOneBalance,
-                    AssetTwoBalance = assetTwoBalance,
-                    InitialWalletBalance = initialWalletBalance,
-                    LastWalletBalance = initialWalletBalance
+                    IsStarted = true
                 };
 
-                _statisticsRepository.CreateOrUpdateSummaryAsync(summaryData).Wait();
+                _statisticsRepository.CreateAsync(data).Wait();
             }
-            else
+            catch (Exception ex)
             {
-                var existingSummaryData = _statisticsRepository.GetSummaryAsync(_instanceId).Result;
+                _userLogRepository.WriteAsync(_instanceId, ex).Wait();
 
-                //Update start values for statistics summary that already exists
-                existingSummaryData.AssetOneBalance = assetOneBalance;
-                existingSummaryData.AssetTwoBalance = assetTwoBalance;
-                existingSummaryData.InitialWalletBalance = initialWalletBalance;
-                existingSummaryData.LastWalletBalance = initialWalletBalance;
-
-                _statisticsRepository.CreateOrUpdateSummaryAsync(existingSummaryData).Wait();
+                throw new Exception("Saving statistics failed", ex);
             }
-
-            var data = new Statistics
-            {
-                InstanceId = _instanceId,
-                InstanceType = _instanceType,
-                IsStarted = true
-            };
-
-            _statisticsRepository.CreateAsync(data).Wait();
         }
 
         public void OnAlgoStopped()
         {
-            var data = new Statistics
+            try
             {
-                InstanceId = _instanceId,
-                InstanceType = _instanceType,
-                IsStarted = false
-            };
+                var data = new Statistics
+                {
+                    InstanceId = _instanceId,
+                    IsStarted = false
+                };
 
-            _statisticsRepository.CreateAsync(data).Wait();
+                _statisticsRepository.CreateAsync(data).Wait();
+            }
+            catch (Exception ex)
+            {
+                _userLogRepository.WriteAsync(_instanceId, ex).Wait();
+
+                throw new Exception("Saving statistics failed", ex);
+            }
         }
 
         public StatisticsSummary GetSummary()
         {
-            return _statisticsRepository.GetSummaryAsync(_instanceId).Result;
+            try
+            {
+                return _statisticsRepository.GetSummaryAsync(_instanceId).Result;
+            }
+            catch (Exception ex)
+            {
+                _userLogRepository.WriteAsync(_instanceId, ex).Wait();
+
+                throw new Exception("Get statistics summary failed", ex);
+            }
         }
     }
 }

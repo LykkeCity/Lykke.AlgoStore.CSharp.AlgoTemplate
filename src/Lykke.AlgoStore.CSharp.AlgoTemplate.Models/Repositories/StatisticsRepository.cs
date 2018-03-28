@@ -38,39 +38,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
             entity.RowKey = GenerateRowKey(data.Id);
 
-            var entitySummary = await _tableSummary.GetDataAsync(
-                GeneratePartitionKey(data.InstanceId),
-                GenerateSummaryRowKey());
+            await _table.InsertAsync(entity);
+        }
 
-            if (entitySummary == null)
-                throw new ArgumentException("Statistics summary row not found");
+        public async Task CreateAsync(Statistics data, StatisticsSummary summary)
+        {
+            var entity = AutoMapper.Mapper.Map<StatisticsEntity>(data);
+            entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
+            entity.RowKey = GenerateRowKey(data.Id);
 
-            if (data.IsStarted.HasValue && data.IsStarted.Value)
-                entitySummary.TotalNumberOfStarts++;
-
-            if (data.IsBuy.HasValue)
-            {
-                entitySummary.TotalNumberOfTrades++;
-
-                if(!entity.Amount.HasValue)
-                    throw new ArgumentException("Amount for statistics not provided");
-
-                if (!entity.Price.HasValue)
-                    throw new ArgumentException("Price for statistics not provided");
-
-                if (data.IsBuy.Value)
-                {
-                    entitySummary.AssetOneBalance = entitySummary.AssetOneBalance + entity.Amount.Value;
-                    entitySummary.AssetTwoBalance = entitySummary.AssetTwoBalance - (entity.Amount.Value * entity.Price.Value);
-                    entitySummary.LastWalletBalance = entitySummary.AssetOneBalance + entitySummary.AssetTwoBalance;
-                }
-                else
-                {
-                    entitySummary.AssetOneBalance = entitySummary.AssetOneBalance - entity.Amount.Value;
-                    entitySummary.AssetTwoBalance = entitySummary.AssetTwoBalance + (entity.Amount.Value * entity.Price.Value);
-                    entitySummary.LastWalletBalance = entitySummary.AssetOneBalance + entitySummary.AssetTwoBalance;
-                }
-            }
+            var entitySummary = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(summary);
+            entitySummary.PartitionKey = GeneratePartitionKey(summary.InstanceId);
+            entitySummary.RowKey = GenerateSummaryRowKey();
 
             var batch = new TableBatchOperation();
             batch.Insert(entity);

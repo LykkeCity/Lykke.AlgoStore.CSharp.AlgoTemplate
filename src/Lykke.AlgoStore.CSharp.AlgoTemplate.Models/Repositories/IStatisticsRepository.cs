@@ -8,6 +8,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
     public interface IStatisticsRepository
     {
         Task CreateAsync(Statistics data);
+        Task CreateAsync(Statistics data, StatisticsSummary summary);
         Task DeleteAsync(string instanceId, string id);
         Task DeleteAllAsync(string instanceId);
         Task<StatisticsSummary> GetSummaryAsync(string instanceId);

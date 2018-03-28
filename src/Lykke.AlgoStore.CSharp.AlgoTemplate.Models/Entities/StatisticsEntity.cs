@@ -15,17 +15,5 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public double? Amount { get; set; }
 
         public bool? IsStarted { get; set; }
-
-        public string AlgoInstanceTypeValue { get; set; }
-
-        public AlgoInstanceType InstanceType
-        {
-            get
-            {
-                Enum.TryParse(AlgoInstanceTypeValue, out AlgoInstanceType type);
-                return type;
-            }
-            set => AlgoInstanceTypeValue = value.ToString();
-        }
     }
 }

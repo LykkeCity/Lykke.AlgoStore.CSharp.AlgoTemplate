@@ -52,8 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = instanceId,
                 Amount = 123.45,
                 IsBuy = true,
-                Price = 123.45,
-                InstanceType = instanceType
+                Price = 123.45
             };
 
             Assert.Throws<AggregateException>(() => WhenInvokeCreateEntity(repo, _entity));
@@ -70,7 +69,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entitySummary = new StatisticsSummary
             {
                 InstanceId = instanceId,
-                InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
@@ -84,7 +82,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
-            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
             Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
@@ -105,7 +102,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entitySummary = new StatisticsSummary
             {
                 InstanceId = instanceId,
-                InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
@@ -119,8 +115,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                IsStarted = true,
-                InstanceType = AlgoInstanceType.Test
+                IsStarted = true
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -128,7 +123,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
-            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
             Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
@@ -149,7 +143,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entitySummary = new StatisticsSummary
             {
                 InstanceId = instanceId,
-                InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
@@ -163,8 +156,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                IsStarted = true,
-                InstanceType = AlgoInstanceType.Test
+                IsStarted = true
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -172,8 +164,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                IsStarted = true,
-                InstanceType = AlgoInstanceType.Test
+                IsStarted = true
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -181,7 +172,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
-            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 2, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
             Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
@@ -202,7 +192,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entitySummary = new StatisticsSummary
             {
                 InstanceId = instanceId,
-                InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
@@ -216,8 +205,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                IsStarted = true,
-                InstanceType = AlgoInstanceType.Test
+                IsStarted = true
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -227,8 +215,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = instanceId,
                 Amount = 2,
                 IsBuy = true,
-                Price = 2,
-                InstanceType = instanceType
+                Price = 2
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -236,7 +223,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
-            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 1, summary.TotalNumberOfTrades);
             Assert.AreEqual(12, summary.AssetOneBalance);
@@ -257,7 +243,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entitySummary = new StatisticsSummary
             {
                 InstanceId = instanceId,
-                InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
@@ -271,8 +256,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                IsStarted = true,
-                InstanceType = AlgoInstanceType.Test
+                IsStarted = true
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -282,8 +266,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = instanceId,
                 Amount = 2,
                 IsBuy = false,
-                Price = 2,
-                InstanceType = instanceType
+                Price = 2
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -291,7 +274,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
-            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 1, summary.TotalNumberOfTrades);
             Assert.AreEqual(8, summary.AssetOneBalance);
@@ -312,7 +294,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entitySummary = new StatisticsSummary
             {
                 InstanceId = instanceId,
-                InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
@@ -326,8 +307,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                IsStarted = true,
-                InstanceType = AlgoInstanceType.Test
+                IsStarted = true
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -337,8 +317,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = instanceId,
                 Amount = 2,
                 IsBuy = true,
-                Price = 2,
-                InstanceType = instanceType
+                Price = 2
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -348,8 +327,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = instanceId,
                 Amount = 2,
                 IsBuy = true,
-                Price = 2,
-                InstanceType = instanceType
+                Price = 2
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -357,7 +335,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
-            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 2, summary.TotalNumberOfTrades);
             Assert.AreEqual(14, summary.AssetOneBalance);
@@ -378,7 +355,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entitySummary = new StatisticsSummary
             {
                 InstanceId = instanceId,
-                InstanceType = instanceType,
                 TotalNumberOfTrades = 0,
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
@@ -392,8 +368,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
-                IsStarted = true,
-                InstanceType = AlgoInstanceType.Test
+                IsStarted = true
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -403,8 +378,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = instanceId,
                 Amount = 2,
                 IsBuy = false,
-                Price = 2,
-                InstanceType = instanceType
+                Price = 2
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -414,8 +388,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InstanceId = instanceId,
                 Amount = 2,
                 IsBuy = false,
-                Price = 2,
-                InstanceType = instanceType
+                Price = 2
             };
 
             WhenInvokeCreateEntity(repo, _entity);
@@ -423,7 +396,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var summary = WhenInvokeGetSummary(repo, instanceId);
 
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
-            Assert.AreEqual(_entitySummary.InstanceType, summary.InstanceType);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts + 1, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades + 2, summary.TotalNumberOfTrades);
             Assert.AreEqual(6, summary.AssetOneBalance);

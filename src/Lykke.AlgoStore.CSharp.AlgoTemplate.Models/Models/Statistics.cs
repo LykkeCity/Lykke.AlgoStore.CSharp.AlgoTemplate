@@ -17,8 +17,5 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public double? Amount { get; set; }
 
         public bool? IsStarted { get; set; }
-
-        [Required]
-        public AlgoInstanceType InstanceType { get; set; }
     }
 }

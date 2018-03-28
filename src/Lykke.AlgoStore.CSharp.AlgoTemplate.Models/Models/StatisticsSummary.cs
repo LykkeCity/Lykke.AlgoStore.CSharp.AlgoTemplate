@@ -8,9 +8,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         [Required]
         public string InstanceId { get; set; }
 
-        [Required]
-        public AlgoInstanceType InstanceType { get; set; }
-
         public int TotalNumberOfTrades { get; set; }
 
         public int TotalNumberOfStarts { get; set; }
@@ -23,6 +20,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         public double AssetTwoBalance { get; set; }
 
-        public double NetProfit => (InitialWalletBalance - LastWalletBalance) / InitialWalletBalance;
+        public double NetProfit => System.Math.Abs(InitialWalletBalance) > 0 ? (InitialWalletBalance - LastWalletBalance) / InitialWalletBalance : 0;
     }
 }
