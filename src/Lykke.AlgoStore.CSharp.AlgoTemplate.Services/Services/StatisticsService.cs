@@ -54,6 +54,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 summary.TotalNumberOfTrades++;
 
                 //TODO: Update other summary properties from external service(s) before save
+                //In case of a back-test we have to update summary in here (AL-335)
 
                 _statisticsRepository.CreateAsync(data, summary).Wait();
             }
