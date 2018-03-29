@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
@@ -38,26 +39,49 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void CreateSummaryRow()
+        public void GetAllAlgoInstanceStatistics()
         {
-            //REMARK: Use only when you need to insert new summary row for some reason :)
-            var instanceId = "f2441730-8afa-4796-8b1e-8116b26d7e17";
-
+            var instanceId = SettingsMock.GetInstanceId();
             var repo = GivenStatisticsRepository();
 
-            _entitySummary = new StatisticsSummary
+            _entity = new Statistics
             {
                 InstanceId = instanceId,
-                TotalNumberOfTrades = 0,
-                TotalNumberOfStarts = 0,
-                InitialWalletBalance = 10000,
-                LastWalletBalance = 10000,
-                AssetTwoBalance = 5000,
-                AssetOneBalance = 5000
+                Amount = 2,
+                IsBuy = true,
+                Price = 2
             };
 
-            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+            WhenInvokeCreateEntity(repo, _entity);
+
+            var statistics = WhenInvokeGetStatistics(repo, instanceId);
+
+            Assert.AreEqual(1, statistics.Count);
         }
+
+        //REMARK: Please uncomment test below if you need to create summary row for specific instance (when you want to test something specific)
+        //Be aware that this test wont mop at the end so new row will stay in storage
+        //[Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        //public void CreateSummaryRow()
+        //{
+        //    //REMARK: Use only when you need to insert new summary row for some reason :)
+        //    var instanceId = "f2441730-8afa-4796-8b1e-8116b26d7e17";
+
+        //    var repo = GivenStatisticsRepository();
+
+        //    _entitySummary = new StatisticsSummary
+        //    {
+        //        InstanceId = instanceId,
+        //        TotalNumberOfTrades = 0,
+        //        TotalNumberOfStarts = 0,
+        //        InitialWalletBalance = 10000,
+        //        LastWalletBalance = 10000,
+        //        AssetTwoBalance = 5000,
+        //        AssetOneBalance = 5000
+        //    };
+
+        //    WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+        //}
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         public void InitializeSummaryWillReturnValidSummary()
@@ -441,6 +465,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(24, summary.LastWalletBalance);
             Assert.AreEqual((20d - 24d) / 20d, summary.NetProfit);
+        }
+
+        private static List<Statistics> WhenInvokeGetStatistics(StatisticsRepository repository, string instanceId)
+        {
+            return repository.GetAllStatisticsAsync(instanceId).Result;
         }
 
         private static void WhenInvokeCreateStatisticsEntityWithSummary(

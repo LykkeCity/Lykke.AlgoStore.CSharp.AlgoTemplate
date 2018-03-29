@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
@@ -104,6 +105,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
                 PartitionKey = GeneratePartitionKey(instanceId),
                 RowKey = GenerateSummaryRowKey()
             });
+        }
+
+        public async Task<List<Statistics>> GetAllStatisticsAsync(string instanceId)
+        {
+            var data = await _table.GetDataAsync(GeneratePartitionKey(instanceId));
+
+            return AutoMapper.Mapper.Map<List<Statistics>>(data);
         }
     }
 }
