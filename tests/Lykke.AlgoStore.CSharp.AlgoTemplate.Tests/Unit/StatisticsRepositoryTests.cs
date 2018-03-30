@@ -66,7 +66,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         //public void CreateSummaryRow()
         //{
         //    //REMARK: Use only when you need to insert new summary row for some reason :)
-        //    var instanceId = "f2441730-8afa-4796-8b1e-8116b26d7e17";
+        //    var instanceId = "MJ_TEST_1234567890";
 
         //    var repo = GivenStatisticsRepository();
 
@@ -89,10 +89,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         //[Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         //public void CreateMoreThen1000Rows()
         //{
-        //    var instanceId = "e2bd764b-1f36-4840-93f4-5f8c9c6e1bfa";
+        //    var instanceId = "MJ_TEST_1234567890";
         //    var repo = GivenStatisticsRepository();
-        //    var numberOfEntities = 10000;
-        //    var numberOfEntitiesToFetch = 10000;
+        //    var numberOfEntities = 100;
+        //    var numberOfEntitiesToFetch = 100;
         //    var random = new Random();
 
         //    for (int i = 0; i < numberOfEntities; i++)

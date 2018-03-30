@@ -14,6 +14,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
     /// </summary>
     public class StatisticsRepository : IStatisticsRepository
     {
+        private readonly object _sync = new object();
+        private long _lastDifference = -1;
+        private int _duplicateCounter = 99999;
+
         private readonly INoSQLTableStorage<StatisticsEntity> _table;
         private readonly INoSQLTableStorage<StatisticsSummaryEntity> _tableSummary;
 
@@ -29,7 +33,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
         public static string GeneratePartitionKey(string instanceId) => instanceId;
 
-        public static string GenerateRowKey(string key) => String.IsNullOrEmpty(key) ? DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'") : key;
+        public static string GenerateRowKey(long difference, int duplicateCounter) => String.Format("{0:D19}{1:D5}_{2}",
+            difference, duplicateCounter, DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"));
 
         public static string GenerateSummaryRowKey() => "Summary";
 
@@ -37,7 +42,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         {
             var entity = AutoMapper.Mapper.Map<StatisticsEntity>(data);
             entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
-            entity.RowKey = GenerateRowKey(data.Id);
+            entity.RowKey = GenerateRowKey();
 
             await _table.InsertAsync(entity);
         }
@@ -46,7 +51,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         {
             var entity = AutoMapper.Mapper.Map<StatisticsEntity>(data);
             entity.PartitionKey = GeneratePartitionKey(data.InstanceId);
-            entity.RowKey = GenerateRowKey(data.Id);
+            entity.RowKey = GenerateRowKey();
 
             var entitySummary = AutoMapper.Mapper.Map<StatisticsSummaryEntity>(summary);
             entitySummary.PartitionKey = GeneratePartitionKey(summary.InstanceId);
@@ -117,6 +122,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
                 data = await _table.GetTopRecordsAsync(GeneratePartitionKey(instanceId), maxNumberOfRowsToFetch);
 
             return AutoMapper.Mapper.Map<List<Statistics>>(data);
+        }
+
+        private string GenerateRowKey()
+        {
+            lock (_sync)
+            {
+                var difference = DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks;
+                if (difference != _lastDifference)
+                {
+                    _lastDifference = difference;
+                    _duplicateCounter = 99999;
+                }
+                else
+                    _duplicateCounter -= 1;
+
+                return GenerateRowKey(difference, _duplicateCounter);
+            }
         }
     }
 }
