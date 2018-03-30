@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using AutoMapper;
 using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
@@ -60,7 +61,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         //REMARK: Please uncomment test below if you need to create summary row for specific instance (when you want to test something specific)
-        //Be aware that this test wont mop at the end so new row will stay in storage
+        //Be aware that this test wont mop up at the end so new row will stay in storage
         //[Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         //public void CreateSummaryRow()
         //{
@@ -81,6 +82,52 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         //    };
 
         //    WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+        //}
+
+        //REMARK: Please uncomment test below if you need to create multiple rows for specific instance (when you want to test something specific)
+        //Be aware that there is a line at the end that should mop up at the end
+        //[Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        //public void CreateMoreThen1000Rows()
+        //{
+        //    var instanceId = "e2bd764b-1f36-4840-93f4-5f8c9c6e1bfa";
+        //    var repo = GivenStatisticsRepository();
+        //    var numberOfEntities = 10000;
+        //    var numberOfEntitiesToFetch = 10000;
+        //    var random = new Random();
+
+        //    for (int i = 0; i < numberOfEntities; i++)
+        //    {
+        //        _entity = new Statistics
+        //        {
+        //            InstanceId = instanceId,
+        //            Amount = random.NextDouble() * (10 - 1) + 1,
+        //            IsBuy = random.NextDouble() >= 0.5,
+        //            Price = random.NextDouble() * (10 - 1) + 1
+        //        };
+
+        //        WhenInvokeCreateEntity(repo, _entity);
+        //    }
+
+        //    var timer = new Stopwatch();
+        //    timer.Start();
+
+        //    var allEntities = repo.GetAllStatisticsAsync(instanceId).Result;
+
+        //    timer.Stop();
+
+        //    Assert.AreEqual(numberOfEntities, allEntities.Count);
+        //    Assert.Warn($"All entities fetched in {timer.ElapsedMilliseconds}ms");
+
+        //    timer.Start();
+
+        //    allEntities = repo.GetAllStatisticsAsync(instanceId, numberOfEntitiesToFetch).Result;
+
+        //    timer.Stop();
+
+        //    Assert.AreEqual(numberOfEntitiesToFetch, allEntities.Count);
+        //    Assert.Warn($"{numberOfEntitiesToFetch} entities fetched in {timer.ElapsedMilliseconds}ms");
+
+        //    repo.DeleteAllAsync(instanceId).Wait();
         //}
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]

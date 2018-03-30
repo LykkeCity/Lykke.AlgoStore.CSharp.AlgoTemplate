@@ -107,9 +107,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             });
         }
 
-        public async Task<List<Statistics>> GetAllStatisticsAsync(string instanceId)
+        public async Task<List<Statistics>> GetAllStatisticsAsync(string instanceId, int maxNumberOfRowsToFetch = 0)
         {
-            var data = await _table.GetDataAsync(GeneratePartitionKey(instanceId));
+            IEnumerable<StatisticsEntity> data;
+
+            if (maxNumberOfRowsToFetch <= 0)
+                data = await _table.GetDataAsync(GeneratePartitionKey(instanceId));
+            else
+                data = await _table.GetTopRecordsAsync(GeneratePartitionKey(instanceId), maxNumberOfRowsToFetch);
 
             return AutoMapper.Mapper.Map<List<Statistics>>(data);
         }
