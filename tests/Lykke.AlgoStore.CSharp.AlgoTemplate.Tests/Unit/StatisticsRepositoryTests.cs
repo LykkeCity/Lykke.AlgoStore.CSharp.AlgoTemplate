@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using AutoMapper;
 using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
@@ -38,26 +40,95 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
-        public void CreateSummaryRow()
+        public void GetAllAlgoInstanceStatistics()
         {
-            //REMARK: Use only when you need to insert new summary row for some reason :)
-            var instanceId = "f2441730-8afa-4796-8b1e-8116b26d7e17";
-
+            var instanceId = SettingsMock.GetInstanceId();
             var repo = GivenStatisticsRepository();
 
-            _entitySummary = new StatisticsSummary
+            _entity = new Statistics
             {
                 InstanceId = instanceId,
-                TotalNumberOfTrades = 0,
-                TotalNumberOfStarts = 0,
-                InitialWalletBalance = 10000,
-                LastWalletBalance = 10000,
-                AssetTwoBalance = 5000,
-                AssetOneBalance = 5000
+                Amount = 2,
+                IsBuy = true,
+                Price = 2
             };
 
-            WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+            WhenInvokeCreateEntity(repo, _entity);
+
+            var statistics = WhenInvokeGetStatistics(repo, instanceId);
+
+            Assert.AreEqual(1, statistics.Count);
         }
+
+        //REMARK: Please uncomment test below if you need to create summary row for specific instance (when you want to test something specific)
+        //Be aware that this test wont mop up at the end so new row will stay in storage
+        //[Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        //public void CreateSummaryRow()
+        //{
+        //    //REMARK: Use only when you need to insert new summary row for some reason :)
+        //    var instanceId = "MJ_TEST_1234567890";
+
+        //    var repo = GivenStatisticsRepository();
+
+        //    _entitySummary = new StatisticsSummary
+        //    {
+        //        InstanceId = instanceId,
+        //        TotalNumberOfTrades = 0,
+        //        TotalNumberOfStarts = 0,
+        //        InitialWalletBalance = 10000,
+        //        LastWalletBalance = 10000,
+        //        AssetTwoBalance = 5000,
+        //        AssetOneBalance = 5000
+        //    };
+
+        //    WhenInvokeCreateSummaryEntity(repo, _entitySummary);
+        //}
+
+        //REMARK: Please uncomment test below if you need to create multiple rows for specific instance (when you want to test something specific)
+        //Be aware that there is a line at the end that should mop up at the end
+        //[Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        //public void CreateMoreThen1000Rows()
+        //{
+        //    var instanceId = "MJ_TEST_1234567890";
+        //    var repo = GivenStatisticsRepository();
+        //    var numberOfEntities = 100;
+        //    var numberOfEntitiesToFetch = 100;
+        //    var random = new Random();
+
+        //    for (int i = 0; i < numberOfEntities; i++)
+        //    {
+        //        _entity = new Statistics
+        //        {
+        //            InstanceId = instanceId,
+        //            Amount = random.NextDouble() * (10 - 1) + 1,
+        //            IsBuy = random.NextDouble() >= 0.5,
+        //            Price = random.NextDouble() * (10 - 1) + 1
+        //        };
+
+        //        WhenInvokeCreateEntity(repo, _entity);
+        //    }
+
+        //    var timer = new Stopwatch();
+        //    timer.Start();
+
+        //    var allEntities = repo.GetAllStatisticsAsync(instanceId).Result;
+
+        //    timer.Stop();
+
+        //    Assert.AreEqual(numberOfEntities, allEntities.Count);
+        //    Assert.Warn($"All entities fetched in {timer.ElapsedMilliseconds}ms");
+
+        //    timer.Start();
+
+        //    allEntities = repo.GetAllStatisticsAsync(instanceId, numberOfEntitiesToFetch).Result;
+
+        //    timer.Stop();
+
+        //    Assert.AreEqual(numberOfEntitiesToFetch, allEntities.Count);
+        //    Assert.Warn($"{numberOfEntitiesToFetch} entities fetched in {timer.ElapsedMilliseconds}ms");
+
+        //    repo.DeleteAllAsync(instanceId).Wait();
+        //}
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
         public void InitializeSummaryWillReturnValidSummary()
@@ -74,7 +145,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
                 AssetTwoBalance = 10,
-                AssetOneBalance = 10
+                AssetOneBalance = 10,
+                UserCurrencyBaseAssetId = "USD"
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -88,7 +160,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
-            Assert.AreEqual(0, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -106,7 +177,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
                 AssetTwoBalance = 10,
-                AssetOneBalance = 10
+                AssetOneBalance = 10,
+                UserCurrencyBaseAssetId = "USD"
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -130,7 +202,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
-            Assert.AreEqual(0, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -148,7 +219,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
                 AssetTwoBalance = 10,
-                AssetOneBalance = 10
+                AssetOneBalance = 10,
+                UserCurrencyBaseAssetId = "USD"
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -182,7 +254,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
-            Assert.AreEqual(0, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -200,7 +271,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
                 AssetTwoBalance = 10,
-                AssetOneBalance = 10
+                AssetOneBalance = 10,
+                UserCurrencyBaseAssetId = "USD"
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -239,7 +311,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(6, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(18, summary.LastWalletBalance);
-            Assert.AreEqual((20d - 18d) / 20d, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -257,7 +328,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
                 AssetTwoBalance = 10,
-                AssetOneBalance = 10
+                AssetOneBalance = 10,
+                UserCurrencyBaseAssetId = "USD"
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -296,7 +368,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(14, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(22, summary.LastWalletBalance);
-            Assert.AreEqual((20d - 22d) / 20d, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -314,7 +385,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
                 AssetTwoBalance = 10,
-                AssetOneBalance = 10
+                AssetOneBalance = 10,
+                UserCurrencyBaseAssetId = "USD"
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -368,7 +440,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(2, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(16, summary.LastWalletBalance);
-            Assert.AreEqual((20d - 16d) / 20d, summary.NetProfit);
         }
 
         [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
@@ -386,7 +457,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
                 AssetTwoBalance = 10,
-                AssetOneBalance = 10
+                AssetOneBalance = 10,
+                UserCurrencyBaseAssetId = "USD"
             };
 
             WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -440,7 +512,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(18, summary.AssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(24, summary.LastWalletBalance);
-            Assert.AreEqual((20d - 24d) / 20d, summary.NetProfit);
+        }
+
+        private static List<Statistics> WhenInvokeGetStatistics(StatisticsRepository repository, string instanceId)
+        {
+            return repository.GetAllStatisticsAsync(instanceId).Result;
         }
 
         private static void WhenInvokeCreateStatisticsEntityWithSummary(

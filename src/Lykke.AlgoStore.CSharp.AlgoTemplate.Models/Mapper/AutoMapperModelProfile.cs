@@ -42,6 +42,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
                 .ForMember(dest => dest.ETag, opt => opt.Ignore());
 
+            CreateMap<StatisticsEntity, Statistics>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.RowKey));
+
             CreateMap<Statistics, StatisticsSummaryEntity>()
                 .ForMember(dest => dest.RowKey, opt => opt.Ignore())
                 .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
@@ -52,7 +55,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForMember(dest => dest.InitialWalletBalance, opt => opt.Ignore())
                 .ForMember(dest => dest.LastWalletBalance, opt => opt.Ignore())
                 .ForMember(dest => dest.AssetOneBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.AssetTwoBalance, opt => opt.Ignore());
+                .ForMember(dest => dest.AssetTwoBalance, opt => opt.Ignore())
+                .ForMember(dest => dest.UserCurrencyBaseAssetId, opt => opt.Ignore());
 
             CreateMap<StatisticsSummary, StatisticsSummaryEntity>()
                 .ForMember(dest => dest.RowKey, opt => opt.Ignore())
@@ -64,7 +68,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForSourceMember(src => src.ETag, opt => opt.Ignore())
                 .ForSourceMember(src => src.PartitionKey, opt => opt.Ignore())
                 .ForSourceMember(src => src.RowKey, opt => opt.Ignore())
-                .ForSourceMember(src => src.Timestamp, opt => opt.Ignore());
+                .ForSourceMember(src => src.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.NetProfit, opt => opt.Ignore());
         }
     }
 }

@@ -19,5 +19,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public double AssetOneBalance { get; set; }
 
         public double AssetTwoBalance { get; set; }
+
+        public string UserCurrencyBaseAssetId { get; set; }
     }
 }

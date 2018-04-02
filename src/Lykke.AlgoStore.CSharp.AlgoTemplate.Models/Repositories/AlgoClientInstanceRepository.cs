@@ -70,9 +70,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             return entitiy.ToModel();
         }
 
-        public async Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByWalletIdAsync(string walletId)
+        public async Task<IEnumerable<AlgoClientInstanceData>> GetAllByWalletIdAndInstanceStatusIsNotStoppedAsync(string walletId)
         {
-            var entities = await _table.GetDataAsync(KeyGenerator.GenerateWalletIdPartitionKey(walletId));
+            var entities = (await _table.GetDataAsync(KeyGenerator.GenerateWalletIdPartitionKey(walletId)))
+                                    .Where(a => a.AlgoInstanceStatus != AlgoInstanceStatus.Stopped);
             var result = entities.Select(entity => entity.ToModel());
             return result;
         }

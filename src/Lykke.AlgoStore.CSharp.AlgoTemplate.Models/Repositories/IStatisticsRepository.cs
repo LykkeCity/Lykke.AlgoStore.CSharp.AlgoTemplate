@@ -1,6 +1,5 @@
-﻿using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
@@ -14,5 +13,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         Task<StatisticsSummary> GetSummaryAsync(string instanceId);
         Task CreateOrUpdateSummaryAsync(StatisticsSummary data);
         Task<bool> SummaryExistsAsync(string instanceId);
+        Task<List<Statistics>> GetAllStatisticsAsync(string instanceId, int maxNumberOfRowsToFetch = 0);
     }
 }
