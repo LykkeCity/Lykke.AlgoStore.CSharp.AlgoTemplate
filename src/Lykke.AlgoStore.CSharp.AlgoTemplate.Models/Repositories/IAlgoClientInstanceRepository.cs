@@ -11,7 +11,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         Task<List<AlgoClientInstanceData>> GetAllAlgoInstancesByClientAsync(string clientId);
         Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoIdAndClienIdAsync(string algoId, string clientId);
         Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByAlgoIdAndInstanceTypeAsync(string algoId, AlgoInstanceType instanceType);
-        Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByWalletIdAsync(string walletId);
+        Task<IEnumerable<AlgoClientInstanceData>> GetAllAlgoInstancesByWalletIdAndInstanceStausIsNotStoppedAsync(string walletId);
 
         Task<AlgoClientInstanceData> GetAlgoInstanceDataByAlgoIdAsync(string algoId, string instanceId);
         Task<AlgoClientInstanceData> GetAlgoInstanceDataByClientIdAsync(string clientId, string instanceId);
