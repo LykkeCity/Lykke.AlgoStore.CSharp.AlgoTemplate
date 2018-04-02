@@ -125,7 +125,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
 
         public static IAlgoSettingsService InitSettingsService()
         {
-            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456789\", \"InstanceId\": \"123456789\", \"InstanceType\": \"Test\" }");
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"5967bd68-1cea-4c24-9314-2fea325e0296\", \"InstanceId\": \"db216005-c8a7-486a-8cdc-037b179c8b74\", \"InstanceType\": \"Test\" }");
 
             var result = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             result.Initialize();

@@ -20,6 +20,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         public double AssetTwoBalance { get; set; }
 
-        public double NetProfit => System.Math.Abs(InitialWalletBalance) > 0 ? (InitialWalletBalance - LastWalletBalance) / InitialWalletBalance : 0;
+        public string UserCurrencyBaseAssetId { get; set; }
+
+        public double NetProfit { get; set; }
     }
 }
