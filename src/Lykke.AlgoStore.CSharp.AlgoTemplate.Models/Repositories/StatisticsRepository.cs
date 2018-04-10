@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
@@ -120,6 +121,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
                 data = await _table.GetDataAsync(GeneratePartitionKey(instanceId));
             else
                 data = await _table.GetTopRecordsAsync(GeneratePartitionKey(instanceId), maxNumberOfRowsToFetch);
+
+            return AutoMapper.Mapper.Map<List<Statistics>>(data);
+        }
+
+        public async Task<List<Statistics>> GetAllTradesAsync(string instanceId, int maxNumberOfRowsToFetch = 0)
+        {
+            var partition = GeneratePartitionKey(instanceId);
+            Func<StatisticsEntity, bool> filter = x => x.IsBuy.HasValue;
+
+            var data = await _table.GetDataAsync(partition, filter);
+
+            if (maxNumberOfRowsToFetch > 0)
+                data = data.Take(maxNumberOfRowsToFetch);
 
             return AutoMapper.Mapper.Map<List<Statistics>>(data);
         }

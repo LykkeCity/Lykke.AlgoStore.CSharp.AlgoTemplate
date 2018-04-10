@@ -14,5 +14,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         Task CreateOrUpdateSummaryAsync(StatisticsSummary data);
         Task<bool> SummaryExistsAsync(string instanceId);
         Task<List<Statistics>> GetAllStatisticsAsync(string instanceId, int maxNumberOfRowsToFetch = 0);
+        Task<List<Statistics>> GetAllTradesAsync(string instanceId, int maxNumberOfRowsToFetch = 0);
     }
 }

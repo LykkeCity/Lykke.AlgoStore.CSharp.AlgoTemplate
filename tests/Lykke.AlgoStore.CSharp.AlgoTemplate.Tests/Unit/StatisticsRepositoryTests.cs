@@ -48,6 +48,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new Statistics
             {
                 InstanceId = instanceId,
+                IsStarted = true
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
                 Amount = 2,
                 IsBuy = true,
                 Price = 2
@@ -57,8 +65,61 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var statistics = WhenInvokeGetStatistics(repo, instanceId);
 
+            Assert.AreEqual(2, statistics.Count);
+        }
+
+        [Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        public void GetAllAlgoInstanceTrades()
+        {
+            var instanceId = SettingsMock.GetInstanceId();
+            var repo = GivenStatisticsRepository();
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                IsStarted = true
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            _entity = new Statistics
+            {
+                InstanceId = instanceId,
+                Amount = 2,
+                IsBuy = true,
+                Price = 2
+            };
+
+            WhenInvokeCreateEntity(repo, _entity);
+
+            var statistics = WhenInvokeGetTrades(repo, instanceId);
+
             Assert.AreEqual(1, statistics.Count);
         }
+
+        //REMARK: Please uncomment test below if you need to get all trades for REAl algo instance
+        //[Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        //public void GetAllAlgoInstanceTradesForRealAlgoInsatnce()
+        //{
+        //    var instanceId = "1d34526b-814d-4f8c-83de-28b2c03c7aca";
+        //    var repo = GivenStatisticsRepository();
+
+        //    var statistics = WhenInvokeGetTrades(repo, instanceId);
+
+        //    Assert.AreEqual(0, statistics.Count);
+        //}
+
+        //REMARK: Please uncomment test below if you need to get summary for REAl algo instance
+        //[Test, Explicit("Should run manually only.Manipulate data in Table Storage")]
+        //public void GetAlgoInstanceSummaryForRealAlgoInstance()
+        //{
+        //    var instanceId = "1d34526b-814d-4f8c-83de-28b2c03c7aca";
+        //    var repo = GivenStatisticsRepository();
+
+        //    var statistics = WhenInvokeGetSummary(repo, instanceId);
+
+        //    Assert.AreEqual(1, statistics.TotalNumberOfStarts);
+        //}
 
         //REMARK: Please uncomment test below if you need to create summary row for specific instance (when you want to test something specific)
         //Be aware that this test wont mop up at the end so new row will stay in storage
@@ -517,6 +578,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private static List<Statistics> WhenInvokeGetStatistics(StatisticsRepository repository, string instanceId)
         {
             return repository.GetAllStatisticsAsync(instanceId).Result;
+        }
+
+        private static List<Statistics> WhenInvokeGetTrades(StatisticsRepository repository, string instanceId)
+        {
+            return repository.GetAllTradesAsync(instanceId).Result;
         }
 
         private static void WhenInvokeCreateStatisticsEntityWithSummary(
