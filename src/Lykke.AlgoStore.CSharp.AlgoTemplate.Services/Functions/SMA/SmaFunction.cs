@@ -24,6 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         public SmaFunction(SmaParameters smaParameters)
         {
             _functionParams = smaParameters;
+            _storageQueue = _functionParams.Capacity == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Capacity);
         }
 
         /// <summary>
@@ -34,8 +35,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         {
             if (values == null)
                 throw new ArgumentException();
-
-            _storageQueue = _functionParams.Capacity == 0 ? new Queue<double>() : new Queue<double>(_functionParams.Capacity);
 
             foreach (var value in values)
                 AddNewValue(value);
