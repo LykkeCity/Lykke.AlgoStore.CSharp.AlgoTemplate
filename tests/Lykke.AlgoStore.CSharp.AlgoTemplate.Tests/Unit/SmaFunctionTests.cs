@@ -232,6 +232,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(14, sma);
         }
 
+        [Test]
+        public void SmaFunction_AddNewValue_RunsCorrectlyWithoutWarmup()
+        {
+            var function = new SmaFunction(new SmaParameters() { Capacity = 3 });
+
+            var result = function.AddNewValue(1);
+
+            Assert.AreEqual(1, result);
+        }
+
+        [Test]
+        public void SmaFunction_Value_ReturnsCorrectlyWithoutWarmup()
+        {
+            var function = new SmaFunction(new SmaParameters() { Capacity = 3 });
+
+            var result = function.Value;
+
+            Assert.AreEqual(0, result);
+        }
+
     }
 
 }
