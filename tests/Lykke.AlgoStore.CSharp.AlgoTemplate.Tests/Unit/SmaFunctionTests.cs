@@ -131,25 +131,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test]
-        public void CalculateSmaTestForFixedData()
-        {
-            var smaAlgo = new SmaAlgo
-            {
-                Parameters = new SmaParameters
-                {
-                    LongTermPeriod = 5,
-                    ShortTermPeriod = 3,
-                    Decimals = 4
-                }
-            };
-
-            smaAlgo.WarmUp(FixedPriceValues);
-
-            Assert.AreEqual(smaAlgo.GetLongTermSmaValue(), 15);
-            Assert.AreEqual(smaAlgo.GetShortTermSmaValue(), 16);
-        }
-
-        [Test]
         public void CalculateSmaForOneValueInputAndOneAddedValueReturnsAverageValue()
         {
             var percision = 1;
@@ -183,25 +164,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var sma = function.GetSmaValue();
 
             Assert.AreEqual(sma, 13);
-        }
-
-        [Test, Explicit("Run manually only cause it uses random generated data for calculus")]
-        public void CalculateSmaTestForRandomData()
-        {
-            var smaAlgo = new SmaAlgo
-            {
-                Parameters = new SmaParameters
-                {
-                    LongTermPeriod = 50,
-                    ShortTermPeriod = 20,
-                    Decimals = 4
-                }
-            };
-
-            smaAlgo.WarmUp(CustomPriceValues);
-
-            Assert.Greater(smaAlgo.GetLongTermSmaValue(), 164);
-            Assert.Greater(smaAlgo.GetShortTermSmaValue(), 164);
         }
 
         [Test]

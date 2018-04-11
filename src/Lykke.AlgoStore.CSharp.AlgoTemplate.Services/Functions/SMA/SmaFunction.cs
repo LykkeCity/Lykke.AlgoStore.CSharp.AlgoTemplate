@@ -67,14 +67,5 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
 
             return GetSmaValue();
         }
-
-        /// <summary>
-        /// Get value that we are calculating SMA for
-        /// </summary>
-        /// <returns>Latest value that we calculate SMA for</returns>
-        public double GetValue()
-        {
-            return _storageQueue.Last();
-        }
     }
 }
