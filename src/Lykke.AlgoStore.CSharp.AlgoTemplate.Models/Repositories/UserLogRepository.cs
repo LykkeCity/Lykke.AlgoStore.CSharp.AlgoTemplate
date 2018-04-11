@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
@@ -60,10 +61,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
         public async Task<List<UserLog>> GetEntries(int limit, string instanceId)
         {
-            var partitionKey = GeneratePartitionKey(instanceId);
-            var data = await _table.GetDataAsync(new List<string> { partitionKey }, limit);
+            var query = new TableQuery<UserLogEntity>()
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, GeneratePartitionKey(instanceId)))
+                .Take(limit);
 
-            var result = AutoMapper.Mapper.Map<List<UserLog>>(data);
+            var result = new List<UserLog>();
+
+            await _table.ExecuteAsync(query, (items) => result.AddRange(AutoMapper.Mapper.Map<List<UserLog>>(items)), () => false);
 
             return result;
         }
