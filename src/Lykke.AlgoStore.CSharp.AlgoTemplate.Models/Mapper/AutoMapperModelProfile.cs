@@ -54,8 +54,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForMember(dest => dest.TotalNumberOfStarts, opt => opt.Ignore())
                 .ForMember(dest => dest.InitialWalletBalance, opt => opt.Ignore())
                 .ForMember(dest => dest.LastWalletBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.AssetOneBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.AssetTwoBalance, opt => opt.Ignore())
+                .ForMember(dest => dest.InitialTradedAssetBalance, opt => opt.Ignore())
+                .ForMember(dest => dest.InitialAssetTwoBalance, opt => opt.Ignore())
+                .ForMember(dest => dest.LastTradedAssetBalance, opt => opt.Ignore())
+                .ForMember(dest => dest.LastAssetTwoBalance, opt => opt.Ignore())
                 .ForMember(dest => dest.UserCurrencyBaseAssetId, opt => opt.Ignore());
 
             CreateMap<StatisticsSummary, StatisticsSummaryEntity>()
