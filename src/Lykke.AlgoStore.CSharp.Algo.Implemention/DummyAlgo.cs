@@ -28,8 +28,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
                 $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
                 $"{{quote.IsBuy: {quote.IsBuy}}}, {{quote.IsOnline: {quote.IsOnline}}}");
 
-            var smaShort = _shortSma.GetValue();
-            var smaLong = _longSma.GetValue();
+            var smaShort = _shortSma.Value;
+            var smaLong = _longSma.Value;
             context.Actions.Log($"Function values are: SMA_Short: {smaShort}, SMA_Long: {smaLong}");
 
             //if (quote.Price < 10000)
