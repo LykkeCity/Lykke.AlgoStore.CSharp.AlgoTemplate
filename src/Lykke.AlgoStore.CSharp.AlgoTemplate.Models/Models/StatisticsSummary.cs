@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
@@ -16,9 +15,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         public double LastWalletBalance { get; set; }
 
-        public double AssetOneBalance { get; set; }
+        public double InitialTradedAssetBalance { get; set; }
 
-        public double AssetTwoBalance { get; set; }
+        public double InitialAssetTwoBalance { get; set; }
+
+        public double LastTradedAssetBalance { get; set; }
+
+        public double LastAssetTwoBalance { get; set; }
 
         public string UserCurrencyBaseAssetId { get; set; }
 
