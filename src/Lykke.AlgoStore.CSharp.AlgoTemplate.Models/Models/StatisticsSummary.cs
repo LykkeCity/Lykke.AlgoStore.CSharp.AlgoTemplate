@@ -23,6 +23,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         public double LastAssetTwoBalance { get; set; }
 
+        public string TradedAssetName { get; set; }
+
+        public string AssetTwoName { get; set; }
+
         public string UserCurrencyBaseAssetId { get; set; }
 
         public double NetProfit { get; set; }
