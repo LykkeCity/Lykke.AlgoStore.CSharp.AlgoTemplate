@@ -11,6 +11,7 @@ using Lykke.MatchingEngine.Connector.Abstractions.Models;
 using Lykke.MatchingEngine.Connector.Abstractions.Services;
 using Lykke.Service.Assets.Client;
 using Lykke.Service.FeeCalculator.Client;
+using FeeType = Lykke.Service.FeeCalculator.AutorestClient.Models.FeeType;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -74,7 +75,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Straight = straight,
                 Volume = Math.Abs(volume),
                 OrderAction = orderAction.ToMeOrderAction(),
-                Fee = await GetMarketOrderFee(clientId, assetPairId, orderAction)
+                Fees = new[] { await GetMarketOrderFee(clientId, assetPairId, orderAction) }
             };
 
             var response = await _matchingEngineClient.HandleMarketOrderAsync(order);
@@ -150,15 +151,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private async Task<MarketOrderFeeModel> GetMarketOrderFee(string clientId, string assetPairId, OrderAction orderAction)
         {
             var assetPair = await _assetsService.AssetPairGetAsync(assetPairId);
-            var fee = await _feeCalculatorClient.GetMarketOrderFees(clientId, assetPairId, assetPair?.BaseAssetId,
-                orderAction.ToFeeOrderAction());
+            var fee = await _feeCalculatorClient.GetMarketOrderAssetFee(clientId, assetPairId, assetPair?.BaseAssetId, orderAction.ToFeeOrderAction());
 
             return new MarketOrderFeeModel
             {
-                Size = (double)fee.DefaultFeeSize,
+                Size = (double)fee.Amount,
+                SizeType = fee.Type == FeeType.Absolute
+                    ? (int)FeeSizeType.ABSOLUTE
+                    : (int)FeeSizeType.PERCENTAGE,
                 SourceClientId = clientId,
-                TargetClientId = _feeSettings.TargetClientId.Hft,
-                Type = (int)MarketOrderFeeType.CLIENT_FEE
+                TargetClientId = fee.TargetWalletId ?? _feeSettings.TargetClientId.Hft,
+                Type = fee.Amount == 0m
+                    ? (int)MarketOrderFeeType.NO_FEE
+                    : (int)MarketOrderFeeType.CLIENT_FEE,
+                AssetId = string.IsNullOrEmpty(fee.TargetAssetId)
+                    ? Array.Empty<string>()
+                    : new[] { fee.TargetAssetId }
             };
         }
 
