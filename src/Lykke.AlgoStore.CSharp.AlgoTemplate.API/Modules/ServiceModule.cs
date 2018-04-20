@@ -70,6 +70,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                     AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log))
                 .SingleInstance();
 
+            builder.RegisterInstance<IAlgoInstanceTradeRepository>(AzureRepoFactories.CreateAlgoTradeRepository(
+                _settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log)).SingleInstance();
+
             builder.RegisterInstance<IAlgoClientInstanceRepository>(
                     AzureRepoFactories.CreateAlgoClientInstanceRepository(
                         _settings.Nested(x => x.CSharpAlgoTemplateService.Db.TableStorageConnectionString), _log))

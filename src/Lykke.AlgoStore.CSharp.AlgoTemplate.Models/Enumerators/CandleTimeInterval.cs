@@ -25,7 +25,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators
         Hour = 3600,
 
         [Display(Name = "4 Hours")]
-        Hour4 = 7200,
+        Hour4 = 14400,
 
         [Display(Name = "6 Hours")]
         Hour6 = 21600,

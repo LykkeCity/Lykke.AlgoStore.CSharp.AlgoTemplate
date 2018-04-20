@@ -17,8 +17,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForMember(dest => dest.AlgoInstanceTypeValue, opt => opt.Ignore())
                 .ForMember(dest => dest.AlgoMetaDataInformation, opt => opt.Ignore())
                 .ForSourceMember(src => src.AlgoMetaDataInformation, opt => opt.Ignore());
-
-
+            
             CreateMap<AlgoClientInstanceEntity, AlgoClientInstanceData>()
                 .ForSourceMember(dest => dest.RowKey, opt => opt.Ignore())
                 .ForSourceMember(dest => dest.Timestamp, opt => opt.Ignore())
@@ -29,6 +28,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForSourceMember(dest => dest.AlgoMetaDataInformation, opt => opt.Ignore())
                 .ForMember(src => src.AlgoMetaDataInformation, opt => opt.Ignore())
                 .ForMember(src => src.InstanceId, opt => opt.MapFrom(src => src.RowKey));
+
+            CreateMap<AlgoInstanceTrade, AlgoInstanceTradeEntity>()
+                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore());
+
+            CreateMap<AlgoInstanceTradeEntity, AlgoInstanceTrade>()
+                .ForSourceMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.ETag, opt => opt.Ignore());
 
             CreateMap<UserLog, UserLogEntity>()
                 .ForMember(dest => dest.RowKey, opt => opt.Ignore())
@@ -46,21 +57,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.RowKey));
 
             CreateMap<Statistics, StatisticsSummaryEntity>()
-                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
-                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
-                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
-                .ForMember(dest => dest.ETag, opt => opt.Ignore())
-                .ForMember(dest => dest.TotalNumberOfTrades, opt => opt.Ignore())
-                .ForMember(dest => dest.TotalNumberOfStarts, opt => opt.Ignore())
-                .ForMember(dest => dest.InitialWalletBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.LastWalletBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.InitialTradedAssetBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.InitialAssetTwoBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.LastTradedAssetBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.LastAssetTwoBalance, opt => opt.Ignore())
-                .ForMember(dest => dest.UserCurrencyBaseAssetId, opt => opt.Ignore())
-                .ForMember(dest => dest.TradedAssetName, opt => opt.Ignore())
-                .ForMember(dest => dest.AssetTwoName, opt => opt.Ignore());
+                     .ForMember(dest => dest.RowKey, opt => opt.Ignore())
+                     .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                     .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                     .ForMember(dest => dest.ETag, opt => opt.Ignore())
+                     .ForMember(dest => dest.TotalNumberOfTrades, opt => opt.Ignore())
+                     .ForMember(dest => dest.TotalNumberOfStarts, opt => opt.Ignore())
+                     .ForMember(dest => dest.InitialWalletBalance, opt => opt.Ignore())
+                     .ForMember(dest => dest.LastWalletBalance, opt => opt.Ignore())
+                     .ForMember(dest => dest.InitialTradedAssetBalance, opt => opt.Ignore())
+                     .ForMember(dest => dest.InitialAssetTwoBalance, opt => opt.Ignore())
+                     .ForMember(dest => dest.LastTradedAssetBalance, opt => opt.Ignore())
+                     .ForMember(dest => dest.LastAssetTwoBalance, opt => opt.Ignore())
+                     .ForMember(dest => dest.UserCurrencyBaseAssetId, opt => opt.Ignore())
+                     .ForMember(dest => dest.TradedAssetName, opt => opt.Ignore())
+                     .ForMember(dest => dest.AssetTwoName, opt => opt.Ignore());
 
             CreateMap<StatisticsSummary, StatisticsSummaryEntity>()
                 .ForMember(dest => dest.RowKey, opt => opt.Ignore())
@@ -69,11 +80,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForMember(dest => dest.ETag, opt => opt.Ignore());
 
             CreateMap<StatisticsSummaryEntity, StatisticsSummary>()
-                .ForSourceMember(src => src.ETag, opt => opt.Ignore())
-                .ForSourceMember(src => src.PartitionKey, opt => opt.Ignore())
-                .ForSourceMember(src => src.RowKey, opt => opt.Ignore())
-                .ForSourceMember(src => src.Timestamp, opt => opt.Ignore())
-                .ForMember(dest => dest.NetProfit, opt => opt.Ignore());
+                  .ForSourceMember(src => src.ETag, opt => opt.Ignore())
+                  .ForSourceMember(src => src.PartitionKey, opt => opt.Ignore())
+                  .ForSourceMember(src => src.RowKey, opt => opt.Ignore())
+                  .ForSourceMember(src => src.Timestamp, opt => opt.Ignore())
+                  .ForMember(dest => dest.NetProfit, opt => opt.Ignore());
+
         }
     }
 }
