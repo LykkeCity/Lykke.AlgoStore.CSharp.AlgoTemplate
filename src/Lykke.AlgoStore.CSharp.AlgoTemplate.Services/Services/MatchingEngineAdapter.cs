@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Log;
+﻿using Common.Log;
 using JetBrains.Annotations;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
@@ -11,6 +7,9 @@ using Lykke.MatchingEngine.Connector.Abstractions.Models;
 using Lykke.MatchingEngine.Connector.Abstractions.Services;
 using Lykke.Service.Assets.Client;
 using Lykke.Service.FeeCalculator.Client;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FeeType = Lykke.Service.FeeCalculator.AutorestClient.Models.FeeType;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services

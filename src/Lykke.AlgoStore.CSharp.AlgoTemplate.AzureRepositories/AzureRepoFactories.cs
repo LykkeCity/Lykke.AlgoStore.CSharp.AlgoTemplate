@@ -22,6 +22,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories
                 AzureTableStorage<StatisticsSummaryEntity>.Create(connectionString, StatisticsRepository.TableName, log));
         }
 
+
+        public static AlgoInstanceTradeRepository CreateAlgoTradeRepository(IReloadingManager<string> connectionString,
+            ILog log)
+        {
+            return new AlgoInstanceTradeRepository(
+                AzureTableStorage<AlgoInstanceTradeEntity>.Create(connectionString, AlgoInstanceTradeRepository.TableName, log));
+        }
+
         public static AlgoClientInstanceRepository CreateAlgoClientInstanceRepository(IReloadingManager<string> connectionString,
             ILog log)
         {
