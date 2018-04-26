@@ -15,6 +15,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
 
         public override FunctionParamsBase FunctionParameters => _functionParams;
         public override double? Value => GetSmaValue();
+        public override bool IsReady => Value != null;
 
         /// <summary>
         /// Initializes new instance of <see cref="SmaFunction"/>
