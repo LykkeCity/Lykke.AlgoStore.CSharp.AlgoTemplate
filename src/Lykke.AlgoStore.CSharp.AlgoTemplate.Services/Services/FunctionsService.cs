@@ -86,10 +86,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var functionId = candlesResponse.RequestId;
 
-                if (_allFunctions[functionId].FunctionParameters.EndingDate < candlesResponse.Candle.DateTime)
+                var function = _allFunctions[functionId];
+
+                if (function.FunctionParameters.StartingDate > candlesResponse.Candle.DateTime || 
+                    function.FunctionParameters.EndingDate < candlesResponse.Candle.DateTime)
                     continue;
 
-                _allFunctions[functionId].AddNewValue(candlesResponse.Candle);
+                function.AddNewValue(candlesResponse.Candle);
             }
         }
 

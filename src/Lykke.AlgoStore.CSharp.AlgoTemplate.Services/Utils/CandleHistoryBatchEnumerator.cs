@@ -29,6 +29,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         {
             _candlesHistoryRequest = historyRequest;
             _candlesHistoryService = candlesHistoryService;
+
+            // If the from date is after the current moment, immediately set the last buffer flag
+            // so that the enumerator becomes empty
+            if (_candlesHistoryRequest.From > DateTime.UtcNow)
+                _isLastBuffer = true;
         }
 
         /// <summary>
