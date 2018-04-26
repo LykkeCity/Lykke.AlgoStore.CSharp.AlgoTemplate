@@ -15,6 +15,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
 
         public override FunctionParamsBase FunctionParameters => _functionParams;
         public override double? Value => GetSmaValue();
+        public override bool IsReady => Value != null;
 
         /// <summary>
         /// Initializes new instance of <see cref="SmaFunction"/>
@@ -46,10 +47,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
         /// Get calculated SMA value
         /// </summary>
         /// <returns>SMA calculated value</returns>
-        public double GetSmaValue()
+        public double? GetSmaValue()
         {
             if (_storageQueue == null || _storageQueue.Count == 0)
-                return 0;
+                return null;
 
             return _storageQueue.Average();
         }

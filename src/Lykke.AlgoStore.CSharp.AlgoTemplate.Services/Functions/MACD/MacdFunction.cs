@@ -23,6 +23,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD
         /// </summary>
         public override double? Value => _currentValue;
 
+        public override bool IsReady => _currentValue != null;
+
         /// <summary>
         /// Returns the histogram component of the MACD function (MACD line - Signal line)
         /// </summary>
