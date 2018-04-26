@@ -48,7 +48,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     RequestId = function.FunctionParameters.FunctionInstanceIdentifier,
                     AssetPair = function.FunctionParameters.AssetPair,
                     CandleInterval = function.FunctionParameters.CandleTimeInterval,
-                    StartFrom = function.FunctionParameters.StartingDate
+                    StartFrom = function.FunctionParameters.StartingDate,
+                    EndOn = function.FunctionParameters.EndingDate
                 };
             }
         }

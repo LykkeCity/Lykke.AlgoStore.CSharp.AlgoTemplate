@@ -29,5 +29,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService
         /// </summary>
         public DateTime StartFrom { get; set; }
 
+        /// <summary>
+        /// The end date for the data feed.
+        /// </summary>
+        public DateTime EndOn { get; set; }
     }
 }
