@@ -44,6 +44,11 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         public DateTime StartingDate { get; set; }
 
         /// <summary>
+        /// The end date after which the function will stop receiving updates
+        /// </summary>
+        public DateTime EndingDate { get; set; }
+
+        /// <summary>
         /// The interval of the candles the function is going to work on
         /// Example: If you set it to <see cref="CandleTimeInterval.Minute"/> 
         /// the function will work with candles per minute.
