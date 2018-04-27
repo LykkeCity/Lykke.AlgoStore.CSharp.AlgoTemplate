@@ -29,6 +29,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         {
             _candlesHistoryRequest = historyRequest;
             _candlesHistoryService = candlesHistoryService;
+
+            // If the from date is after the current moment, immediately set the last buffer flag
+            // so that the enumerator becomes empty
+            if (_candlesHistoryRequest.From > DateTime.UtcNow)
+                _isLastBuffer = true;
         }
 
         /// <summary>
@@ -97,8 +102,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 
                 _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 9999);
 
-                if (_nextTimestamp > DateTime.UtcNow)
+                var timeLimit = DateTime.UtcNow > _candlesHistoryRequest.To ? _candlesHistoryRequest.To : DateTime.UtcNow;
+
+                if (_nextTimestamp > timeLimit)
+                {
+                    _nextTimestamp = timeLimit;
                     _isLastBuffer = true;
+                }
 
                 FillBuffer();
             }

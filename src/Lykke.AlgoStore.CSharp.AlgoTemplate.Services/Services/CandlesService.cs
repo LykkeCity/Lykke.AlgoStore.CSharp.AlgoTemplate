@@ -52,6 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 {
                     AssetPair = request.AssetPair,
                     From = request.StartFrom,
+                    To = request.EndOn,
                     Interval = request.CandleInterval
                 };
 

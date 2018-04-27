@@ -19,8 +19,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
         public CandleTimeInterval Interval { get; set; }
 
         /// <summary>
-        /// The start data of the history data.
+        /// The start date of the history data.
         /// </summary>
         public DateTime From { get; set; }
+
+        /// <summary>
+        /// The end date of the history data.
+        /// </summary>
+        public DateTime To { get; set; }
     }
 }

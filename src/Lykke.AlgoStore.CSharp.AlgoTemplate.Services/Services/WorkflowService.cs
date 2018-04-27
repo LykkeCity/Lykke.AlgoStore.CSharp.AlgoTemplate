@@ -73,7 +73,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 AssetPair = _algo.AssetPair, //"BTCEUR",
                 CandleInterval = _algo.CandleInterval,
                 RequestId = _algoSettingsService.GetAlgoId(),
-                StartFrom = _algo.StartFrom
+                StartFrom = _algo.StartFrom,
+                EndOn = DateTime.MaxValue // TODO: Replace with algo end date
             });
 
             _candlesService.Subscribe(candleServiceCandleRequests, OnInitialFunctionServiceData, OnFunctionServiceUpdate);
