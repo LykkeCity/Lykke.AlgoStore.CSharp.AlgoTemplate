@@ -46,11 +46,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
                             TableStorageConnectionString = "Mock connectionString"
                         },
                         QuoteRabbitMqSettings = new QuoteRabbitMqSubscriptionSettings(),
-                    },
-                    MatchingEngineClient = new MatchingEngineSettings(),
-                    AssetsServiceClient = new AssetsServiceClient(),
-                    FeeCalculatorServiceClient = new FeeCalculatorServiceClient(),
-                    FeeSettings = new FeeSettings()
+                    }
                 }
             );
             return reloadingMock.Object;

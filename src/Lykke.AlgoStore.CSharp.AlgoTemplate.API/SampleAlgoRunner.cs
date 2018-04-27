@@ -16,6 +16,7 @@ using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using AzureStorage.Tables;
+using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 using Lykke.Logs;
 using Lykke.SlackNotification.AzureQueue;
 using Microsoft.Extensions.DependencyInjection;
@@ -112,6 +113,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             serviceModule.AlgoType = GetAlgoType();
 
             builder.RegisterModule(serviceModule);
+            builder.RegisterMatchingEngineClient(appSettings.CurrentValue.MatchingEngineAdapterClient.GetClientIpAddress(),
+                appSettings.CurrentValue.MatchingEngineAdapterClient.Port);
             builder.Populate(services);
 
             var ioc = builder.Build();
