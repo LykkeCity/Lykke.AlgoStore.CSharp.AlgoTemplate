@@ -61,6 +61,12 @@
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Core\Lykke.AlgoStore.CSharp.AlgoTemplate.Core.csproj" />
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Services\Lykke.AlgoStore.CSharp.AlgoTemplate.Services.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client">
+      <HintPath>..\..\..\AlgoStoreMEA\client\Lykke.AlgoStore.MatchingEngineAdapter.Client\bin\Debug\netstandard2.0\Lykke.AlgoStore.MatchingEngineAdapter.Client.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <ItemGroup>

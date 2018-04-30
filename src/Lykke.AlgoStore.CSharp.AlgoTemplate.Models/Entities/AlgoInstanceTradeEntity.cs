@@ -16,6 +16,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 
         public string OrderId { get; set; }
 
+        public string AssetPairId { get; set; }
+
+        public string AssetId { get; set; }
+
         public string WalletId { get; set; }
     }
 }
