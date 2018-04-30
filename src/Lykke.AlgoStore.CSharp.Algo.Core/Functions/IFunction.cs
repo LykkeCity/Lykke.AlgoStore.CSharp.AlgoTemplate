@@ -16,6 +16,11 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         double? Value { get; }
 
         /// <summary>
+        /// Whether or not this function has enough data in order to be used properly
+        /// </summary>
+        bool IsReady { get; }
+
+        /// <summary>
         /// Initialize the function with the initial values.
         /// </summary>
         /// <param name="values">The initial values to be 

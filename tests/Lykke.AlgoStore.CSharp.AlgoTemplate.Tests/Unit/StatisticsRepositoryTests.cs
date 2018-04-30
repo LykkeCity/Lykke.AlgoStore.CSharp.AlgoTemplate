@@ -138,8 +138,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         //        TotalNumberOfStarts = 0,
         //        InitialWalletBalance = 10000,
         //        LastWalletBalance = 10000,
-        //        AssetTwoBalance = 5000,
-        //        AssetOneBalance = 5000
+        //        InitialTradedAssetBalance = 5000,
+        //        InitialAssetTwoBalance = 5000,
+        //        LastTradedAssetBalance = 5000,
+        //        LastAssetTwoBalance = 5000,
         //    };
 
         //    WhenInvokeCreateSummaryEntity(repo, _entitySummary);
@@ -205,8 +207,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
-                AssetTwoBalance = 10,
-                AssetOneBalance = 10,
+                InitialTradedAssetBalance = 10,
+                InitialAssetTwoBalance = 10,
+                LastTradedAssetBalance = 10,
+                LastAssetTwoBalance = 10,
                 UserCurrencyBaseAssetId = "USD"
             };
 
@@ -217,8 +221,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
-            Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
-            Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialTradedAssetBalance, summary.InitialTradedAssetBalance);
+            Assert.AreEqual(_entitySummary.InitialAssetTwoBalance, summary.InitialAssetTwoBalance);
+            Assert.AreEqual(_entitySummary.LastTradedAssetBalance, summary.LastTradedAssetBalance);
+            Assert.AreEqual(_entitySummary.LastAssetTwoBalance, summary.LastAssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
         }
@@ -237,8 +243,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
-                AssetTwoBalance = 10,
-                AssetOneBalance = 10,
+                InitialTradedAssetBalance = 10,
+                InitialAssetTwoBalance = 10,
+                LastTradedAssetBalance = 10,
+                LastAssetTwoBalance = 10,
                 UserCurrencyBaseAssetId = "USD"
             };
 
@@ -259,8 +267,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
-            Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
-            Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialTradedAssetBalance, summary.InitialTradedAssetBalance);
+            Assert.AreEqual(_entitySummary.InitialAssetTwoBalance, summary.InitialAssetTwoBalance);
+            Assert.AreEqual(_entitySummary.LastTradedAssetBalance, summary.LastTradedAssetBalance);
+            Assert.AreEqual(_entitySummary.LastAssetTwoBalance, summary.LastAssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
         }
@@ -279,8 +289,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
-                AssetTwoBalance = 10,
-                AssetOneBalance = 10,
+                InitialTradedAssetBalance = 10,
+                InitialAssetTwoBalance = 10,
+                LastTradedAssetBalance = 10,
+                LastAssetTwoBalance = 10,
                 UserCurrencyBaseAssetId = "USD"
             };
 
@@ -311,8 +323,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
-            Assert.AreEqual(_entitySummary.AssetOneBalance, summary.AssetOneBalance);
-            Assert.AreEqual(_entitySummary.AssetTwoBalance, summary.AssetTwoBalance);
+            Assert.AreEqual(_entitySummary.InitialTradedAssetBalance, summary.InitialTradedAssetBalance);
+            Assert.AreEqual(_entitySummary.InitialAssetTwoBalance, summary.InitialAssetTwoBalance);
+            Assert.AreEqual(_entitySummary.LastTradedAssetBalance, summary.LastTradedAssetBalance);
+            Assert.AreEqual(_entitySummary.LastAssetTwoBalance, summary.LastAssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(_entitySummary.LastWalletBalance, summary.LastWalletBalance);
         }
@@ -331,8 +345,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
-                AssetTwoBalance = 10,
-                AssetOneBalance = 10,
+                InitialTradedAssetBalance = 10,
+                InitialAssetTwoBalance = 10,
+                LastTradedAssetBalance = 10,
+                LastAssetTwoBalance = 10,
                 UserCurrencyBaseAssetId = "USD"
             };
 
@@ -357,8 +373,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             };
 
             _entitySummary.TotalNumberOfTrades++;
-            _entitySummary.AssetOneBalance = 12;
-            _entitySummary.AssetTwoBalance = 6;
+            _entitySummary.LastTradedAssetBalance = 12;
+            _entitySummary.LastAssetTwoBalance = 6;
             _entitySummary.LastWalletBalance = 18;
 
             WhenInvokeCreateStatisticsEntityWithSummary(repo, _entity, _entitySummary);
@@ -368,8 +384,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
-            Assert.AreEqual(12, summary.AssetOneBalance);
-            Assert.AreEqual(6, summary.AssetTwoBalance);
+            Assert.AreEqual(12, summary.LastTradedAssetBalance);
+            Assert.AreEqual(6, summary.LastAssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(18, summary.LastWalletBalance);
         }
@@ -388,8 +404,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
-                AssetTwoBalance = 10,
-                AssetOneBalance = 10,
+                InitialTradedAssetBalance = 10,
+                InitialAssetTwoBalance = 10,
+                LastTradedAssetBalance = 10,
+                LastAssetTwoBalance = 10,
                 UserCurrencyBaseAssetId = "USD"
             };
 
@@ -414,8 +432,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             };
 
             _entitySummary.TotalNumberOfTrades++;
-            _entitySummary.AssetOneBalance = 8;
-            _entitySummary.AssetTwoBalance = 14;
+            _entitySummary.LastTradedAssetBalance = 8;
+            _entitySummary.LastAssetTwoBalance = 14;
             _entitySummary.LastWalletBalance = 22;
 
             WhenInvokeCreateStatisticsEntityWithSummary(repo, _entity, _entitySummary);
@@ -425,8 +443,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
-            Assert.AreEqual(8, summary.AssetOneBalance);
-            Assert.AreEqual(14, summary.AssetTwoBalance);
+            Assert.AreEqual(8, summary.LastTradedAssetBalance);
+            Assert.AreEqual(14, summary.LastAssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(22, summary.LastWalletBalance);
         }
@@ -445,8 +463,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
-                AssetTwoBalance = 10,
-                AssetOneBalance = 10,
+                InitialTradedAssetBalance = 10,
+                InitialAssetTwoBalance = 10,
+                LastTradedAssetBalance = 10,
+                LastAssetTwoBalance = 10,
                 UserCurrencyBaseAssetId = "USD"
             };
 
@@ -471,8 +491,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             };
 
             _entitySummary.TotalNumberOfTrades++;
-            _entitySummary.AssetOneBalance = 12;
-            _entitySummary.AssetTwoBalance = 6;
+            _entitySummary.LastTradedAssetBalance = 12;
+            _entitySummary.LastAssetTwoBalance = 6;
             _entitySummary.LastWalletBalance = 18;
 
             WhenInvokeCreateStatisticsEntityWithSummary(repo, _entity, _entitySummary);
@@ -486,8 +506,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             };
 
             _entitySummary.TotalNumberOfTrades++;
-            _entitySummary.AssetOneBalance = 14;
-            _entitySummary.AssetTwoBalance = 2;
+            _entitySummary.LastTradedAssetBalance = 14;
+            _entitySummary.LastAssetTwoBalance = 2;
             _entitySummary.LastWalletBalance = 16;
 
             WhenInvokeCreateStatisticsEntityWithSummary(repo, _entity, _entitySummary);
@@ -497,8 +517,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
-            Assert.AreEqual(14, summary.AssetOneBalance);
-            Assert.AreEqual(2, summary.AssetTwoBalance);
+            Assert.AreEqual(14, summary.LastTradedAssetBalance);
+            Assert.AreEqual(2, summary.LastAssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(16, summary.LastWalletBalance);
         }
@@ -517,8 +537,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 TotalNumberOfStarts = 0,
                 InitialWalletBalance = 20,
                 LastWalletBalance = 20,
-                AssetTwoBalance = 10,
-                AssetOneBalance = 10,
+                InitialTradedAssetBalance = 10,
+                InitialAssetTwoBalance = 10,
+                LastTradedAssetBalance = 10,
+                LastAssetTwoBalance = 10,
                 UserCurrencyBaseAssetId = "USD"
             };
 
@@ -543,8 +565,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             };
 
             _entitySummary.TotalNumberOfTrades++;
-            _entitySummary.AssetOneBalance = 8;
-            _entitySummary.AssetTwoBalance = 14;
+            _entitySummary.LastTradedAssetBalance = 8;
+            _entitySummary.LastAssetTwoBalance = 14;
             _entitySummary.LastWalletBalance = 22;
 
             WhenInvokeCreateStatisticsEntityWithSummary(repo, _entity, _entitySummary);
@@ -558,8 +580,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             };
 
             _entitySummary.TotalNumberOfTrades++;
-            _entitySummary.AssetOneBalance = 6;
-            _entitySummary.AssetTwoBalance = 18;
+            _entitySummary.LastTradedAssetBalance = 6;
+            _entitySummary.LastAssetTwoBalance = 18;
             _entitySummary.LastWalletBalance = 24;
 
             WhenInvokeCreateStatisticsEntityWithSummary(repo, _entity, _entitySummary);
@@ -569,8 +591,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(_entitySummary.InstanceId, summary.InstanceId);
             Assert.AreEqual(_entitySummary.TotalNumberOfStarts, summary.TotalNumberOfStarts);
             Assert.AreEqual(_entitySummary.TotalNumberOfTrades, summary.TotalNumberOfTrades);
-            Assert.AreEqual(6, summary.AssetOneBalance);
-            Assert.AreEqual(18, summary.AssetTwoBalance);
+            Assert.AreEqual(6, summary.LastTradedAssetBalance);
+            Assert.AreEqual(18, summary.LastAssetTwoBalance);
             Assert.AreEqual(_entitySummary.InitialWalletBalance, summary.InitialWalletBalance);
             Assert.AreEqual(24, summary.LastWalletBalance);
         }

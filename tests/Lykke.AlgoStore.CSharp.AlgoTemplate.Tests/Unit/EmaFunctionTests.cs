@@ -22,7 +22,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             // Warming up
             var warmupValue = function.WarmUp(values);
             Assert.AreEqual(null, warmupValue);
-            Assert.AreEqual(false, function.IsReady());
+            Assert.AreEqual(false, function.IsReady);
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var warmupValue = function.WarmUp(values);
 
             Assert.AreEqual(10, warmupValue);
-            Assert.AreEqual(true, function.IsReady());
+            Assert.AreEqual(true, function.IsReady);
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var addNewValue = function.AddNewValue(10);
             Assert.AreEqual(10, addNewValue);
-            Assert.AreEqual(true, function.IsReady());
+            Assert.AreEqual(true, function.IsReady);
         }
 
 
@@ -74,7 +74,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var addNewValue = function.GetEmaAndAddValue(2);
             Assert.AreEqual(6, addNewValue);
-            Assert.AreEqual(true, function.IsReady());
+            Assert.AreEqual(true, function.IsReady);
         }
 
         [Test]
@@ -89,11 +89,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             var addNewValue = function.GetEmaAndAddValue(15);
             Assert.AreEqual(null, addNewValue);
-            Assert.AreEqual(false, function.IsReady());
+            Assert.AreEqual(false, function.IsReady);
 
             var addNewValue2 = function.GetEmaAndAddValue(5);
             Assert.AreEqual(10, addNewValue2);
-            Assert.AreEqual(true, function.IsReady());
+            Assert.AreEqual(true, function.IsReady);
         }
     }
 }

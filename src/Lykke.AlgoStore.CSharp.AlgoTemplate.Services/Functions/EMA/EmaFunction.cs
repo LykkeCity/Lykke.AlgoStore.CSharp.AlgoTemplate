@@ -16,10 +16,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
 
         private double? _value;
 
-        private bool isReady = false;
+        private bool _isReady = false;
 
         public override FunctionParamsBase FunctionParameters => _functionParams;
         public override double? Value => _value;
+        public override bool IsReady => _isReady;
 
         public EmaFunction(EmaParameters emaParameters)
         {
@@ -62,7 +63,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
         /// <param name="value">New value that will be used in future calculus</param>
         public override double? AddNewValue(double value)
         {
-            if (!isReady)
+            if (!_isReady)
             {
                 _emaPreviousPeriod = GetInitialValue(value);
                 return _emaPreviousPeriod;
@@ -77,14 +78,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
             return AddNewValue(value);
         }
 
-        /// <summary>
-        /// Gets if fuction is ready for using aftere warmup values
-        /// </summary>
-        public bool IsReady()
-        {
-            return isReady;
-        }
-
         private double? GetInitialValue(double value)
         {
             if (_storageQueue.Count >= _period && _period > 0)
@@ -95,7 +88,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.EMA
             if (_storageQueue.Count < _period)
                 return null;
 
-            isReady = true;
+            _isReady = true;
             return _storageQueue.Average();
         }
 

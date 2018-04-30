@@ -8,17 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Domain\Entities\AlgoClientInstanceData.cs" />
-    <Compile Remove="Domain\Entities\BaseAlgoData.cs" />
-    <Compile Remove="Domain\Entities\BaseAlgoInstance.cs" />
-    <Compile Remove="Domain\Entities\BaseValidatableData.cs" />
-    <Compile Remove="Repositories\IAlgoClientInstanceRepository.cs" />
+    <Compile Remove="Domain\Entities\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="Domain\Entities\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="Domain\Entities\**" />
+    <None Remove="Repositories\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lykke.Common" Version="5.0.0" />
-    <PackageReference Include="Lykke.MatchingEngineConnector" Version="3.0.2" />
-    <PackageReference Include="Lykke.Service.Assets.Client" Version="3.3.2" />
+    <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.9" />
+    <PackageReference Include="Lykke.Common" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,9 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\Entities\" />
     <Folder Include="Properties\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
   <ItemGroup>

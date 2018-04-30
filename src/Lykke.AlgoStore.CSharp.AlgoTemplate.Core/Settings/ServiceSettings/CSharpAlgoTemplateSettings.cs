@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings
+﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings
 {
     public class CSharpAlgoTemplateSettings
     {
         public DbSettings Db { get; set; }
-        public TimeSpan CacheExpirationPeriod { get; set; }
         public QuoteRabbitMqSubscriptionSettings QuoteRabbitMqSettings { get; set; }
         public BaseRabbitMqSubscriptionSettings CandleRabbitMqSettings { get; set; }
     }

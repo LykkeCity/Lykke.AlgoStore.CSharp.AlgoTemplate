@@ -1,6 +1,4 @@
-﻿using System;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 {
@@ -16,9 +14,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 
         public double LastWalletBalance { get; set; }
 
-        public double AssetOneBalance { get; set; }
+        public double InitialTradedAssetBalance { get; set; }
 
-        public double AssetTwoBalance { get; set; }
+        public double InitialAssetTwoBalance { get; set; }
+
+        public double LastTradedAssetBalance { get; set; }
+
+        public double LastAssetTwoBalance { get; set; }
+
+        public string TradedAssetName { get; set; }
+
+        public string AssetTwoName { get; set; }
 
         public string UserCurrencyBaseAssetId { get; set; }
     }

@@ -48,7 +48,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     RequestId = function.FunctionParameters.FunctionInstanceIdentifier,
                     AssetPair = function.FunctionParameters.AssetPair,
                     CandleInterval = function.FunctionParameters.CandleTimeInterval,
-                    StartFrom = function.FunctionParameters.StartingDate
+                    StartFrom = function.FunctionParameters.StartingDate,
+                    EndOn = function.FunctionParameters.EndingDate
                 };
             }
         }
@@ -85,7 +86,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var functionId = candlesResponse.RequestId;
 
-                _allFunctions[functionId].AddNewValue(candlesResponse.Candle);
+                var function = _allFunctions[functionId];
+
+                if (function.FunctionParameters.StartingDate > candlesResponse.Candle.DateTime || 
+                    function.FunctionParameters.EndingDate < candlesResponse.Candle.DateTime)
+                    continue;
+
+                function.AddNewValue(candlesResponse.Candle);
             }
         }
 

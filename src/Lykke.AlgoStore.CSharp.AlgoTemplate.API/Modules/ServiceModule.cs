@@ -11,8 +11,6 @@ using System;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
-using Lykke.Service.Assets.Client;
-using Lykke.Service.FeeCalculator.Client;
 using Lykke.SettingsReader;
 using Lykke.Service.CandlesHistory.Client;
 
@@ -70,6 +68,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                     AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log))
                 .SingleInstance();
 
+            builder.RegisterInstance<IAlgoInstanceTradeRepository>(AzureRepoFactories.CreateAlgoTradeRepository(
+                _settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log)).SingleInstance();
+
             builder.RegisterInstance<IAlgoClientInstanceRepository>(
                     AzureRepoFactories.CreateAlgoClientInstanceRepository(
                         _settings.Nested(x => x.CSharpAlgoTemplateService.Db.TableStorageConnectionString), _log))
@@ -113,23 +114,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<RabbitMqQuoteProviderService>()
                 .As<IQuoteProviderService>()
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.QuoteRabbitMqSettings)));
-
-            builder.RegisterType<AssetServiceDecorator>()
-                .As<IAssetServiceDecorator>()
-                .SingleInstance();
-
-            builder.RegisterFeeCalculatorClient(_settings.CurrentValue.FeeCalculatorServiceClient.ServiceUrl, _log);
-
-            _services.RegisterAssetsClient(AssetServiceSettings.Create(
-                new Uri(_settings.CurrentValue.AssetsServiceClient.ServiceUrl),
-                _settings.CurrentValue.CSharpAlgoTemplateService.CacheExpirationPeriod));
-
-            builder.BindMeClient(_settings.CurrentValue.MatchingEngineClient.IpEndpoint.GetClientIpEndPoint(), socketLog: null, ignoreErrors: true);
-
-            builder.RegisterType<MatchingEngineAdapter>()
-                .As<IMatchingEngineAdapter>()
-                .WithParameter(TypedParameter.From(_settings.CurrentValue.FeeSettings))
-                .SingleInstance();
 
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();

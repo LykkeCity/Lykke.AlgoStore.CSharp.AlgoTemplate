@@ -56,6 +56,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
         /// </summary>
         public abstract double? Value { get; }
 
+        public abstract bool IsReady { get; }
+
         private Dictionary<FunctionParamsBase.CandleValue, Func<Candle, double>> _candleProjections
             = new Dictionary<FunctionParamsBase.CandleValue, Func<Candle, double>>()
             {

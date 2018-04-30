@@ -25,6 +25,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
             public double? LatestAddNewValue => _latestAddNewValue;
             public double[] LatestWarmUp => _latestWarmUp;
             public override double? Value => _latestValue;
+            public override bool IsReady => Value != null;
 
             public AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue candleValue)
             {
