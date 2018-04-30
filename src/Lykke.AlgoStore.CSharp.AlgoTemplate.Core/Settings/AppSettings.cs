@@ -7,10 +7,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings
     {
         public CSharpAlgoTemplateSettings CSharpAlgoTemplateService { get; set; }
         public SlackNotificationsSettings SlackNotifications { get; set; }
-        public MatchingEngineSettings MatchingEngineClient { get; set; }
-        public AssetsServiceClient AssetsServiceClient { get; set; }
+        public MatchingEngineAdapterSettings MatchingEngineAdapterClient { get; set; }
         public CandlesHistoryServiceClient CandlesHistoryServiceClient { get; set; }
-        public FeeSettings FeeSettings { get; set; }
-        public FeeCalculatorServiceClient FeeCalculatorServiceClient { get; set; }
     }
 }

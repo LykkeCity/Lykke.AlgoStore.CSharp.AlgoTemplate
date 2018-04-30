@@ -7,6 +7,7 @@ using Common.Log;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Modules;
+using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
@@ -57,7 +58,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
                 Log = CreateLogWithSlack(services, appSettings);
 
+                builder.RegisterMatchingEngineClient(appSettings.CurrentValue.MatchingEngineAdapterClient.GetClientIpAddress(),
+                    appSettings.CurrentValue.MatchingEngineAdapterClient.Port);
                 builder.RegisterModule(new ServiceModule(appSettings, Log));
+                
                 builder.Populate(services);
                 ApplicationContainer = builder.Build();
 

@@ -1,7 +1,8 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using System;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
+using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -16,69 +17,45 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// </summary>
         public class TradingServiceException : Exception { }
 
-        private readonly IMatchingEngineAdapter _matchingEngineAdapter;
+        private readonly IMatchingEngineAdapterClient _matchingEngineAdapterClient;
         private readonly IAlgoSettingsService _algoSettingsService;
 
         private string _assetPairId;
-        private string _asset;
         private string _walletId;
+        private string _instanceId;
         private bool _straight;
     
-        public TradingService(IMatchingEngineAdapter matchingEngineAdapter,
+        public TradingService(IMatchingEngineAdapterClient matchingEngineAdapterClient,
             IAlgoSettingsService algoSettingsService)
         {
-            _matchingEngineAdapter = matchingEngineAdapter;
+            _matchingEngineAdapterClient = matchingEngineAdapterClient;
             _algoSettingsService = algoSettingsService;
         }
 
         public void Initialize()
         {
+            _instanceId = _algoSettingsService.GetInstanceId();
             _assetPairId = _algoSettingsService.GetAlgoInstanceAssetPair();
-            _asset = _algoSettingsService.GetTradedAsset();
             _walletId = _algoSettingsService.GetAlgoInstanceWalletId();
             _straight = _algoSettingsService.IsAlgoInstanceMarketOrderStraight();
+
+            _matchingEngineAdapterClient.SetClientAndInstanceId(_algoSettingsService.GetAlgoInstanceClientId(), _instanceId);
         }
 
         public async Task<ResponseModel<double>> Sell(double volume)
         {
-            var order = new MarketOrderRequest
-            {
-                Asset = _asset,
-                AssetPairId = _assetPairId,
-                OrderAction = MatchingEngine.Connector.Abstractions.Models.OrderAction.Sell,
-                Volume = volume
-            };
+            var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
+                OrderAction.Sell, volume, _straight, _instanceId, null);
 
-            var response = await _matchingEngineAdapter.HandleMarketOrderAsync(
-                clientId: _walletId,
-                assetPairId: order.AssetPairId,
-                orderAction: order.OrderAction,
-                volume: volume,
-                straight: _straight,
-                reservedLimitVolume: null);
-
-            return response;
+            return meaResponse;
         }
 
         public async Task<ResponseModel<double>> Buy(double volume)
         {
-            var order = new MarketOrderRequest
-            {
-                Asset = _asset,
-                AssetPairId = _assetPairId,
-                OrderAction = MatchingEngine.Connector.Abstractions.Models.OrderAction.Buy,
-                Volume = volume
-            };
+            var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
+                OrderAction.Buy, volume, _straight, _instanceId, null);
 
-            var response = await _matchingEngineAdapter.HandleMarketOrderAsync(
-                clientId: _walletId,
-                assetPairId: order.AssetPairId,
-                orderAction: order.OrderAction,
-                volume: volume,
-                straight: _straight,
-                reservedLimitVolume: null);
-
-            return response;
+            return meaResponse;
         }
     }
 }
