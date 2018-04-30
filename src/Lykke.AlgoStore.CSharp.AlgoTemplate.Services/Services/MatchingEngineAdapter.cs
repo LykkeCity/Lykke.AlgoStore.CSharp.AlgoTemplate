@@ -10,6 +10,8 @@ using Lykke.Service.FeeCalculator.Client;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using FeeType = Lykke.Service.FeeCalculator.AutorestClient.Models.FeeType;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -21,6 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IFeeCalculatorClient _feeCalculatorClient;
         private readonly IAssetsService _assetsService;
         private readonly FeeSettings _feeSettings;
+        private readonly IAlgoInstanceTradeRepository _algoSettinAlgoInstanceTradeRepository;
 
         private static readonly Dictionary<MeStatusCodes, ResponseModel.ErrorCodeType> StatusCodesMap = new Dictionary<MeStatusCodes, ResponseModel.ErrorCodeType>
         {
@@ -44,7 +47,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IFeeCalculatorClient feeCalculatorClient,
             IAssetsService assetsService,
             FeeSettings feeSettings,
-            [NotNull] ILog log)
+            [NotNull] ILog log,
+            IAlgoInstanceTradeRepository algoSettinAlgoInstanceTradeRepository)
         {
             _matchingEngineClient =
                 matchingEngineClient ?? throw new ArgumentNullException(nameof(matchingEngineClient));
@@ -52,6 +56,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _assetsService = assetsService ?? throw new ArgumentNullException(nameof(assetsService));
             _feeSettings = feeSettings ?? throw new ArgumentNullException(nameof(feeSettings));
             _log = log ?? throw new ArgumentNullException(nameof(log));
+            _algoSettinAlgoInstanceTradeRepository = algoSettinAlgoInstanceTradeRepository;
         }
 
         public async Task<ResponseModel> CancelLimitOrderAsync(Guid limitOrderId)
@@ -78,9 +83,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             };
 
             var response = await _matchingEngineClient.HandleMarketOrderAsync(order);
+
+
+
             await CheckResponseAndThrowIfNull(response);
             if (response.Status == MeStatusCodes.Ok)
             {
+                await _algoSettinAlgoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
+                    new AlgoInstanceTrade()
+                    {
+                        Amount = order.Volume,
+                        OrderId = order.Id,
+                        WalletId = order.ClientId,
+                        InstanceId = "6d854be0-7124-4720-bb2f-05cb0ae2a08e"
+                    });
                 return ResponseModel<double>.CreateOk(response.Price);
             }
             return ConvertToApiModel<double>(response.Status);

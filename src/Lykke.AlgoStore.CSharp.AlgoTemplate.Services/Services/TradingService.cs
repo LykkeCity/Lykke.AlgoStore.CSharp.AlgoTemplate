@@ -2,6 +2,7 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using System;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -23,7 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _asset;
         private string _walletId;
         private bool _straight;
-    
+
         public TradingService(IMatchingEngineAdapter matchingEngineAdapter,
             IAlgoSettingsService algoSettingsService)
         {
