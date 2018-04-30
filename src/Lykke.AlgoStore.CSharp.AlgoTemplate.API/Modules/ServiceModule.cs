@@ -115,6 +115,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IQuoteProviderService>()
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.QuoteRabbitMqSettings)));
 
+            builder.RegisterType<AssetServiceDecorator>()
+                .As<IAssetServiceDecorator>()
+                .SingleInstance();
+
+            builder.RegisterFeeCalculatorClient(_settings.CurrentValue.FeeCalculatorServiceClient.ServiceUrl, _log);
+
+            _services.RegisterAssetsClient(AssetServiceSettings.Create(
+                new Uri(_settings.CurrentValue.AssetsServiceClient.ServiceUrl),
+                _settings.CurrentValue.CSharpAlgoTemplateService.CacheExpirationPeriod));
+
+            builder.BindMeClient(_settings.CurrentValue.MatchingEngineClient.IpEndpoint.GetClientIpEndPoint(), socketLog: null, ignoreErrors: true);
+
+            builder.RegisterType<MatchingEngineAdapter>()
+                .As<IMatchingEngineAdapter>()
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.FeeSettings))
+                .SingleInstance();
+
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();
 
