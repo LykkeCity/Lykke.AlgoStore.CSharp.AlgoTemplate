@@ -4,9 +4,9 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.SettingsReader;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models
 {
-    public static class AzureRepoFactories
+    public class AzureRepoFactories
     {
         public static UserLogRepository CreateUserLogRepository(IReloadingManager<string> connectionString, ILog log)
         {
@@ -19,7 +19,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories
         {
             return new StatisticsRepository(AzureTableStorage<StatisticsSummaryEntity>.Create(connectionString, StatisticsRepository.TableName, log));
         }
-
 
         public static AlgoInstanceTradeRepository CreateAlgoTradeRepository(IReloadingManager<string> connectionString,
             ILog log)

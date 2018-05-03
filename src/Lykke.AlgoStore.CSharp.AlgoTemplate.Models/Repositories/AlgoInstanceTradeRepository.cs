@@ -1,6 +1,7 @@
 ﻿using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,16 +91,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _tableStorage.InsertAsync(entity);
         }
 
-        public async Task<IEnumerable<AlgoInstanceTrade>> GetAlgoInstaceTradesByTradedAssetAsync(string instanceId, string assetId, int maxNumberOfRowsToFetch = 0)
+        public async Task<IEnumerable<AlgoInstanceTrade>> GetAlgoInstaceTradesByTradedAssetAsync(string instanceId, string assetId, int maxNumberOfRowsToFetch)
         {
-            var partition = GeneratePartitionKeyByInstanceIdAndAssetId(instanceId, assetId);
+            var query = new TableQuery<AlgoInstanceTradeEntity>()
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, GeneratePartitionKeyByInstanceIdAndAssetId(instanceId, assetId)))
+                .Take(maxNumberOfRowsToFetch);
 
-            var data = await _tableStorage.GetDataAsync(partition, x => x.IsBuy.HasValue);
+            var result = new List<AlgoInstanceTrade>();
 
-            if (maxNumberOfRowsToFetch > 0)
-                data = data.Take(maxNumberOfRowsToFetch);
+            await _tableStorage.ExecuteAsync(query, (items) => result.AddRange(AutoMapper.Mapper.Map<List<AlgoInstanceTrade>>(items)), () => false);
 
-            return AutoMapper.Mapper.Map<List<AlgoInstanceTrade>>(data);
+            return result;
         }
     }
 }
