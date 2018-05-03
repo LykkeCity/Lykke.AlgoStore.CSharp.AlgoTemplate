@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
@@ -10,6 +6,9 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -53,7 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
         private static IEnumerable<AlgoInstanceTrade> WhenInvokeGetStatistics(AlgoInstanceTradeRepository repository, string instanceId, string assetId)
         {
-            return repository.GetAlgoInstaceTradesByTradedAssetAsync(instanceId, assetId).Result;
+            return repository.GetAlgoInstaceTradesByTradedAssetAsync(instanceId, assetId, 100).Result;
         }
 
         private static void WhenInvokeCreateEntity(AlgoInstanceTradeRepository repository, AlgoInstanceTrade entity)
