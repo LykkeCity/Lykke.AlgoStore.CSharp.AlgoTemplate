@@ -9,7 +9,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
     {
         public string HftApiKey { get; set; }
 
-        [Required]
         public string WalletId { get; set; }
 
         [Required]
@@ -37,5 +36,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public AlgoMetaDataInformation AlgoMetaDataInformation { get; set; }
 
         public string AlgoClientId { get; set; }
+
+        public double BackTestTradingAssetBalance { get; set; }
+
+        public double BackTestAssetTwoBalance { get; set; }
     }
 }

@@ -27,7 +27,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForSourceMember(dest => dest.AlgoInstanceStatusValue, opt => opt.Ignore())
                 .ForSourceMember(dest => dest.AlgoMetaDataInformation, opt => opt.Ignore())
                 .ForMember(src => src.AlgoMetaDataInformation, opt => opt.Ignore())
-                .ForMember(src => src.InstanceId, opt => opt.MapFrom(src => src.RowKey));
+                .ForMember(src => src.InstanceId, opt => opt.MapFrom(src => src.RowKey))
+                .ForMember(src => src.BackTestTradingAssetBalance, opt => opt.Ignore())
+                .ForMember(src => src.BackTestAssetTwoBalance, opt => opt.Ignore());
 
             CreateMap<AlgoInstanceTrade, AlgoInstanceTradeEntity>()
                 .ForMember(dest => dest.RowKey, opt => opt.Ignore())
