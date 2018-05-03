@@ -25,7 +25,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="Dockerfile">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -50,11 +50,11 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.1" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.Algo.Implemention\Lykke.AlgoStore.CSharp.Algo.Implemention.csproj" />
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories\Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.csproj" />

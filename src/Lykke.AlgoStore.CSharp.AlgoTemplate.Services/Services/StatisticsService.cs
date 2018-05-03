@@ -36,33 +36,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnAction(bool isBuy, double volume, double price)
         {
-            var data = new Statistics
-            {
-                InstanceId = _instanceId,
-                Amount = volume,
-                IsBuy = isBuy,
-                Price = price
-            };
-
             var summary = GetSummary();
 
             summary.TotalNumberOfTrades++;
 
-            //TODO: Update other summary properties from external service(s) before save
-            //In case of a back-test we have to update summary in here (AL-335)
-
-            _statisticsRepository.CreateAsync(data, summary).Wait();
+            _statisticsRepository.CreateAsync(summary).Wait();
         }
 
         public void OnAlgoStarted()
         {
             _instanceId = _algoSettings.GetInstanceId();
-
-            var data = new Statistics
-            {
-                InstanceId = _instanceId,
-                IsStarted = true
-            };
 
             var summary = GetSummary();
 
@@ -75,18 +58,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             summary.TotalNumberOfStarts++;
 
-            _statisticsRepository.CreateAsync(data, summary).Wait();
+            _statisticsRepository.CreateAsync(summary).Wait();
         }
 
         public void OnAlgoStopped()
         {
-            var data = new Statistics
-            {
-                InstanceId = _instanceId,
-                IsStarted = false
-            };
 
-            _statisticsRepository.CreateAsync(data).Wait();
         }
 
         public StatisticsSummary GetSummary()

@@ -131,7 +131,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var result = new Mock<IStatisticsRepository>();
 
-            result.Setup(repo => repo.CreateAsync(new Statistics()));
             result.Setup(repo => repo.GetSummaryAsync(_instanceId)).Returns(Task.FromResult(new StatisticsSummary()));
 
             return result.Object;
@@ -141,7 +140,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var result = new Mock<IStatisticsRepository>();
 
-            result.Setup(repo => repo.CreateAsync(It.IsAny<Statistics>())).ThrowsAsync(new Exception("CreateAsync"));
             result.Setup(repo => repo.GetSummaryAsync(It.IsAny<string>())).ThrowsAsync(new Exception("GetSummary"));
 
             return result.Object;
