@@ -74,7 +74,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 CandleInterval = _algo.CandleInterval,
                 RequestId = _algoSettingsService.GetAlgoId(),
                 StartFrom = _algo.StartFrom,
-                EndOn = DateTime.MaxValue // TODO: Replace with algo end date
+                EndOn = _algo.EndOn
             });
 
             _candlesService.Subscribe(candleServiceCandleRequests, OnInitialFunctionServiceData, OnFunctionServiceUpdate);
@@ -135,6 +135,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAlgoId())?.Candle;
 
+            if (algoCandle.DateTime > _algo.EndOn)
+                return;
+
             var ctx = CreateCandleContext(algoCandle);
 
             lock (_sync)
@@ -152,6 +155,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private Task OnQuote(IAlgoQuote quote)
         {
+            if (quote.DateReceived > _algo.EndOn)
+                return Task.CompletedTask;
+
             _statisticsService.OnQuote(quote);
 
             var ctx = CreateQuoteContext(quote);

@@ -42,6 +42,11 @@ namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
         DateTime StartFrom { get; set; }
 
         /// <summary>
+        /// The end time on which the algo instance will be shut down
+        /// </summary>
+        DateTime EndOn { get; set; }
+
+        /// <summary>
         /// Volume which we will buy or sell
         /// </summary>
         double Volume { get; set; }
