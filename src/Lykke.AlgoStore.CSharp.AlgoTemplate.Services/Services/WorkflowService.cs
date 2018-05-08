@@ -2,14 +2,14 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
-using System.Threading;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -63,6 +63,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             //get algo parameters
             SetUpAlgoParameters(algoInstance);
 
+            if (algoInstance != null)
+            {
+                algoInstance.AlgoInstanceStatus = Models.Enumerators.AlgoInstanceStatus.Started;
+                algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
+                _algoSettingsService.UpdateAlgoInstance(algoInstance).Wait();
+            }
+
             // Function service initialization.
             _functionsService.Initialize();
             var candleServiceCandleRequests = _functionsService.GetCandleRequests().ToList();
@@ -81,6 +88,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             // Gets not finished limited orders?!?
             // can we get it for algo ?!?
+
             _tradingService.Initialize();
 
             // subscribe for RabbitMQ quotes and candles
@@ -90,16 +98,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var quoteGeneration = _quoteProviderService.Initialize();
             _quoteProviderService.Subscribe(_algo.AssetPair, OnQuote);
             _quoteProviderService.Start();
-            
+
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
-
-            if (algoInstance != null)
-            {
-                algoInstance.AlgoInstanceStatus = Models.Enumerators.AlgoInstanceStatus.Started;
-                algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
-                _algoSettingsService.UpdateAlgoInstance(algoInstance);
-            }
 
             return Task.WhenAll(quoteGeneration);
         }
