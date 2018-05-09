@@ -121,11 +121,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         {
             CheckDisposed();
 
-            if (!_isStarted)
+            if (!_isStarted || _isEnumeratorDone)
                 return null;
-
-            if (_isEnumeratorDone)
-                throw new InvalidOperationException("The enumerator is past the final element");
 
             if (_intermediateCandle != null)
                 return _intermediateCandle;
@@ -144,6 +141,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 
             if (result)
                 _currentCandle = Current;
+
+            _isEnumeratorDone = !result;
 
             return result;
         }
