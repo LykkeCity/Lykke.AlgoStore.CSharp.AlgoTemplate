@@ -2,9 +2,11 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -19,17 +21,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private readonly ICandleProviderService _candleProvider;
         private readonly IHistoryDataService _historyService;
-        
+        private readonly IAlgoSettingsService _settingsService;
+
         private bool _isProducing;
         private readonly List<CandleServiceRequest> _candleRequests = new List<CandleServiceRequest>();
         private Action<IList<MultipleCandlesResponse>> _initialDataConsumer;
 
         private readonly Dictionary<string, SubscriptionData> _subscriptions = new Dictionary<string, SubscriptionData>();
 
-        public CandlesService(ICandleProviderService candleProvider, IHistoryDataService historyService)
+        public CandlesService(
+            ICandleProviderService candleProvider,
+            IHistoryDataService historyService, 
+            IAlgoSettingsService settingsService)
         {
             _candleProvider = candleProvider;
             _historyService = historyService;
+            _settingsService = settingsService;
         }
 
         public void StartProducing()
@@ -44,10 +51,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _candleProvider.Start();
             _isProducing = true;
 
+            var isBacktest = _settingsService.GetSetting("InstanceType") == AlgoInstanceType.Test.ToString();
+
             var resultList = new List<MultipleCandlesResponse>();
 
             foreach(var request in _candleRequests)
             {
+                if(isBacktest)
+                {
+                    _subscriptions[request.RequestId].IsHistoryDone = true;
+                    resultList.Add(new MultipleCandlesResponse
+                    {
+                        RequestId = request.RequestId,
+                        Candles = Enumerable.Empty<Candle>()
+                    });
+
+                    continue;
+                }
+
                 var historyRequest = new CandlesHistoryRequest
                 {
                     AssetPair = request.AssetPair,
@@ -98,7 +119,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             _subscriptions.Add(serviceRequest.RequestId, subscriptionData);
 
-            _candleProvider.Subscribe(serviceRequest.AssetPair, serviceRequest.CandleInterval, callback);
+            _candleProvider.Subscribe(serviceRequest, callback);
         }
 
         private void ProcessCandle(string requestId, Candle candle, SubscriptionData subscriptionData,

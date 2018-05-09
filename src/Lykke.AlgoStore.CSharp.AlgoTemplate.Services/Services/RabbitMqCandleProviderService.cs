@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Common.Log;
 using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
@@ -19,9 +20,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     public class RabbitMqCandleProviderService : ICandleProviderService
     {
+        private class CallbackInfo
+        {
+            public Action<Candle> Callback { get; set; }
+            public DateTime StartFrom { get; set; }
+            public DateTime EndOn { get; set; }
+        }
+
         private class SubscriptionData
         {
-            public List<Action<Candle>> Callbacks { get; } = new List<Action<Candle>>();
+            public List<CallbackInfo> Callbacks { get; } = new List<CallbackInfo>();
             public Thread CandleGenerator { get; set; }
             public Candle PrevCandle { get; set; }
             public Candle CurrentCandle { get; set; }
@@ -47,13 +55,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algoSettingsService = algoSettingsService;
         }
 
-        public void Subscribe(string assetPair, Models.Enumerators.CandleTimeInterval timeInterval, Action<Candle> callback)
+        public void Subscribe(CandleServiceRequest serviceRequest, Action<Candle> callback)
         {
-            if (assetPair == null)
-                throw new ArgumentNullException(nameof(assetPair));
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
+            if (serviceRequest == null)
+                throw new ArgumentNullException(nameof(serviceRequest));
 
+            var assetPair = serviceRequest.AssetPair;
+            var timeInterval = serviceRequest.CandleInterval;
+            
             if (!_subscriptions.ContainsKey(assetPair))
                 _subscriptions.Add(assetPair, new Dictionary<CandleTimeInterval, SubscriptionData>());
 
@@ -62,7 +71,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (!_subscriptions[assetPair].ContainsKey(contractTimeInterval))
                 _subscriptions[assetPair].Add(contractTimeInterval, CreateSubscriptionData(contractTimeInterval));
 
-            _subscriptions[assetPair][contractTimeInterval].Callbacks.Add(callback);
+            _subscriptions[assetPair][contractTimeInterval].Callbacks.Add(new CallbackInfo
+            {
+                StartFrom = serviceRequest.StartFrom,
+                EndOn = serviceRequest.EndOn,
+                Callback = callback
+            });
         }
 
         public void SetPrevCandleFromHistory(string assetPair, Models.Enumerators.CandleTimeInterval timeInterval, Candle candle)
@@ -268,7 +282,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 }
 
                 Candle currentCandle = null;
-                Action<Candle>[] callbacks = null;
+                CallbackInfo[] callbacks = null;
 
                 lock (subscriptionData.Sync)
                 {
@@ -297,8 +311,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 }
 
                 // To prevent any possible deadlocks, run callbacks outside of lock with a copy of the callback list
-                foreach (var callback in callbacks)
-                    callback(currentCandle);
+                foreach (var callbackInfo in callbacks)
+                {
+                    if (callbackInfo.StartFrom > currentCandle.DateTime || callbackInfo.EndOn < currentCandle.DateTime)
+                        continue;
+
+                    callbackInfo.Callback(currentCandle);
+                }
 
                 nextCandleTime = algoStoreInterval.IncrementTimestamp(nextCandleTime);
             }

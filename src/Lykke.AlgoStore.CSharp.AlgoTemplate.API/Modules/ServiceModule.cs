@@ -13,7 +13,9 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.Service.CandlesHistory.Client;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
+using System.Dynamic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -102,7 +104,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<ActionsService>()
                 .As<IActions>();
 
-            if (Environment.GetEnvironmentVariable("INSTANCE_TYPE") == AlgoInstanceType.Test.ToString())
+            dynamic dynamicSettings = 
+                JsonConvert.DeserializeObject<ExpandoObject>(Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS"));
+
+            if (dynamicSettings.InstanceType == AlgoInstanceType.Test.ToString())
             {
                 builder.RegisterType<HistoricalCandleProviderService>()
                         .As<ICandleProviderService>()
