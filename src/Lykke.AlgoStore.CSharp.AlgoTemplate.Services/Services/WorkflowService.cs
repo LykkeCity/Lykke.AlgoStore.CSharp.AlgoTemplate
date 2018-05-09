@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
 using System.Threading;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -59,6 +60,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algoSettingsService.Initialize();
 
             var algoInstance = _algoSettingsService.GetAlgoInstance();
+            var isBacktest = _algoSettingsService.GetSetting("InstanceType") == AlgoInstanceType.Test.ToString();
 
             //get algo parameters
             SetUpAlgoParameters(algoInstance);
@@ -88,15 +90,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // pass _algoSettingsService in constructor
             _candlesService.StartProducing();
             var quoteGeneration = _quoteProviderService.Initialize();
-            _quoteProviderService.Subscribe(_algo.AssetPair, OnQuote);
-            _quoteProviderService.Start();
+
+            if (!isBacktest)
+            {
+                _quoteProviderService.Subscribe(_algo.AssetPair, OnQuote);
+                _quoteProviderService.Start();
+            }
             
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
 
             if (algoInstance != null)
             {
-                algoInstance.AlgoInstanceStatus = Models.Enumerators.AlgoInstanceStatus.Started;
+                algoInstance.AlgoInstanceStatus = AlgoInstanceStatus.Started;
                 algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
                 _algoSettingsService.UpdateAlgoInstance(algoInstance);
             }
