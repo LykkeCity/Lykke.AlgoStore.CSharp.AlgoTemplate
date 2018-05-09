@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using System;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 {
@@ -19,7 +20,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public string AssetPairId { get; set; }
 
         public string AssetId { get; set; }
-
+        
         public string WalletId { get; set; }
+
+        public DateTime? DateOfTrade { get; set; }
     }
 }

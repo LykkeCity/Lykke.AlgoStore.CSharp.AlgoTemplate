@@ -7,10 +7,12 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AzureStorage;
+using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using Newtonsoft.Json;
 
@@ -26,6 +28,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private readonly string _walletId = "66269b36-a51c-4f8c-8d17-09a45f0f4bc6";
         private readonly string _assetId = "USD";
         private readonly double _amount = 10;
+        private readonly int _itemCount = 10;
 
         [SetUp]
         public void SetUp()
@@ -53,7 +56,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             WhenInvokeCreateEntity(repo, _entity);
 
-            var statistics = WhenInvokeGetStatistics(repo, _instanceId, _assetId);
+            var statistics = WhenInvokeGetTrades(repo, _instanceId, _assetId);
             Assert.AreEqual(1, statistics.ToList().Count);
         }
 
@@ -135,6 +138,38 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test]
+        public async Task AlgoTrades_TestGetAlgoInstaceTradesByTradedAssetAsync_ReturnNotNull()
+        {
+            var storage = new Mock<INoSQLTableStorage<AlgoInstanceTradeEntity>>();
+
+            var fakeQuery = new TableQuery<AlgoInstanceTradeEntity>()
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, String.Format(_instanceId + "_" + _assetId)))
+                .Take(_itemCount);
+
+            storage.Setup(s => s.ExecuteAsync(It.IsAny<TableQuery<AlgoInstanceTradeEntity>>(),
+                    It.IsAny<Action<IEnumerable<AlgoInstanceTradeEntity>>>(), It.IsAny<Func<bool>>()))
+                .Returns((TableQuery<AlgoInstanceTradeEntity> query,
+                    Action<IEnumerable<AlgoInstanceTradeEntity>> items, Func<bool> stop) =>
+                {
+                    Assert.AreEqual(query.TakeCount, fakeQuery.TakeCount);
+                    Assert.AreEqual(query.FilterString, query.FilterString);
+                    return Task.FromResult(GetAlgoInstanceEntities());
+                })
+                .Callback<TableQuery<AlgoInstanceTradeEntity>,
+                          Action<IEnumerable<AlgoInstanceTradeEntity>>,
+                          Func<bool>>((query, items, stop) =>
+                {
+                    items(GetAlgoInstanceEntities());
+                });
+
+            AlgoInstanceTradeRepository repository = new AlgoInstanceTradeRepository(storage.Object);
+            var result = await repository.GetAlgoInstaceTradesByTradedAssetAsync(_instanceId, _assetId, _itemCount);
+
+            Assert.IsNotNull(result);
+            CheckIfAlgoInstanceModelIsCorrect(result.First());
+        }
+
+        [Test]
         public async Task AlgoTrades_TestGetAlgoInstanceOrderAsync_ReturnNotNull()
         {
             var storage = new Mock<INoSQLTableStorage<AlgoInstanceTradeEntity>>();
@@ -146,14 +181,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var result = await repository.GetAlgoInstanceOrderAsync(_orderId, _walletId);
 
             Assert.IsNotNull(result);
+            CheckIfAlgoInstanceModelIsCorrect(result);
         }
 
-        private AlgoInstanceTradeEntity GetAlgoInstanceEntity()
+        #region  Unit Tests Helpers
+
+        private AlgoInstanceTrade GetAlgoInstanceModel()
         {
-            AlgoInstanceTradeEntity fakeResult = new AlgoInstanceTradeEntity()
+            AlgoInstanceTrade fakeResult = new AlgoInstanceTrade()
             {
-                PartitionKey = _orderId,
-                RowKey = _walletId,
+                Id = _walletId,
                 InstanceId = _instanceId,
                 OrderId = _orderId,
                 IsBuy = true,
@@ -175,6 +212,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(serializedSecond, serializedFirst);
         }
 
+        private void CheckIfAlgoInstanceModelIsCorrect(AlgoInstanceTrade modelToCheck)
+        {
+            AlgoInstanceTrade fakeResult = GetAlgoInstanceModel();
+
+            string serializedFirst = JsonConvert.SerializeObject(modelToCheck);
+            string serializedSecond = JsonConvert.SerializeObject(fakeResult);
+
+            Assert.AreEqual(serializedSecond, serializedFirst);
+        }
 
         private void CheckIfTradesEntityIsCorrect(AlgoInstanceTradeEntity entityToCheck)
         {
@@ -198,9 +244,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(serializedSecond, serializedFirst);
         }
 
-        #region  Unit Tests Helpers
-
-        private static IEnumerable<AlgoInstanceTrade> WhenInvokeGetStatistics(AlgoInstanceTradeRepository repository, string instanceId, string assetId)
+        private static IEnumerable<AlgoInstanceTrade> WhenInvokeGetTrades(AlgoInstanceTradeRepository repository, string instanceId, string assetId)
         {
             return repository.GetAlgoInstaceTradesByTradedAssetAsync(instanceId, assetId, 100).Result;
         }
@@ -217,6 +261,30 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                     SettingsMock.GetLogsConnectionString(), AlgoInstanceTradeRepository.TableName, new LogMock()));
         }
 
+        private IEnumerable<AlgoInstanceTradeEntity> GetAlgoInstanceEntities()
+        {
+            List<AlgoInstanceTradeEntity> resultList = new List<AlgoInstanceTradeEntity>();
+            resultList.Add(GetAlgoInstanceEntity());
+
+            return resultList;
+        }
+
+        private AlgoInstanceTradeEntity GetAlgoInstanceEntity()
+        {
+            AlgoInstanceTradeEntity fakeResult = new AlgoInstanceTradeEntity()
+            {
+                PartitionKey = _orderId,
+                RowKey = _walletId,
+                InstanceId = _instanceId,
+                OrderId = _orderId,
+                IsBuy = true,
+                WalletId = _walletId,
+                Amount = _amount,
+                AssetId = _assetId
+            };
+
+            return fakeResult;
+        }
         #endregion
     }
 }
