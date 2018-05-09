@@ -5,6 +5,7 @@ using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
@@ -12,7 +13,9 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.Service.CandlesHistory.Client;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
+using System.Dynamic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -101,15 +104,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<ActionsService>()
                 .As<IActions>();
 
-            builder.RegisterType<RabbitMqCandleProviderService>()
-                .As<ICandleProviderService>()
-                .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.CandleRabbitMqSettings)));
+            dynamic dynamicSettings = 
+                JsonConvert.DeserializeObject<ExpandoObject>(Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS"));
 
-            // TODO: Register this when we are able to determine if the algo is running in backtest mode and retrieve the start date
-
-            //builder.RegisterType<HistoricalCandleProviderService>()
-            //    .As<ICandleProviderService>()
-            //    .WithParameter(TypedParameter.From(DateTime.UtcNow.AddMonths(-2)));
+            if (dynamicSettings.InstanceType == AlgoInstanceType.Test.ToString())
+            {
+                builder.RegisterType<HistoricalCandleProviderService>()
+                        .As<ICandleProviderService>()
+                        .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.CandleRabbitMqSettings)));
+            }
+            else
+            {
+                builder.RegisterType<RabbitMqCandleProviderService>()
+                    .As<ICandleProviderService>()
+                    .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.CandleRabbitMqSettings)));
+            }
 
             builder.RegisterType<RabbitMqQuoteProviderService>()
                 .As<IQuoteProviderService>()
