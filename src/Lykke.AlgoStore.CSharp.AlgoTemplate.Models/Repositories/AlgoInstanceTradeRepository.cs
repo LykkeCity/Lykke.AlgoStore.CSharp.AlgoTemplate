@@ -26,7 +26,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
         private static string GeneratePartitionKeyByOrderId(string orderId) => orderId;
 
-        private static string GenerateRowKeyByOrderId(string walletId) => walletId;
+        private static string GenerateRowKeyByWalletId(string walletId) => walletId;
 
         /// <summary>
         /// In order to get easily the trades of algo instance by asset we should have PK with instance Id and asset id 
@@ -59,7 +59,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         public async Task<AlgoInstanceTrade> GetAlgoInstanceOrderAsync(string orderId, string walletId)
         {
             var partitionKey = GeneratePartitionKeyByOrderId(orderId);
-            var rowKey = GenerateRowKeyByOrderId(walletId);
+            var rowKey = GenerateRowKeyByWalletId(walletId);
 
             var result = await _tableStorage.GetDataAsync(partitionKey, rowKey);
 
@@ -73,7 +73,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         {
             var entity = AutoMapper.Mapper.Map<AlgoInstanceTradeEntity>(data);
             entity.PartitionKey = GeneratePartitionKeyByOrderId(data.OrderId);
-            entity.RowKey = GenerateRowKeyByOrderId(data.WalletId);
+            entity.RowKey = GenerateRowKeyByWalletId(data.WalletId);
 
             await _tableStorage.InsertAsync(entity);
         }
@@ -99,7 +99,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             var result = new List<AlgoInstanceTrade>();
 
-            await _tableStorage.ExecuteAsync(query, (items) => result.AddRange(AutoMapper.Mapper.Map<List<AlgoInstanceTrade>>(items)), () => false);
+            await _tableStorage.ExecuteAsync(query,
+                (items) => result.AddRange(AutoMapper.Mapper.Map<List<AlgoInstanceTrade>>(items)), () => false);
 
             return result;
         }

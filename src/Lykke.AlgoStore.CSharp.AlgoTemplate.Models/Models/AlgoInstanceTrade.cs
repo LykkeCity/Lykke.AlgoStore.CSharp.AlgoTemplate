@@ -1,4 +1,6 @@
-﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
+﻿using System;
+
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
     public class AlgoInstanceTrade
     {
@@ -17,6 +19,8 @@
         public string OrderId { get; set; }
 
         public string AssetPairId { get; set; }
+
+        public DateTime? DateOfTrade { get; set; }
 
         public string AssetId { get; set; }
 
