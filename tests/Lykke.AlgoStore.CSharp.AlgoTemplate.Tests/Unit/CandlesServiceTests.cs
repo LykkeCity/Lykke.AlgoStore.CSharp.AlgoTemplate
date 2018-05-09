@@ -18,7 +18,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void StartProducing_ThrowsNotSupported_WhenNoSubscriptions()
         {
-            var candlesService = new CandlesService(null, null);
+            var candlesService = new CandlesService(null, null, null);
 
             Assert.Throws<NotSupportedException>(() => candlesService.StartProducing());
         }
@@ -31,7 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var requests = new List<CandleServiceRequest>();
             Action<IList<MultipleCandlesResponse>> initialDataConsumer = (data) => { };
 
-            var candlesService = new CandlesService(providerMock.Object, null);
+            var candlesService = new CandlesService(providerMock.Object, null, Given_Correct_AlgoSettingsService());
             candlesService.Subscribe(requests, initialDataConsumer, null);
 
             candlesService.StartProducing();
@@ -42,7 +42,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void Subscribe_ThrowsNotSupported_WhenInvokedMoreThanOnce()
         {
-            var candlesService = new CandlesService(null, null);
+            var candlesService = new CandlesService(null, null, null);
             var requests = new List<CandleServiceRequest>();
             Action<IList<MultipleCandlesResponse>> initialDataConsumer = (data) => { };
 
@@ -58,6 +58,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                         .Returns(Task.CompletedTask);
 
             return providerMock;
+        }
+
+        private IAlgoSettingsService Given_Correct_AlgoSettingsService()
+        {
+            var mock = new Mock<IAlgoSettingsService>();
+
+            return mock.Object;
         }
     }
 }
