@@ -149,7 +149,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAlgoId())?.Candle;
 
-            if (algoCandle.DateTime > _algo.EndOn)
+            if (algoCandle != null && algoCandle.DateTime > _algo.EndOn)
                 return;
 
             var ctx = CreateCandleContext(algoCandle);
