@@ -11,6 +11,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public string AlgoId { get; set; }
         public string AssetPair { get; set; }
         public string TradedAsset { get; set; }
+        public string OppositeAssetId { get; set; }
         public double Volume { get; set; }
         public double Margin { get; set; }
         public string AlgoMetaDataInformation { get; set; }
