@@ -76,7 +76,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 {
                     GenerateTick();
                     var intevalBetweenTicksInMilis = _random.Next(MIN_DELAY_BETWEEN_TICKS_IN_MILIS, MAX_DELAY_BETWEEN_TICKS_IN_MILIS);
-                    Thread.Sleep(intevalBetweenTicksInMilis);
+                    Thread.Sleep(50000);
                 }
             });
         }

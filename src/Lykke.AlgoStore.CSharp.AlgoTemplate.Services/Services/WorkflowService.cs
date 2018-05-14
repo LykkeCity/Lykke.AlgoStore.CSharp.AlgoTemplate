@@ -104,7 +104,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _quoteProviderService.Subscribe(_algo.AssetPair, OnQuote);
                 _quoteProviderService.Start();
             }
-            
+
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
 
@@ -202,6 +202,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             context.Data = new AlgoQuoteData(quote);
 
+            context.Actions = actions;
+
             SetContextProperties(context);
 
             return context;
@@ -213,6 +215,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             context.Data = new AlgoCandleData(candle);
 
+            context.Actions = actions;
+
             SetContextProperties(context);
 
             return context;
@@ -221,28 +225,35 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private void SetContextProperties(Context context)
         {
             context.Functions = _functionsService.GetFunctionResults();
-
-            context.Actions = actions;
+            //context.Actions = actions;
         }
 
         public void SetUpAlgoParameters(AlgoClientInstanceData algoInstance)
         {
-            if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Parameters == null)
-                return;
-
-            Type parameterType = _algo.GetType();
-
-            foreach (var parameter in algoInstance.AlgoMetaDataInformation.Parameters)
+            try
             {
-                PropertyInfo prop = parameterType.GetProperty(parameter.Key);
+                if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Parameters == null)
+                    return;
 
-                if (prop != null && prop.CanWrite)
+                Type parameterType = _algo.GetType();
+
+                foreach (var parameter in algoInstance.AlgoMetaDataInformation.Parameters)
                 {
-                    if (prop.PropertyType.IsEnum)
-                        prop.SetValue(_algo, Enum.ToObject(prop.PropertyType, Convert.ToInt32(parameter.Value)), null);
-                    else
-                        prop.SetValue(_algo, Convert.ChangeType(parameter.Value, prop.PropertyType), null);
+                    PropertyInfo prop = parameterType.GetProperty(parameter.Key);
+
+                    if (prop != null && prop.CanWrite)
+                    {
+                        if (prop.PropertyType.IsEnum)
+                            prop.SetValue(_algo, Enum.ToObject(prop.PropertyType, Convert.ToInt32(parameter.Value)), null);
+                        else
+                            prop.SetValue(_algo, Convert.ChangeType(parameter.Value, prop.PropertyType), null);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
     }

@@ -102,9 +102,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .SingleInstance();
 
             builder.RegisterType<ActionsService>()
-                .As<IActions>();
+                .As<ICandleActions, IQuoteActions>();
 
-            dynamic dynamicSettings = 
+            dynamic dynamicSettings =
                 JsonConvert.DeserializeObject<ExpandoObject>(Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS"));
 
             if (dynamicSettings.InstanceType == AlgoInstanceType.Test.ToString())
@@ -126,6 +126,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<TradingService>()
                 .As<ITradingService>();
+
+            builder.RegisterType<FakeTradingService>()
+                .As<IFakeTradingService>();
 
             builder.RegisterType<CandlesService>()
                 .As<ICandlesService>();
