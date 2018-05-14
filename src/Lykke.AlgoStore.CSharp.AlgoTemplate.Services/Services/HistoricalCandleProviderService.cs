@@ -150,11 +150,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 var intervalsToUpdate = GetIntervalsForUpdate(currentDate);
 
                 intervalsToUpdate = intervalsToUpdate
-                    .Where(c => _providers.ContainsKey(c) && 
+                    .Where(c => _providers.ContainsKey(c) &&
                                 _providers[c].Values.Any(csd => (csd.CandleSource.Current == null ||
                                                                  csd.CandleSource.Current.DateTime < currentDate) &&
-                                                                csd.CandleSource.MoveNext()))
-                    .ToHashSet();
+                                                                csd.CandleSource.MoveNext())).ToHashSet();
 
                 foreach (var subscription in _subscriptions)
                 {

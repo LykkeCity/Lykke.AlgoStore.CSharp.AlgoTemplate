@@ -52,7 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var candleContextMock = new Mock<ICandleContext>();
 
             candleContextMock.SetupGet(c => c.Actions)
-                .Returns(Mock.Of<IActions>());
+                .Returns(Mock.Of<ICandleActions>());
 
             var smaShort = new SmaFunction(new SmaParameters
             {

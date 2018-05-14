@@ -5,8 +5,8 @@
     /// </summary>
     public interface IActions
     {
-        double Buy(double volume);      
-        double Sell(double volume);
+        //double Buy(double volume);
+        //double Sell(double volume);
         void Log(string message);
     }
 }

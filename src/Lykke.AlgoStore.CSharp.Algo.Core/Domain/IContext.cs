@@ -15,7 +15,7 @@
         /// Access point for the user action, which can be performed 
         /// by an algo <see cref="IActions"/>
         /// </summary>
-        IActions Actions { get; }
+        //IActions Actions { get; }
 
         /// <summary>
         /// Access to statistics information and service available to

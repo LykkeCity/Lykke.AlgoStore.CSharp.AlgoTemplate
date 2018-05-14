@@ -24,15 +24,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _instanceId;
         private string _algoId;
         private string _tradedAsset;
+        private AlgoInstanceType _instanceType;
 
         public string GetAlgoId() => _algoId;
         public string GetInstanceId() => _instanceId;
         public string GetTradedAsset() => _tradedAsset;
+        public AlgoInstanceType GetInstanceType() => _instanceType;
 
-        public AlgoInstanceType GetInstanceType()
-        {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AlgoInstanceType;
-        }
+        //public AlgoInstanceType GetInstanceType()
+        //{
+        //    return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AlgoInstanceType;
+        //}
 
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
         {
@@ -52,7 +54,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = GetSetting("InstanceId");
             _algoId = GetSetting("AlgoId");
             _tradedAsset = GetAlgoInstanceTradedAsset();
-
+            _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType),GetSetting("InstanceType"));
             _isAlive = true;
         }
 
