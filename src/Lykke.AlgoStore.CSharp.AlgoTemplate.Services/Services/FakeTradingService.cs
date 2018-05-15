@@ -5,6 +5,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -38,22 +39,41 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _oppositeAssetId = _algoSettingsService.GetAlgoInstanceOppositeAssetId();
         }
 
+        /// <summary>
+        /// Make a fake trade "Sell"
+        /// </summary>
+        /// <param name="volume">Volume that we want to trade</param>
+        /// <param name="candleData">Candle data that is taken from history service</param>
         public async Task<ResponseModel<double>> Sell(double volume, IAlgoCandle candleData)
         {
-            //save traded asset trade
+            double tradedOppositeVolume = CalculateOppositeOfTradedAssetTradeValue(volume, candleData.Close);
+
+            var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
+
+            if (summary.LastTradedAssetBalance < volume)
+                return new ResponseModel<double>()
+                {
+                    Error = new ResponseModel.ErrorModel()
+                    {
+                        Message = ErrorMessages.NotEnoughFunds,
+                        Code = ResponseModel.ErrorCodeType.NotEnoughFunds
+                    }
+                };
+
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
                 CreateAlgoInstanceTrade(_tradedAssetId, -volume, candleData, false));
 
-            double tradedOpositeVolume = CalculateOpositeOfTradedAssetTradeValue(volume, candleData.Close);
-
-            //save oposite asset trade of traded asset
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
-                CreateAlgoInstanceTrade(_oppositeAssetId, tradedOpositeVolume, candleData, false));
+                CreateAlgoInstanceTrade(_oppositeAssetId, tradedOppositeVolume, candleData, false));
 
-
-            var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
             summary.LastTradedAssetBalance -= volume;
-            summary.LastAssetTwoBalance += tradedOpositeVolume;
+            summary.LastAssetTwoBalance += tradedOppositeVolume;
+
+            if (_straight)
+                summary.LastWalletBalance = Math.Round(summary.LastAssetTwoBalance + summary.LastTradedAssetBalance * candleData.Close, 8);
+            else
+                summary.LastWalletBalance = Math.Round(summary.LastTradedAssetBalance + summary.LastAssetTwoBalance * candleData.Close, 8);
+
             await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
 
             return new ResponseModel<double>()
@@ -62,22 +82,41 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             };
         }
 
+        /// <summary>
+        /// Make a fake trade "Buy"
+        /// </summary>
+        /// <param name="volume">Volume that we want to trade</param>
+        /// <param name="candleData">Candle data that is taken from history service</param>
         public async Task<ResponseModel<double>> Buy(double volume, IAlgoCandle candleData)
         {
-            double tradedOpositeVolume = CalculateOpositeOfTradedAssetTradeValue(volume, candleData.Close);
-
-            //save traded asset trade
-
-            await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
-                CreateAlgoInstanceTrade(_tradedAssetId, volume, candleData, true));
-
-            //save oposite asset trade of traded asset
-            await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
-                CreateAlgoInstanceTrade(_oppositeAssetId, -tradedOpositeVolume, candleData, true));
+            double tradedOppositeValue = CalculateOppositeOfTradedAssetTradeValue(volume, candleData.Close);
 
             var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
+
+            if (summary.LastAssetTwoBalance < tradedOppositeValue)
+                return new ResponseModel<double>()
+                {
+                    Error = new ResponseModel.ErrorModel()
+                    {
+                        Message = ErrorMessages.NotEnoughFunds,
+                        Code = ResponseModel.ErrorCodeType.NotEnoughFunds
+                    }
+                };
+
+            await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
+                    CreateAlgoInstanceTrade(_tradedAssetId, volume, candleData, true));
+
+            await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
+                CreateAlgoInstanceTrade(_oppositeAssetId, -tradedOppositeValue, candleData, true));
+
             summary.LastTradedAssetBalance += volume;
-            summary.LastAssetTwoBalance -= tradedOpositeVolume;
+            summary.LastAssetTwoBalance -= tradedOppositeValue;
+
+            if (_straight)
+                summary.LastWalletBalance = Math.Round(summary.LastAssetTwoBalance + summary.LastTradedAssetBalance * candleData.Close, 8);
+            else
+                summary.LastWalletBalance = Math.Round(summary.LastTradedAssetBalance + summary.LastAssetTwoBalance * candleData.Close, 8);
+
             await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
 
             return new ResponseModel<double>()
@@ -100,15 +139,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             };
         }
 
-        private double CalculateOpositeOfTradedAssetTradeValue(double volume, double closePrice)
+        private double CalculateOppositeOfTradedAssetTradeValue(double volume, double closePrice)
         {
-            double tradedOpositeVolume = 0;
+            double tradedOppositeValue = 0;
             if (_straight)
-                tradedOpositeVolume = volume * closePrice;
+                tradedOppositeValue = volume * closePrice;
             else
-                tradedOpositeVolume = volume / closePrice;
+                tradedOppositeValue = volume / closePrice;
 
-            return Math.Round(tradedOpositeVolume, 8);
+            return Math.Round(tradedOppositeValue, 8);
         }
     }
 }

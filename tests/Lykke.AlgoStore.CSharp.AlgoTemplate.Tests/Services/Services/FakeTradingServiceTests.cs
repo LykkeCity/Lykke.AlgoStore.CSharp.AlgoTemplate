@@ -60,6 +60,42 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         }
 
         [Test]
+        public void Buy_Not_Enough_Funds_Test()
+        {
+            var algoSettingsService = GetAlgoSettingsServiceMock();
+            var algoInstanceTradeRepository = GetAlgoInstanceTradeRepositoryBuyMock(_straightFalse, true);
+            var statisticsRepository = GetStatisticsRepository_NotEnoughFunds_Mock();
+
+            FakeTradingService service = new FakeTradingService(algoSettingsService,
+                algoInstanceTradeRepository, statisticsRepository);
+
+            service.Initialize(_instanceId, _assetPair, _straightFalse);
+            var result = service.Buy(_volume, GetIAlgoCandle()).Result;
+
+            Assert.IsNotNull(result.Error);
+            Assert.AreEqual(ErrorMessages.NotEnoughFunds, result.Error.Message);
+
+        }
+
+        [Test]
+        public void Sell_Not_Enough_Funds_Test()
+        {
+            var algoSettingsService = GetAlgoSettingsServiceMock();
+            var algoInstanceTradeRepository = GetAlgoInstanceTradeRepositoryBuyMock(_straightFalse, true);
+            var statisticsRepository = GetStatisticsRepository_NotEnoughFunds_Mock();
+
+            FakeTradingService service = new FakeTradingService(algoSettingsService,
+                algoInstanceTradeRepository, statisticsRepository);
+
+            service.Initialize(_instanceId, _assetPair, _straightFalse);
+            var result = service.Sell(_volume, GetIAlgoCandle()).Result;
+
+            Assert.IsNotNull(result.Error);
+            Assert.AreEqual(ErrorMessages.NotEnoughFunds, result.Error.Message);
+
+        }
+
+        [Test]
         public void Sell_Straight_True_Test()
         {
             var algoSettingsService = GetAlgoSettingsServiceMock();
@@ -181,8 +217,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 .Returns(Task.FromResult(new StatisticsSummary()
                 {
                     InstanceId = _instanceId,
-                    LastAssetTwoBalance = 1000,
-                    LastTradedAssetBalance = 1500
+                    LastAssetTwoBalance = 60000,
+                    LastTradedAssetBalance = 50000
+                }));
+
+            return statisticsRepository.Object;
+        }
+
+        private IStatisticsRepository GetStatisticsRepository_NotEnoughFunds_Mock()
+        {
+            var statisticsRepository = new Mock<IStatisticsRepository>();
+
+            statisticsRepository.Setup(a => a.CreateOrUpdateSummaryAsync(It.IsAny<StatisticsSummary>()))
+                .Returns(Task.CompletedTask);
+
+            statisticsRepository.Setup(a => a.GetSummaryAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new StatisticsSummary()
+                {
+                    InstanceId = _instanceId,
+                    LastAssetTwoBalance = 10,
+                    LastTradedAssetBalance = 1
                 }));
 
             return statisticsRepository.Object;
@@ -198,20 +252,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         private AlgoInstanceTrade GetAlgoInstanceTradeSell()
         {
             var result = GetAlgoInstanceTradeFake(false);
-            result.IsBuy = false;
-            return result;
-        }
-
-        private AlgoInstanceTrade GetAlgoInstanceTradeOppositeBuy()
-        {
-            var result = GetAlgoInstanceOpppositeTradeFake_Straight_True(true);
-            result.IsBuy = true;
-            return result;
-        }
-
-        private AlgoInstanceTrade GetAlgoInstanceTradeOppositeSell()
-        {
-            var result = GetAlgoInstanceOpppositeTradeFake_Straight_True(false);
             result.IsBuy = false;
             return result;
         }

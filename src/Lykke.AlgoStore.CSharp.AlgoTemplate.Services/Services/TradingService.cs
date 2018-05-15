@@ -56,10 +56,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public async Task<ResponseModel<double>> Sell(double volume, IAlgoCandle candleData = null)
         {
-
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
-
                 var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
                     OrderAction.Sell, volume, _straight, _instanceId, null);
 
