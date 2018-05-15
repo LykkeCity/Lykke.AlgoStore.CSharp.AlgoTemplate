@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
@@ -74,7 +75,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void Recalculate(IList<SingleCandleResponse> candles)
         {
-            if (candles == null)
+            if (candles == null || candles.Any(c => c.Candle == null))
             {
                 return;
             }
@@ -88,7 +89,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var function = _allFunctions[functionId];
 
-                if (function.FunctionParameters.StartingDate > candlesResponse.Candle.DateTime || 
+                if (function.FunctionParameters.StartingDate > candlesResponse.Candle.DateTime ||
                     function.FunctionParameters.EndingDate < candlesResponse.Candle.DateTime)
                     continue;
 

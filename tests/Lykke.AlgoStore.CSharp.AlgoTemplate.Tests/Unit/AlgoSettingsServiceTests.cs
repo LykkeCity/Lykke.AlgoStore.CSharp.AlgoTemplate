@@ -37,7 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void GetNoneExistingSetting_ForNonEmptyEnvironmentVariable_ShouldReturnEmptyString()
         {
-            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" , \"InstanceType\": \"Live\"}");
 
             var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             settingsService.Initialize();
@@ -50,7 +50,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void GetExistingSetting_ForNonEmptyEnvironmentVariable_ShouldReturnValue()
         {
-            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\", \"InstanceType\": \"Live\" }");
 
             var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             settingsService.Initialize();
@@ -63,7 +63,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void IsAlive_ForNonInitializedService_ShouldReturnFalse()
         {
-            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\", \"InstanceType\": \"Live\" }");
 
             var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
 
@@ -75,7 +75,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void IsAlive_ForInitializedService_ShouldReturnTrue()
         {
-            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" }");
+            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\" , \"InstanceType\": \"Live\"}");
 
             var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
             settingsService.Initialize();

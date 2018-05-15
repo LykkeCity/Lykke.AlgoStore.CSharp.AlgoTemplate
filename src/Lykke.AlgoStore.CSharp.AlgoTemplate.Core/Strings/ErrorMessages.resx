@@ -123,6 +123,9 @@
   <data name="BalanceLowerThanReserved" xml:space="preserve">
     <value>Balance lower than reserved</value>
   </data>
+  <data name="CandleShouldNotBeNull" xml:space="preserve">
+    <value>No Candle Information. Candle should not be null</value>
+  </data>
   <data name="Dust" xml:space="preserve">
     <value>Please try to send higher order</value>
   </data>

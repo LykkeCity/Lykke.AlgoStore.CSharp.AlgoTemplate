@@ -63,7 +63,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var result = _tradingService.Buy(volume);
+                var result = _tradingService.Buy(volume, candleData);
 
                 HandleResponse(result.Result, true, volume);
 

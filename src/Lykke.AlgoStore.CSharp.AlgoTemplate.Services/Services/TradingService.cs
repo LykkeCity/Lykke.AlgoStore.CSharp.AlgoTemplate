@@ -1,10 +1,12 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
 using System;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using Lykke.AlgoStore.MatchingEngineAdapter.Client;
+using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -49,11 +51,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
             else
             {
-                _fakeTradingService.Initialize(_instanceId,_assetPairId, _straight);
+                _fakeTradingService.Initialize(_instanceId, _assetPairId, _straight);
             }
         }
 
-        public async Task<ResponseModel<double>> Sell(double volume, IAlgoCandle candleData)
+        public async Task<ResponseModel<double>> Sell(double volume, IAlgoCandle candleData = null)
         {
 
             if (_algoSettingsService.GetAlgoInstance().AlgoInstanceType == AlgoInstanceType.Live)
@@ -67,12 +69,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
             else
             {
+                if (candleData == null)
+                    return new ResponseModel<double>()
+                    {
+                        Error = new ResponseModel.ErrorModel()
+                        {
+                            Message = ErrorMessages.CandleShouldNotBeNull
+                        }
+                    };
 
-                return null;
+                return await _fakeTradingService.Sell(volume, candleData);
             }
         }
 
-        public async Task<ResponseModel<double>> Buy(double volume, IAlgoCandle candleData)
+        public async Task<ResponseModel<double>> Buy(double volume, IAlgoCandle candleData = null)
         {
             if (_algoSettingsService.GetAlgoInstance().AlgoInstanceType == AlgoInstanceType.Live)
             {
@@ -84,8 +94,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
             else
             {
+                if (candleData == null)
+                    return new ResponseModel<double>()
+                    {
+                        Error = new ResponseModel.ErrorModel()
+                        {
+                            Message = ErrorMessages.CandleShouldNotBeNull
+                        }
+                    };
 
-                return null;
+                return await _fakeTradingService.Buy(volume, candleData);
             }
         }
     }

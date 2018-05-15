@@ -21,7 +21,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         private DateTime _nextTimestamp;
 
         private int _currentIndex = 0;
-        
+
         private bool _isLastBuffer;
         private bool _isDisposed;
 
@@ -122,7 +122,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         {
             var task = _candlesHistoryService.GetCandlesHistoryAsync(_candlesHistoryRequest.AssetPair, Service.CandlesHistory.Client.Models.CandlePriceType.Mid,
                                                                     (Service.CandlesHistory.Client.Models.CandleTimeInterval)_candlesHistoryRequest.Interval,
-                                                                    _currentTimestamp, _nextTimestamp);
+                                                                   _currentTimestamp, _nextTimestamp);
 
             task.Wait();
 

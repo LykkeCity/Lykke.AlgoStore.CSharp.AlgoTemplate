@@ -54,7 +54,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = GetSetting("InstanceId");
             _algoId = GetSetting("AlgoId");
             _tradedAsset = GetAlgoInstanceTradedAsset();
-            _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType),GetSetting("InstanceType"));
+            _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType), GetSetting("InstanceType"));
             _isAlive = true;
         }
 
@@ -104,6 +104,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public string GetAlgoInstanceClientId()
         {
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.ClientId;
+        }
+
+        public string GetAlgoInstanceOppositeAssetId()
+        {
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.OppositeAssetId;
         }
     }
 }
