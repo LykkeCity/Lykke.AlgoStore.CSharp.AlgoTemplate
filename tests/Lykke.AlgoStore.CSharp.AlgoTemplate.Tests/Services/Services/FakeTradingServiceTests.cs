@@ -9,6 +9,10 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
+using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {
@@ -85,6 +89,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
         }
 
+        [Test]
+        public void Trading_Service_FakeTrading_ReturnError_Test()
+        {
+            IMatchingEngineAdapterClient clientMEA = new Mock<IMatchingEngineAdapterClient>().Object;
+            IAlgoSettingsService settingsService = GetAlgoSettingsServiceMock();
+            IFakeTradingService fakeTradingService = GetFakeTradingServiceMock();
+            TradingService service = new TradingService(clientMEA, settingsService, fakeTradingService);
+
+            var result = service.Buy(_volume).Result;
+
+            Assert.IsNotNull(result.Error);
+            Assert.AreEqual(ErrorMessages.CandleShouldNotBeNull, result.Error.Message);
+        }
+
         #region Helper Methods
 
         private IAlgoSettingsService GetAlgoSettingsServiceMock()
@@ -93,8 +111,43 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 
             algoSettingsService.Setup(a => a.GetTradedAsset()).Returns(_tradedAsset);
             algoSettingsService.Setup(a => a.GetAlgoInstanceOppositeAssetId()).Returns(_oppositeAsset);
+            algoSettingsService.Setup(a => a.GetInstanceId()).Returns(_instanceId);
+            algoSettingsService.Setup(a => a.GetAlgoInstanceAssetPair()).Returns(_assetPair);
+            algoSettingsService.Setup(a => a.GetAlgoInstanceWalletId()).Returns("testwal2-2108-4b39-97ed-61ca1f4df59c");
+            algoSettingsService.Setup(a => a.IsAlgoInstanceMarketOrderStraight()).Returns(_straightTrue);
+            algoSettingsService.Setup(a => a.GetAlgoInstance()).Returns(
+                new AlgoClientInstanceData()
+                {
+                    InstanceId = _instanceId,
+                    AlgoInstanceType = AlgoInstanceType.Test,
+                    AssetPair = _assetPair,
+                    TradedAsset = _tradedAsset
+                });
+
+            algoSettingsService.Setup(a => a.GetInstanceType()).Returns(AlgoInstanceType.Test);
 
             return algoSettingsService.Object;
+        }
+
+        private IFakeTradingService GetFakeTradingServiceMock()
+        {
+            var fakeTradingService = new Mock<IFakeTradingService>();
+
+            fakeTradingService.Setup(a => a.Buy(It.IsAny<double>(), It.IsAny<IAlgoCandle>()))
+                              .Returns(Task.FromResult(
+                                        new ResponseModel<double>()
+                                        {
+                                            Result = 1000
+                                        }));
+
+            fakeTradingService.Setup(a => a.Sell(It.IsAny<double>(), It.IsAny<IAlgoCandle>()))
+                              .Returns(Task.FromResult(
+                                        new ResponseModel<double>()
+                                        {
+                                            Result = 1000
+                                        }));
+
+            return fakeTradingService.Object;
         }
 
         private IAlgoInstanceTradeRepository GetAlgoInstanceTradeRepositoryBuyMock(bool isStraight, bool isBuy)
@@ -116,7 +169,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 
             return algoInstanceTradeRepository.Object;
         }
-
 
         private IStatisticsRepository GetStatisticsRepositoryMock()
         {
@@ -190,7 +242,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 IsBuy = isbuy
             };
         }
-
 
         private AlgoInstanceTrade GetAlgoInstanceOpppositeTradeFake_Straight_False(bool isbuy)
         {

@@ -44,7 +44,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _walletId = _algoSettingsService.GetAlgoInstanceWalletId();
             _straight = _algoSettingsService.IsAlgoInstanceMarketOrderStraight();
 
-            if (_algoSettingsService.GetAlgoInstance().AlgoInstanceType == AlgoInstanceType.Live)
+            if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
                 _matchingEngineAdapterClient.SetClientAndInstanceId(_algoSettingsService.GetAlgoInstanceClientId(), _instanceId);
             }
@@ -57,7 +57,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public async Task<ResponseModel<double>> Sell(double volume, IAlgoCandle candleData = null)
         {
 
-            if (_algoSettingsService.GetAlgoInstance().AlgoInstanceType == AlgoInstanceType.Live)
+            if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
 
                 var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
@@ -82,7 +82,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public async Task<ResponseModel<double>> Buy(double volume, IAlgoCandle candleData = null)
         {
-            if (_algoSettingsService.GetAlgoInstance().AlgoInstanceType == AlgoInstanceType.Live)
+            if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
                 var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
                     OrderAction.Buy, volume, _straight, _instanceId, null);
