@@ -1,12 +1,11 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
-using System;
-using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using Lykke.AlgoStore.MatchingEngineAdapter.Client;
-using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
+using System;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -47,7 +46,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             if (_algoSettingsService.GetAlgoInstance().AlgoInstanceType == AlgoInstanceType.Live)
             {
-                //_matchingEngineAdapterClient.SetClientAndInstanceId(_algoSettingsService.GetAlgoInstanceClientId(), _instanceId);
+                _matchingEngineAdapterClient.SetClientAndInstanceId(_algoSettingsService.GetAlgoInstanceClientId(), _instanceId);
             }
             else
             {
@@ -61,11 +60,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (_algoSettingsService.GetAlgoInstance().AlgoInstanceType == AlgoInstanceType.Live)
             {
 
-                //var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
-                //    OrderAction.Sell, volume, _straight, _instanceId, null);
+                var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
+                    OrderAction.Sell, volume, _straight, _instanceId, null);
 
-                //return meaResponse;
-                return null;
+                return meaResponse;
             }
             else
             {
@@ -86,11 +84,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             if (_algoSettingsService.GetAlgoInstance().AlgoInstanceType == AlgoInstanceType.Live)
             {
-                //var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
-                //    OrderAction.Buy, volume, _straight, _instanceId, null);
+                var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
+                    OrderAction.Buy, volume, _straight, _instanceId, null);
 
-                //return meaResponse;
-                return null;
+                return meaResponse;
             }
             else
             {

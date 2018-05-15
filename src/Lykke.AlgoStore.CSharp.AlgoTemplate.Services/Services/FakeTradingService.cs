@@ -54,6 +54,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
             summary.LastTradedAssetBalance -= volume;
             summary.LastAssetTwoBalance += tradedOpositeVolume;
+            await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
 
             return new ResponseModel<double>()
             {
@@ -77,6 +78,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
             summary.LastTradedAssetBalance += volume;
             summary.LastAssetTwoBalance -= tradedOpositeVolume;
+            await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
 
             return new ResponseModel<double>()
             {
