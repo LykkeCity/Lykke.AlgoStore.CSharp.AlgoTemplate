@@ -13,12 +13,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
         /// </summary>
         public IFunctionProvider Functions { get; set; }
 
-        ///// <summary>
-        ///// Access point for the user action, which can be performed 
-        ///// by an algo <see cref="IActions"/>
-        ///// </summary>
-        //public IActions Actions { get; set; }
-
         /// <summary>
         /// Access to statistics information and service available to
         /// an algo. <see cref="IStatistics"/>

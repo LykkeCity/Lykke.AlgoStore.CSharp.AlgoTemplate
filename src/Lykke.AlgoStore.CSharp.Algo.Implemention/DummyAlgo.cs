@@ -15,6 +15,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         public override void OnStartUp(IFunctionProvider functions)
         {
+
             _shortSma = functions.GetFunction<SmaFunction>("SMA_Short");
             _longSma = functions.GetFunction<SmaFunction>("SMA_Long");
         }
@@ -50,9 +51,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             context.Actions.Log($"Volume value: {Volume}");
 
             var candle = context.Data.Candle;
-            //context.Actions.Log($"Receiving quote at {DateTime.UtcNow} " +
-            //                    $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
-            //                    $"{{quote.IsBuy: {quote.}}}, {{quote.IsOnline: {quote.IsOnline}}}");
+            context.Actions.Log($"Receiving candle at {candle.DateTime} candle close Price {candle.Close}");
 
             var smaShort = _shortSma.Value;
             var smaLong = _longSma.Value;
@@ -60,12 +59,12 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             //if (quote.Price < 10000)
             //{
-            context.Actions.Buy(context.Data.Candle, Volume);
+            //context.Actions.Buy(context.Data.Candle, Volume);
             //}
 
             //if (quote.Price > 7000)
             //{
-            //    context.Actions.Sell(Volume);
+            context.Actions.Sell(context.Data.Candle, Volume);
             //}
         }
     }
