@@ -22,7 +22,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ErrorMessages {
+    public class ErrorMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings.ErrorMessages", typeof(ErrorMessages).Assembly);
@@ -51,7 +51,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Already Processed.
         /// </summary>
-        internal static string AlreadyProcessed {
+        public static string AlreadyProcessed {
             get {
                 return ResourceManager.GetString("AlreadyProcessed", resourceCulture);
             }
@@ -72,16 +72,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Balance lower than reserved.
         /// </summary>
-        internal static string BalanceLowerThanReserved {
+        public static string BalanceLowerThanReserved {
             get {
                 return ResourceManager.GetString("BalanceLowerThanReserved", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No Candle Information. Candle should not be null.
+        /// </summary>
+        public static string CandleShouldNotBeNull {
+            get {
+                return ResourceManager.GetString("CandleShouldNotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please try to send higher order.
         /// </summary>
-        internal static string Dust {
+        public static string Dust {
             get {
                 return ResourceManager.GetString("Dust", resourceCulture);
             }
@@ -90,7 +99,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to The order leads to negative spread.
         /// </summary>
-        internal static string LeadToNegativeSpread {
+        public static string LeadToNegativeSpread {
             get {
                 return ResourceManager.GetString("LeadToNegativeSpread", resourceCulture);
             }
@@ -99,7 +108,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Low balance.
         /// </summary>
-        internal static string LowBalance {
+        public static string LowBalance {
             get {
                 return ResourceManager.GetString("LowBalance", resourceCulture);
             }
@@ -108,7 +117,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to No liquidity.
         /// </summary>
-        internal static string NoLiquidity {
+        public static string NoLiquidity {
             get {
                 return ResourceManager.GetString("NoLiquidity", resourceCulture);
             }
@@ -117,7 +126,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Not enough funds.
         /// </summary>
-        internal static string NotEnoughFunds {
+        public static string NotEnoughFunds {
             get {
                 return ResourceManager.GetString("NotEnoughFunds", resourceCulture);
             }
@@ -126,7 +135,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Not found.
         /// </summary>
-        internal static string NotFound {
+        public static string NotFound {
             get {
                 return ResourceManager.GetString("NotFound", resourceCulture);
             }
@@ -135,7 +144,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Reserved volume higher than balance.
         /// </summary>
-        internal static string ReservedVolumeHigherThanBalance {
+        public static string ReservedVolumeHigherThanBalance {
             get {
                 return ResourceManager.GetString("ReservedVolumeHigherThanBalance", resourceCulture);
             }
@@ -144,7 +153,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Runtime error.
         /// </summary>
-        internal static string RuntimeError {
+        public static string RuntimeError {
             get {
                 return ResourceManager.GetString("RuntimeError", resourceCulture);
             }
@@ -153,7 +162,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Unknown asset.
         /// </summary>
-        internal static string UnknownAsset {
+        public static string UnknownAsset {
             get {
                 return ResourceManager.GetString("UnknownAsset", resourceCulture);
             }

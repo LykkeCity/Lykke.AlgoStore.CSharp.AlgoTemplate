@@ -1,13 +1,14 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
+using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     /// <summary>
     /// <see cref="IActions"/> implementation
     /// </summary>
-    public class ActionsService : IActions
+    public class ActionsService : ICandleActions, IQuoteActions
     {
         private readonly IAlgoSettingsService _algoSettingsService;
         private readonly IUserLogService _logService;
@@ -37,7 +38,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _statisticsService = statisticsService;
             _logService = logService;
             _algoSettingsService = algoSettingsService;
-            _onErrorHandler = onErrorHandler;        
+            _onErrorHandler = onErrorHandler;
         }
 
         public double Buy(double volume)
@@ -46,16 +47,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 var result = _tradingService.Buy(volume);
 
-                if (result.Result.Error != null)
-                {
-                    Log($"There was a problem placing a buy order. Error: {result.Result.Error.Message}");
-                }
+                HandleResponse(result.Result, true, volume);
 
-                if (result.Result.Result > 0)
-                {
-                    _statisticsService.OnAction(true, volume, result.Result.Result);
-                    Log($"Buy order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result.Result} at {DateTime.UtcNow}");
-                }
+                return result.Result.Result;
+            }
+            catch (Exception e)
+            {
+                _onErrorHandler.Invoke(e, "There was a problem placing a buy order.");
+                // If we can not return. re-throw.
+                throw;
+            }
+        }
+
+        public double Buy(IAlgoCandle candleData, double volume)
+        {
+            try
+            {
+                var result = _tradingService.Buy(volume, candleData);
+
+                HandleResponse(result.Result, true, volume);
 
                 return result.Result.Result;
             }
@@ -80,16 +90,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 var result = _tradingService.Sell(volume);
 
-                if (result.Result.Error != null)
-                {
-                    Log($"There was a problem placing a sell order. Error: {result.Result.Error.Message}");
-                }
-                
-                if (result.Result.Result > 0)
-                {
-                    _statisticsService.OnAction(false, volume, result.Result.Result);
-                    Log($"Sell order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result.Result} at {DateTime.UtcNow}");
-                }
+                HandleResponse(result.Result, false, volume);
 
                 return result.Result.Result;
             }
@@ -98,6 +99,40 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _onErrorHandler.Invoke(e, "There was a problem placing a sell order.");
                 // If we can not return. re-throw.
                 throw;
+            }
+        }
+
+        public double Sell(IAlgoCandle candleData, double volume)
+        {
+            try
+            {
+                var result = _tradingService.Sell(volume, candleData);
+
+                HandleResponse(result.Result, false, volume);
+
+                return result.Result.Result;
+            }
+            catch (Exception e)
+            {
+                _onErrorHandler.Invoke(e, "There was a problem placing a sell order.");
+                // If we can not return. re-throw.
+                throw;
+            }
+        }
+
+        private void HandleResponse(ResponseModel<double> result, bool isBuy, double volume)
+        {
+            string action = isBuy ? "buy" : "sell";
+
+            if (result.Error != null)
+            {
+                Log($"There was a problem placing a {action} order. Error: {result.Error.Message} is buying - {isBuy} ");
+            }
+
+            if (result.Result > 0)
+            {
+                _statisticsService.OnAction(isBuy, volume, result.Result);
+                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result} at {DateTime.UtcNow}");
             }
         }
     }

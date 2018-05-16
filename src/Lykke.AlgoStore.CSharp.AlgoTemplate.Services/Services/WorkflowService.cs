@@ -104,7 +104,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _quoteProviderService.Subscribe(_algo.AssetPair, OnQuote);
                 _quoteProviderService.Start();
             }
-            
+
             //Update algo statistics
             _statisticsService.OnAlgoStarted();
 
@@ -202,6 +202,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             context.Data = new AlgoQuoteData(quote);
 
+            context.Actions = actions;
+
             SetContextProperties(context);
 
             return context;
@@ -213,6 +215,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             context.Data = new AlgoCandleData(candle);
 
+            context.Actions = actions;
+
             SetContextProperties(context);
 
             return context;
@@ -221,8 +225,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private void SetContextProperties(Context context)
         {
             context.Functions = _functionsService.GetFunctionResults();
-
-            context.Actions = actions;
         }
 
         public void SetUpAlgoParameters(AlgoClientInstanceData algoInstance)

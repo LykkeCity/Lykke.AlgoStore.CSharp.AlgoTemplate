@@ -145,16 +145,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 currentDate = currentDate.AddSeconds(1);
 
-                if (currentDate > DateTime.UtcNow) break;
+                if (currentDate > DateTime.UtcNow)
+                {
+                    break;
+                }
 
                 var intervalsToUpdate = GetIntervalsForUpdate(currentDate);
 
                 intervalsToUpdate = intervalsToUpdate
-                    .Where(c => _providers.ContainsKey(c) && 
+                    .Where(c => _providers.ContainsKey(c) &&
                                 _providers[c].Values.Any(csd => (csd.CandleSource.Current == null ||
                                                                  csd.CandleSource.Current.DateTime < currentDate) &&
-                                                                csd.CandleSource.MoveNext()))
-                    .ToHashSet();
+                                                                csd.CandleSource.MoveNext())).ToHashSet();
 
                 foreach (var subscription in _subscriptions)
                 {
@@ -168,7 +170,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     // If the candle is not for today - move on
                     // This can happen when the history service is first fetching the candles and
                     // the first one ends up some time after the current date
-                    if (candle.DateTime != currentDate) continue;
+                    if (candle != null && candle.DateTime != currentDate) continue;
 
                     subscription.Callback(candle);
                 }
