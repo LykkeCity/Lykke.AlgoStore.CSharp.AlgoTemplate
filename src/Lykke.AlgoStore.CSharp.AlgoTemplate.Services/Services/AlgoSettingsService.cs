@@ -31,11 +31,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public string GetTradedAsset() => _tradedAsset;
         public AlgoInstanceType GetInstanceType() => _instanceType;
 
-        //public AlgoInstanceType GetInstanceType()
-        //{
-        //    return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AlgoInstanceType;
-        //}
-
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
         {
             _algoClientInstanceMetadataRepository = algoClientInstanceMetadataRepository;

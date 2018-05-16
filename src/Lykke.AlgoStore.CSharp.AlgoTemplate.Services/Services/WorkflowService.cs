@@ -225,35 +225,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private void SetContextProperties(Context context)
         {
             context.Functions = _functionsService.GetFunctionResults();
-            //context.Actions = actions;
         }
 
         public void SetUpAlgoParameters(AlgoClientInstanceData algoInstance)
         {
-            try
+            if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Parameters == null)
+                return;
+
+            Type parameterType = _algo.GetType();
+
+            foreach (var parameter in algoInstance.AlgoMetaDataInformation.Parameters)
             {
-                if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Parameters == null)
-                    return;
+                PropertyInfo prop = parameterType.GetProperty(parameter.Key);
 
-                Type parameterType = _algo.GetType();
-
-                foreach (var parameter in algoInstance.AlgoMetaDataInformation.Parameters)
+                if (prop != null && prop.CanWrite)
                 {
-                    PropertyInfo prop = parameterType.GetProperty(parameter.Key);
-
-                    if (prop != null && prop.CanWrite)
-                    {
-                        if (prop.PropertyType.IsEnum)
-                            prop.SetValue(_algo, Enum.ToObject(prop.PropertyType, Convert.ToInt32(parameter.Value)), null);
-                        else
-                            prop.SetValue(_algo, Convert.ChangeType(parameter.Value, prop.PropertyType), null);
-                    }
+                    if (prop.PropertyType.IsEnum)
+                        prop.SetValue(_algo, Enum.ToObject(prop.PropertyType, Convert.ToInt32(parameter.Value)), null);
+                    else
+                        prop.SetValue(_algo, Convert.ChangeType(parameter.Value, prop.PropertyType), null);
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
             }
         }
     }
