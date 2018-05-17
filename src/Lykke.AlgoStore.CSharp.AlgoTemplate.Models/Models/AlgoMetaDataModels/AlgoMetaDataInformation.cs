@@ -4,7 +4,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels
 {
     public class AlgoMetaDataInformation
     {
-        public IEnumerable<AlgoMetaDataParameter> Parameters { get; set; }
-        public IEnumerable<AlgoMetaDataFunction> Functions { get; set; }
+        public IList<AlgoMetaDataParameter> Parameters { get; set; }
+        public IList<AlgoMetaDataFunction> Functions { get; set; }
     }
 }

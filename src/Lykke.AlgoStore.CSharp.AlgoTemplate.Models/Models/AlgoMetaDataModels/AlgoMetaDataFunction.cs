@@ -5,7 +5,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels
     public class AlgoMetaDataFunction
     {
         /// <summary>
-        /// Namescpace of the function, which will be used to load the function
+        /// Namespace of the function, which will be used to load the function
         /// </summary>
         public string Type { get; set; }
 
@@ -22,6 +22,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels
         /// <summary>
         /// Function Parameters
         /// </summary>
-        public IEnumerable<AlgoMetaDataParameter> Parameters { get; set; }
+        public IList<AlgoMetaDataParameter> Parameters { get; set; }
     }
 }

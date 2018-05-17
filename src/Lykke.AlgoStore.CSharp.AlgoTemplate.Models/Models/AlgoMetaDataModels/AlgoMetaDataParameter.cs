@@ -22,6 +22,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels
         /// <summary>
         /// If parameter is enum, it has predefined values which will be used from front-end guys for visualization in dropdowns
         /// </summary>
-        public IEnumerable<EnumValue> PredefinedValues { get; set; }
+        public IList<EnumValue> PredefinedValues { get; set; }
     }
 }
