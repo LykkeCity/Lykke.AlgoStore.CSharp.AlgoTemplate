@@ -10,11 +10,5 @@
         /// algo <see cref="IFunctionProvider"/>
         /// </summary>
         IFunctionProvider Functions { get; }
-
-        /// <summary>
-        /// Access to statistics information and service available to
-        /// an algo. <see cref="IStatistics"/>
-        /// </summary>
-        IStatistics Statistics { get; }
     }
 }
