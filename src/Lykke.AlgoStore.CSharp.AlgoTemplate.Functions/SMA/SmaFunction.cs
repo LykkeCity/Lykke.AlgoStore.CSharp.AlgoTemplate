@@ -1,9 +1,9 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.SMA
 {
     /// <summary>
     /// Custom Simple Moving Average (SMA) function

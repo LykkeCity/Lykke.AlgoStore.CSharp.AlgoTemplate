@@ -1,6 +1,6 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.MACD
 {
     public class MacdParameters : FunctionParamsBase
     {

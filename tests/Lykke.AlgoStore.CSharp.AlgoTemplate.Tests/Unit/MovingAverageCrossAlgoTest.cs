@@ -3,14 +3,14 @@ using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.ADX;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {

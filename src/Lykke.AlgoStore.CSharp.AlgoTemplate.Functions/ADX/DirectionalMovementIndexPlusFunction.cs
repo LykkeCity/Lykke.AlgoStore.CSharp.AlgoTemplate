@@ -1,10 +1,10 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
-using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
+using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.ADX
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.ADX
 {
     public class DirectionalMovementIndexPlusFunction : IFunction
     {

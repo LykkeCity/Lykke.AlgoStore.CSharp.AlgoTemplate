@@ -1,6 +1,6 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.SMA
 {
     /// <summary>
     /// Simple Moving Average (SMA) parameters

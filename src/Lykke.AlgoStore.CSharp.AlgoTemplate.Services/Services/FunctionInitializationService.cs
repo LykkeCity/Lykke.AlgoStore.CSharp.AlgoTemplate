@@ -34,16 +34,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 if (function.Parameters == null)
                     continue;
 
-                Type functionType = Type.GetType(function.Type);
+                //Load old (obsolete) and new assembly that holds functions and decide which one to use
+                var oldAssembly = Assembly.Load("Lykke.AlgoStore.CSharp.AlgoTemplate.Services");
+                var newAssembly = Assembly.Load("Lykke.AlgoStore.CSharp.AlgoTemplate.Functions");
 
-                FunctionParamsBase paramObject = new FunctionParamsBase();
+                var assembly =
+                    oldAssembly.GetType(function.Type) == null ||
+                    oldAssembly.GetType(function.FunctionParameterType) == null
+                        ? newAssembly
+                        : oldAssembly;
 
-                Type parameterType = Type.GetType(function.FunctionParameterType);
-                paramObject = (FunctionParamsBase)Activator.CreateInstance(parameterType);
+                var functionType = assembly.GetType(function.Type);
+                var parameterType = assembly.GetType(function.FunctionParameterType);
+                var paramObject = (FunctionParamsBase)Activator.CreateInstance(parameterType);
 
                 foreach (var param in function.Parameters)
                 {
-                    PropertyInfo prop = parameterType.GetProperty(param.Key);
+                    var prop = parameterType.GetProperty(param.Key);
                     if (prop != null && prop.CanWrite)
                     {
                         if (prop.PropertyType.IsEnum)

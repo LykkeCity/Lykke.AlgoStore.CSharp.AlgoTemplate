@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Common.Log;
+﻿using Common.Log;
 using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
