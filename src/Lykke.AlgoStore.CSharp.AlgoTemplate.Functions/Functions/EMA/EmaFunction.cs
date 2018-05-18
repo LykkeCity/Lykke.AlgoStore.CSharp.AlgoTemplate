@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.EMA
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.EMA
 {
     public class EmaFunction : AbstractFunction
     {

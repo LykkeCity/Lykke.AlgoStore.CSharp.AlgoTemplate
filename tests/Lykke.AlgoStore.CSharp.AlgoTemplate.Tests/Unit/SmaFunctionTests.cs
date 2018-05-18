@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.SMA;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using NUnit.Framework;
 

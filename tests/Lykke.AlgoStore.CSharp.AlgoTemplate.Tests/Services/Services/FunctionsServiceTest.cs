@@ -12,7 +12,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.SMA;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {
@@ -775,8 +775,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                         new AlgoMetaDataFunction()
                         {
                             Id="SAM_TEST",
-                            Type = "Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.SMA.SmaFunction",
-                            FunctionParameterType = "Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.SMA.SmaParameters",
+                            Type = "Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA.SmaFunction",
+                            FunctionParameterType = "Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA.SmaParameters",
                             Parameters = new List<AlgoMetaDataParameter>()
                                 {
                                     new AlgoMetaDataParameter()

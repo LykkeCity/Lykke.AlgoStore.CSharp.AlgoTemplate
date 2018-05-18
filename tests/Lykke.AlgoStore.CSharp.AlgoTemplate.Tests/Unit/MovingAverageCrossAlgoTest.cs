@@ -9,8 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.ADX;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.SMA;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.ADX;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
