@@ -1,10 +1,10 @@
 ﻿using Autofac;
 using Common;
-using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {

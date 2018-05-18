@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.EMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.MACD

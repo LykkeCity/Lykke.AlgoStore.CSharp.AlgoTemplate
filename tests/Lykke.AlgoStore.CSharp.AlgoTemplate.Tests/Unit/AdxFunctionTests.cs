@@ -1,9 +1,9 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.ADX;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit

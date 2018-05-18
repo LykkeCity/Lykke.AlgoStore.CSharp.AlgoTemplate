@@ -1,7 +1,7 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using System;
+﻿using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
 
-namespace Lykke.AlgoStore.CSharp.Algo.Core.Candles
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles
 {
     public class Candle : IAlgoCandle
     {

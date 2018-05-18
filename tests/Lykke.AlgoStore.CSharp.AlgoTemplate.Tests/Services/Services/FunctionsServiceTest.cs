@@ -1,5 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
-using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
@@ -12,6 +11,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services

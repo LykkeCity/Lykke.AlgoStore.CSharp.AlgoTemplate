@@ -1,9 +1,9 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {

@@ -1,10 +1,10 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
 
-namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions
 {
     /// <summary>
     /// Abstract implementation of <see cref="IFunction"/> which provides

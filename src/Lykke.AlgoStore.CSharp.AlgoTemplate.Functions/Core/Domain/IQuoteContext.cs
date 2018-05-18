@@ -1,4 +1,4 @@
-﻿namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
+﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain
 {
     public interface IQuoteContext : IContext
     {

@@ -2,6 +2,7 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System.Collections.Generic;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.ADX;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.MACD;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;

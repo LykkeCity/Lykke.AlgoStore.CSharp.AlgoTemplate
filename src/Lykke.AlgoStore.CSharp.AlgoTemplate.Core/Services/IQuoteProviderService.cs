@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using Common;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {

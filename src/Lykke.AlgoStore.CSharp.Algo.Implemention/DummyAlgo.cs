@@ -1,5 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using System;
+﻿using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention

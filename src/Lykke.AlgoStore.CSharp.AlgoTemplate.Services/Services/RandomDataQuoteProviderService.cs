@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 

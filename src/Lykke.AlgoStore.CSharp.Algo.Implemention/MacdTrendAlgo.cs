@@ -1,4 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.MACD;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention

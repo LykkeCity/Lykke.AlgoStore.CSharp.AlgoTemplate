@@ -1,10 +1,10 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
 {

@@ -3,6 +3,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {

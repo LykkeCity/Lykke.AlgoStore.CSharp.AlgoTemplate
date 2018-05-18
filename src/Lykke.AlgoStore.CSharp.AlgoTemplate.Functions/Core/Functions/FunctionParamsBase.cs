@@ -1,7 +1,8 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
-using System;
+﻿using System;
+using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
-namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions
 {
     /// <summary>
     /// Base class for parameters passed to a function. 

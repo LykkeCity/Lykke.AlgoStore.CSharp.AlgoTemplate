@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA
 {

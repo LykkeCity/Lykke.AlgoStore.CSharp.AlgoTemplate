@@ -1,7 +1,7 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
-using System;
+﻿using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
-namespace Lykke.AlgoStore.CSharp.Algo.Core.Domain
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain
 {
     public class BaseAlgo : IAlgo
     {

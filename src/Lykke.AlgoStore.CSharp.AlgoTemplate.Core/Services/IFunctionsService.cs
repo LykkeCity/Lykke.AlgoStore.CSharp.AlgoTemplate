@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
