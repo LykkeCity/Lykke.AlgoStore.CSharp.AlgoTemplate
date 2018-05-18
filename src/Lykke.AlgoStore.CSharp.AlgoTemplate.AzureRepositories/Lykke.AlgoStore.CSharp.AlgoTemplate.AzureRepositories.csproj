@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Core\Lykke.AlgoStore.CSharp.AlgoTemplate.Core.csproj" />
-    <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

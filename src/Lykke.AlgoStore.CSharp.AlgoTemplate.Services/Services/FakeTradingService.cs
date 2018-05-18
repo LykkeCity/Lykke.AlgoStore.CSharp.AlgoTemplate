@@ -1,10 +1,10 @@
 ﻿using System;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services

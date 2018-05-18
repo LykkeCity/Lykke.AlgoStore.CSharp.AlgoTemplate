@@ -1,6 +1,6 @@
 ﻿using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {

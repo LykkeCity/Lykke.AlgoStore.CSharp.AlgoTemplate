@@ -1,6 +1,6 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using Lykke.AlgoStore.CSharp.Algo.Implemention;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.MACD;
+﻿using Lykke.AlgoStore.CSharp.Algo.Implemention;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.MACD;
 using Moq;
 using NUnit.Framework;
 

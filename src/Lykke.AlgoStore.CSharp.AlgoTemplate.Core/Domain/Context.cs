@@ -1,4 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
 {
@@ -12,11 +12,5 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
         /// algo <see cref="IFunctionProvider"/>
         /// </summary>
         public IFunctionProvider Functions { get; set; }
-
-        /// <summary>
-        /// Access to statistics information and service available to
-        /// an algo. <see cref="IStatistics"/>
-        /// </summary>
-        public IStatistics Statistics { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using AutoMapper;
 using Common.Log;
-using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
@@ -16,6 +15,7 @@ using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using AzureStorage.Tables;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 using Lykke.Logs;
 using Lykke.SlackNotification.AzureQueue;

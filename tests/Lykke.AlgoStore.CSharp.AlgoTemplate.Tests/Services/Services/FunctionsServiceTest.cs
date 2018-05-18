@@ -1,11 +1,9 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Candles;
-using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Moq;
 using Newtonsoft.Json;
@@ -13,6 +11,9 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {
@@ -775,8 +776,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                         new AlgoMetaDataFunction()
                         {
                             Id="SAM_TEST",
-                            Type = "Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA.SmaFunction",
-                            FunctionParameterType = "Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Functions.SMA.SmaParameters",
+                            Type = "Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA.SmaFunction",
+                            FunctionParameterType = "Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA.SmaParameters",
                             Parameters = new List<AlgoMetaDataParameter>()
                                 {
                                     new AlgoMetaDataParameter()

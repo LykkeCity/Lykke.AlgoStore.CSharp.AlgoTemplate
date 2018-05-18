@@ -1,5 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 

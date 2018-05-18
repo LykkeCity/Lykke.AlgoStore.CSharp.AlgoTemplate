@@ -1,5 +1,6 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService
 {
