@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
-using static Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions.AbstractFunction;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+using static Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions.AbstractFunction;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
 {

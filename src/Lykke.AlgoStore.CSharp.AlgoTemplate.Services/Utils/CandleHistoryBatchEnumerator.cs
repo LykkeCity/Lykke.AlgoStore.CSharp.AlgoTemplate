@@ -3,7 +3,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using Lykke.Service.CandlesHistory.Client;
 using System;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {

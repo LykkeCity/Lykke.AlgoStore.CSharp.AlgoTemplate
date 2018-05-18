@@ -1,6 +1,6 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.ADX;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 {

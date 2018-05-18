@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.Algo.Core\Lykke.AlgoStore.CSharp.Algo.Core.csproj" />
-    <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Functions\Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.csproj" />
+    <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Functions\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.csproj" />
     <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj" />
   </ItemGroup>
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.EMA;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.EMA;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.MACD
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.MACD
 {
     /// <summary>
     /// An implementation of the Moving Average Convergence/Divergence (MACD) function using Exponential Moving Averages (EMA)

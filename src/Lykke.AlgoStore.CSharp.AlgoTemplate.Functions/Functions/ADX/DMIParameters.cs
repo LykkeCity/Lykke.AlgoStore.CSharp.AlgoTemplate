@@ -1,6 +1,6 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.ADX
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
 {
     public class DMIParameters : FunctionParamsBase
     {

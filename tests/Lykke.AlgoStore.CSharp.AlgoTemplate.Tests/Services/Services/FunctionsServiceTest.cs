@@ -11,9 +11,9 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {
@@ -776,8 +776,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                         new AlgoMetaDataFunction()
                         {
                             Id="SAM_TEST",
-                            Type = "Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA.SmaFunction",
-                            FunctionParameterType = "Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA.SmaParameters",
+                            Type = "Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA.SmaFunction",
+                            FunctionParameterType = "Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA.SmaParameters",
                             Parameters = new List<AlgoMetaDataParameter>()
                                 {
                                     new AlgoMetaDataParameter()

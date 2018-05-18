@@ -1,4 +1,4 @@
-﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain
+﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain
 {
     /// <summary>
     /// An algo context. Represents a user consumable resources from an algo.

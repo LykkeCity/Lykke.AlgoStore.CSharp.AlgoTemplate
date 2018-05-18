@@ -3,7 +3,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -37,7 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 //Load old (obsolete) and new assembly that holds functions and decide which one to use
                 var oldAssembly = Assembly.Load("Lykke.AlgoStore.CSharp.AlgoTemplate.Services");
-                var newAssembly = Assembly.Load("Lykke.AlgoStore.CSharp.AlgoTemplate.Functions");
+                var newAssembly = Assembly.Load("Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions");
 
                 var assembly =
                     oldAssembly.GetType(function.Type) == null ||

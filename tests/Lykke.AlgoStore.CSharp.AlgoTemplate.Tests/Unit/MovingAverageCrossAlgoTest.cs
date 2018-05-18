@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.ADX;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.SMA;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {

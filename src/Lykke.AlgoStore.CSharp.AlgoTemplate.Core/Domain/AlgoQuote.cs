@@ -1,5 +1,5 @@
 ﻿using System;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
 {

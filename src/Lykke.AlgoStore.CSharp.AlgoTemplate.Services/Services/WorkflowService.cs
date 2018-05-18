@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 

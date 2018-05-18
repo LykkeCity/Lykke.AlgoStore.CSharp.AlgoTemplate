@@ -2,7 +2,7 @@
 using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions
 {
     /// <summary>
     /// Base class for parameters passed to a function. 

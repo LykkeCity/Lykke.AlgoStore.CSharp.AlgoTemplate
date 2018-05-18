@@ -1,7 +1,7 @@
 ﻿using System;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain
 {
     /// <summary>
     /// A user defined algo.

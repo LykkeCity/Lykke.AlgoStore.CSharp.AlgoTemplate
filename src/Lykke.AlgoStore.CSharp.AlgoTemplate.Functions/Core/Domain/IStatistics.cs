@@ -1,6 +1,6 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Domain
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain
 {
     /// <summary>
     /// Algo statistics

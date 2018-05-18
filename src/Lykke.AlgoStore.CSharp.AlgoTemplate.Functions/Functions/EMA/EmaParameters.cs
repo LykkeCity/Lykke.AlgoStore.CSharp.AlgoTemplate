@@ -1,6 +1,6 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Core.Functions;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
 
-namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Functions.Functions.EMA
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.EMA
 {
     public class EmaParameters : FunctionParamsBase
     {
