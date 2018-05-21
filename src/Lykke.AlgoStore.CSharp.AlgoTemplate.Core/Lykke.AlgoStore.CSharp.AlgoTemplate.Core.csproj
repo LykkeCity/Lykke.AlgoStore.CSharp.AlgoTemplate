@@ -17,12 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions" Version="1.0.0" />
     <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.9" />
     <PackageReference Include="Lykke.Common" Version="6.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

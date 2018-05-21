@@ -45,7 +45,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Lykke.AlgoStore.CSharp.Algo.Implemention\Lykke.AlgoStore.CSharp.Algo.Implemention.csproj" />
     <ProjectReference Include="..\..\src\Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories\Lykke.AlgoStore.CSharp.AlgoTemplate.AzureRepositories.csproj" />
-    <ProjectReference Include="..\..\src\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Lykke.AlgoStore.CSharp.AlgoTemplate.Services\Lykke.AlgoStore.CSharp.AlgoTemplate.Services.csproj" />
   </ItemGroup>
 
