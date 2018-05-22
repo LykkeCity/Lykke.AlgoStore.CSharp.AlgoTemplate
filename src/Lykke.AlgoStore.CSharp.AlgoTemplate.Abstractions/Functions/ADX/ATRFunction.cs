@@ -13,7 +13,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
         private Candle _previousInput;
         private int _samples { get; set; }
 
-        private AtrParameters _functionParams = new AtrParameters();
+        public AtrParameters _functionParams = new AtrParameters();
         public FunctionParamsBase FunctionParameters => _functionParams;
 
         public bool IsReady => _samples > _period + 1;

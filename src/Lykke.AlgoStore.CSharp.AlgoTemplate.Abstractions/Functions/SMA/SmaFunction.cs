@@ -11,7 +11,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA
     public class SmaFunction : AbstractFunction
     {
         private Queue<double> _storageQueue;
-        private SmaParameters _functionParams = new SmaParameters();
+
+        public SmaParameters _functionParams = new SmaParameters();
 
         public override FunctionParamsBase FunctionParameters => _functionParams;
         public override double? Value => GetSmaValue();

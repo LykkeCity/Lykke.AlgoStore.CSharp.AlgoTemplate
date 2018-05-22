@@ -14,15 +14,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
 
         private int _samples { get; set; }
 
-        private DMIParameters _functionParams = new DMIParameters();
-        public FunctionParamsBase FunctionParameters => _functionParams;
-
         private double? _currentDMIMinusValue { get; set; }
         private double? SmoothedDirectionalMovementMinus { get; set; }
         private double? PreviousSmoothedDirectionalMovementMinus { get; set; }
 
         private Queue<double> DirectionalMovementMinuses { get; set; }
         private double DirectionalMovementMinus { get; set; }
+
+        public DMIParameters _functionParams = new DMIParameters();
+        public FunctionParamsBase FunctionParameters => _functionParams;
 
         public bool IsReady => _samples > _period + 1;
 
