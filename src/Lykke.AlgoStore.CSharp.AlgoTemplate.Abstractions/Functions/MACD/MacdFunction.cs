@@ -10,13 +10,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.MACD
     /// </summary>
     public class MacdFunction : AbstractFunction
     {
-        private readonly MacdParameters _functionParams;
-
         private readonly EmaFunction _fastEma;
         private readonly EmaFunction _slowEma;
         private readonly EmaFunction _signalLine;
 
         private double? _currentValue;
+
+        public readonly MacdParameters _functionParams;
 
         /// <summary>
         /// Gets the latest value of the function

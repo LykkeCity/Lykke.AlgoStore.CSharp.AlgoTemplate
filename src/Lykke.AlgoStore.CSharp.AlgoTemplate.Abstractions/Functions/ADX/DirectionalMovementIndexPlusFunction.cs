@@ -13,9 +13,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
         private readonly bool _isAverageTrueRangeSet = false;
         private int _samples { get; set; }
 
-        private DMIParameters _functionParams = new DMIParameters();
-        public FunctionParamsBase FunctionParameters => _functionParams;
-
         private double? _currentDMIPlusValue { get; set; }
         private double? SmoothedDirectionalMovementPlus { get; set; }
         private double? PreviousSmoothedDirectionalMovementPlus { get; set; }
@@ -26,6 +23,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
         public bool IsReady => _samples > _period + 1;
 
         public double? Value => _currentDMIPlusValue;
+
+        public DMIParameters _functionParams = new DMIParameters();
+        public FunctionParamsBase FunctionParameters => _functionParams;
 
         /// <summary>
         /// ATR

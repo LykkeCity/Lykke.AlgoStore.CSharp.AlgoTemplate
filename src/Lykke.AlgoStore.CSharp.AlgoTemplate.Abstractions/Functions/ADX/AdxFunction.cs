@@ -9,18 +9,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
 {
     public class AdxFunction : IFunction
     {
-
         private readonly DirectionalMovementIndexPlusFunction _dmiPlusFucn;
         private readonly DirectionalMovementIndexMinusFunction _dmiMinusFucn;
         private readonly ATRFunction _atrFunction;
 
         private readonly int _period;
         private int _samples;
-        private AdxParameters _functionParams = new AdxParameters();
-        public FunctionParamsBase FunctionParameters => _functionParams;
+
         private double? _currentADX { get; set; }
 
         public double? Value => _currentADX;
+
+        public AdxParameters _functionParams = new AdxParameters();
+        public FunctionParamsBase FunctionParameters => _functionParams;
 
         #region Additional Parameters
 

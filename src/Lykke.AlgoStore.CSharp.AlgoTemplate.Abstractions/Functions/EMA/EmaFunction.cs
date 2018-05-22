@@ -11,12 +11,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.EMA
         private readonly int _period;
 
         private Queue<double> _storageQueue;
-        private EmaParameters _functionParams = new EmaParameters();
         private double? _emaPreviousPeriod;
 
         private double? _value;
 
         private bool _isReady = false;
+
+        public EmaParameters _functionParams = new EmaParameters();
 
         public override FunctionParamsBase FunctionParameters => _functionParams;
         public override double? Value => _value;
