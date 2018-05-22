@@ -28,6 +28,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         }
 
         private readonly IHistoryDataService _historyDataService;
+        private readonly IUserLogService _userLogService;
+        private readonly IAlgoSettingsService _algoSettingsService;
 
         private readonly List<SubscriptionData> _subscriptions = new List<SubscriptionData>();
         private readonly Dictionary<CandleTimeInterval, Dictionary<string, CandleSourceData>> _providers =
@@ -41,9 +43,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private bool _isStopped;
 
-        public HistoricalCandleProviderService(IHistoryDataService historyDataService)
+        public HistoricalCandleProviderService(IHistoryDataService historyDataService, IUserLogService userLogService,
+            IAlgoSettingsService algoSettingsService)
         {
             _historyDataService = historyDataService;
+            _userLogService = userLogService;
+            _algoSettingsService = algoSettingsService;
         }
 
         public void Subscribe(CandleServiceRequest serviceRequest, Action<Candle> callback)
@@ -147,6 +152,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 if (currentDate > DateTime.UtcNow)
                 {
+                    _userLogService.Write(_algoSettingsService.GetInstanceId(), "Current date period is reached, execution of back-test historical data is stopped.");
                     break;
                 }
 
@@ -176,6 +182,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 }
             }
             while (!cancellationToken.IsCancellationRequested);
+
+            //Use thread sleep in order pod not to be restarted, 
+            //later when stopping of an algo is implemented, we should remove this thread.
+            Thread.Sleep(Timeout.Infinite);
 
             // TODO: Shutdown algo here
         }
