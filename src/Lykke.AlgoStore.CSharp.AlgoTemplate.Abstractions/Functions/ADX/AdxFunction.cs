@@ -20,7 +20,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
 
         public double? Value => _currentADX;
 
-        public AdxParameters _functionParams = new AdxParameters();
+        public AdxParameters _functionParams { get; set; }
         public FunctionParamsBase FunctionParameters => _functionParams;
 
         #region Additional Parameters

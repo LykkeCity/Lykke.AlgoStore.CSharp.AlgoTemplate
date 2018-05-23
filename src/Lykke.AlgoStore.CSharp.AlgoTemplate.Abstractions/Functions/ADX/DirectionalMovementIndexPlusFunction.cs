@@ -24,7 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
 
         public double? Value => _currentDMIPlusValue;
 
-        public DMIParameters _functionParams = new DMIParameters();
+        public DMIParameters _functionParams { get; set; }
         public FunctionParamsBase FunctionParameters => _functionParams;
 
         /// <summary>

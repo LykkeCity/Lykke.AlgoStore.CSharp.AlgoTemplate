@@ -21,7 +21,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
         private Queue<double> DirectionalMovementMinuses { get; set; }
         private double DirectionalMovementMinus { get; set; }
 
-        public DMIParameters _functionParams = new DMIParameters();
+        public DMIParameters _functionParams { get; set; }
         public FunctionParamsBase FunctionParameters => _functionParams;
 
         public bool IsReady => _samples > _period + 1;
