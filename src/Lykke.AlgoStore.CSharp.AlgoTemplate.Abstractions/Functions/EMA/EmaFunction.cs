@@ -17,7 +17,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.EMA
 
         private bool _isReady = false;
 
-        public EmaParameters _functionParams = new EmaParameters();
+        public EmaParameters _functionParams { get; set; }
 
         public override FunctionParamsBase FunctionParameters => _functionParams;
         public override double? Value => _value;

@@ -12,7 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA
     {
         private Queue<double> _storageQueue;
 
-        public SmaParameters _functionParams = new SmaParameters();
+        public SmaParameters _functionParams { get; set; }
 
         public override FunctionParamsBase FunctionParameters => _functionParams;
         public override double? Value => GetSmaValue();

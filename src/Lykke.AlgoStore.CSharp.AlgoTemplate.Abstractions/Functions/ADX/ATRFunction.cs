@@ -13,7 +13,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
         private Candle _previousInput;
         private int _samples { get; set; }
 
-        public AtrParameters _functionParams = new AtrParameters();
+        public AtrParameters _functionParams { get; set; }
         public FunctionParamsBase FunctionParameters => _functionParams;
 
         public bool IsReady => _samples > _period + 1;
@@ -26,7 +26,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX
         private double TrueRange { get; set; }
 
         /// <summary>
-        /// True ranges for the initial calculation of Avarage True Range
+        /// True ranges for the initial calculation of Average True Range
         /// </summary>
         private Queue<double> TrueRanges { get; set; }
 

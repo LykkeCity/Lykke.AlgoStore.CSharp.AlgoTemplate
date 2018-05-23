@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.MACD
 
         private double? _currentValue;
 
-        public readonly MacdParameters _functionParams;
+        public MacdParameters _functionParams { get; set; }
 
         /// <summary>
         /// Gets the latest value of the function
