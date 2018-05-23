@@ -42,5 +42,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public double BackTestTradingAssetBalance { get; set; }
 
         public double BackTestAssetTwoBalance { get; set; }
+
+        public string AuthToken { get; set; }
     }
 }
