@@ -1,4 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain
 {

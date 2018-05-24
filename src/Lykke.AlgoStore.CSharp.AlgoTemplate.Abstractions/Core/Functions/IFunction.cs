@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
 
-namespace Lykke.AlgoStore.CSharp.Algo.Core.Functions
+namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions
 {
     /// <summary>
     /// Interface for a function in the system. The function is producing
