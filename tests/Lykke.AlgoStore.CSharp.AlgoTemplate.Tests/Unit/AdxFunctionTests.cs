@@ -1,10 +1,10 @@
-﻿using NUnit.Framework;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -35,7 +35,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
                 candles.Add(new Candle
                 {
-                    DateTime = DateTime.Now,
+                    DateTime = DateTime.UtcNow,
                     Open = 0,
                     High = Convert.ToDouble(parts[0]),
                     Low = Convert.ToDouble(parts[1]),
