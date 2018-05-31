@@ -1,4 +1,9 @@
 ﻿using Lykke.AlgoStore.CSharp.Algo.Implemention;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Moq;
 using NUnit.Framework;
@@ -6,11 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -37,7 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
                 candles.Add(new Candle
                 {
-                    DateTime = DateTime.Now,
+                    DateTime = DateTime.UtcNow,
                     Open = 0,
                     High = Convert.ToDouble(parts[0]),
                     Low = Convert.ToDouble(parts[1]),
@@ -142,7 +142,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             adx.AddNewValue(new Candle()
             {
-                DateTime = DateTime.Now,
+                DateTime = DateTime.UtcNow,
                 Open = 930,
                 High = 45.71,
                 Low = 45,
@@ -162,7 +162,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             adx.AddNewValue(new Candle()
             {
-                DateTime = DateTime.Now,
+                DateTime = DateTime.UtcNow,
                 Open = 930,
                 High = 45.35,
                 Low = 44.45,

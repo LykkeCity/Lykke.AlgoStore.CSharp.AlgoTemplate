@@ -1,7 +1,8 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using System;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Extensions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
+using System;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -132,7 +133,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (result.Result > 0)
             {
                 _statisticsService.OnAction(isBuy, volume, result.Result);
-                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result} at {DateTime.UtcNow}");
+                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result} at {DateTime.UtcNow.ToDefaultDateTimeFormat()}");
             }
         }
     }
