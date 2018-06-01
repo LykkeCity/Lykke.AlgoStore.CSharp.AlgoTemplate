@@ -74,7 +74,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var entity = AutoMapper.Mapper.Map<AlgoInstanceTradeEntity>(data);
             entity.PartitionKey = GeneratePartitionKeyByOrderId(data.OrderId);
             entity.RowKey = GenerateRowKeyByWalletId(data.WalletId);
-
+            
             await _tableStorage.InsertAsync(entity);
         }
 
