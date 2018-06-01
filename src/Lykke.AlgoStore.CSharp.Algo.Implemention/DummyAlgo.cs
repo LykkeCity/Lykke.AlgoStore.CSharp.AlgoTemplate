@@ -1,6 +1,5 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Extensions;
 using System;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention
@@ -26,8 +25,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             context.Actions.Log($"Volume value: {Volume}");
 
             var quote = context.Data.Quote;
-            context.Actions.Log($"Receiving quote at {DateTime.UtcNow.ToDefaultDateTimeFormat()} " +
-                $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp.ToDefaultDateTimeFormat()}}}, " +
+            context.Actions.Log($"Receiving quote at {DateTime.UtcNow} " +
+                $"{{quote.Price: {quote.Price}}}, {{quote.Timestamp: {quote.Timestamp}}}, " +
                 $"{{quote.IsBuy: {quote.IsBuy}}}, {{quote.IsOnline: {quote.IsOnline}}}");
 
             var smaShort = _shortSma.Value;
