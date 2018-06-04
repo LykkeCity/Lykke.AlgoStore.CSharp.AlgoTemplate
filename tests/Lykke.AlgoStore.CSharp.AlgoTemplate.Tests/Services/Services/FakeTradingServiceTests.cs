@@ -156,8 +156,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 {
                     InstanceId = _instanceId,
                     AlgoInstanceType = AlgoInstanceType.Test,
-                    AssetPair = _assetPair,
-                    TradedAsset = _tradedAsset
+                    AssetPairId = _assetPair,
+                    TradedAssetId = _tradedAsset
                 });
 
             algoSettingsService.Setup(a => a.GetInstanceType()).Returns(AlgoInstanceType.Test);
