@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lykke.AlgoStore.CSharp.AlgoTemplate.Models" Version="1.0.51-beta" />
+    <PackageReference Include="Lykke.AlgoStore.CSharp.AlgoTemplate.Models" Version="1.0.54" />
   </ItemGroup>
 
 </Project>
