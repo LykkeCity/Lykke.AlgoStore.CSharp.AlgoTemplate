@@ -1,5 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
