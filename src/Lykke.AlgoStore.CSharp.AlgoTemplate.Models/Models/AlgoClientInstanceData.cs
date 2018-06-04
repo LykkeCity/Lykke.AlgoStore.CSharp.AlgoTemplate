@@ -12,10 +12,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public string WalletId { get; set; }
 
         [Required]
-        public string AssetPair { get; set; }       
+        public string AssetPairId { get; set; }       
 
         [Required]
-        public string TradedAsset { get; set; }
+        public string TradedAssetId { get; set; }
 
         public string OppositeAssetId { get; set; }
 
