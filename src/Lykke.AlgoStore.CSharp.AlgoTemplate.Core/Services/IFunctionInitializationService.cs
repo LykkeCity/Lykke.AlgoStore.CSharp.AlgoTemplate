@@ -1,4 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
 using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services

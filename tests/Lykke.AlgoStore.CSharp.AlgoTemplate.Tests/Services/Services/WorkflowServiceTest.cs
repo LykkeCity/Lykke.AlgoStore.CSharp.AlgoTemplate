@@ -1,5 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Core.Functions;
-using Lykke.AlgoStore.CSharp.Algo.Implemention;
+﻿using Lykke.AlgoStore.CSharp.Algo.Implemention;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
