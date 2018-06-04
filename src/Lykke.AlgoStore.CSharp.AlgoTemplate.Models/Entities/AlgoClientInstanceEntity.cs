@@ -9,8 +9,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public string HftApiKey { get; set; }
         public string ClientId { get; set; }
         public string AlgoId { get; set; }
-        public string AssetPair { get; set; }
-        public string TradedAsset { get; set; }
+        public string AssetPairId { get; set; }
+        public string TradedAssetId { get; set; }
         public string OppositeAssetId { get; set; }
         public double Volume { get; set; }
         public double Margin { get; set; }
