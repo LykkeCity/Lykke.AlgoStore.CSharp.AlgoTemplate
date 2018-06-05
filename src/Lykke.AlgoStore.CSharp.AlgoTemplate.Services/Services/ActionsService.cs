@@ -133,7 +133,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (result.Result > 0)
             {
                 _statisticsService.OnAction(isBuy, volume, result.Result);
-                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result} at {DateTime.UtcNow.ToDefaultDateTimeFormat()}");
+                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {DateTime.UtcNow.ToDefaultDateTimeFormat()}");
             }
         }
     }

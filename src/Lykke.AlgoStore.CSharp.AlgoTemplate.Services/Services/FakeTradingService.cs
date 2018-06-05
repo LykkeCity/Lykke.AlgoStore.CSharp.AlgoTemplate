@@ -35,7 +35,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = instanceId;
             _assetPairId = assetPairId;
             _straight = straight;
-            _tradedAssetId = _algoSettingsService.GetTradedAsset();
+            _tradedAssetId = _algoSettingsService.GetTradedAssetId();
             _oppositeAssetId = _algoSettingsService.GetAlgoInstanceOppositeAssetId();
         }
 
