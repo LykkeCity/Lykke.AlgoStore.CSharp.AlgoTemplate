@@ -41,9 +41,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entity = new AlgoClientInstanceData
             {
                 InstanceId = _instanceId,
-                TradedAsset = "BTC",
+                TradedAssetId = "BTC",
                 AlgoId = _algoId,
-                AssetPair = "BTCUSD",
+                AssetPairId = "BTCUSD",
                 HftApiKey = "1234",
                 Margin = 1,
                 Volume = 1,
@@ -97,8 +97,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             string clientIdValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.ClientId;
             string walletIdValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.WalletId;
-            string assetPairValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPair;
-            string assetValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAsset;
+            string assetPairValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPairId;
+            string assetValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAssetId;
             string metadataInfo = repo.GetAlgoInstanceMetadataSetting(_algoId, _instanceId, "Stopwatch").Result;
 
             string expectedClientId = _clientId;

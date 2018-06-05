@@ -48,7 +48,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             _instanceId = GetSetting("InstanceId");
             _algoId = GetSetting("AlgoId");
-            _tradedAsset = GetAlgoInstanceTradedAsset();
+            _tradedAsset = GetAlgoInstanceTradedAssetId();
             _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType), GetSetting("InstanceType"));
             _isAlive = true;
         }
@@ -81,14 +81,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.WalletId;
         }
 
-        private string GetAlgoInstanceTradedAsset()
+        private string GetAlgoInstanceTradedAssetId()
         {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAsset;
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAssetId;
         }
 
-        public string GetAlgoInstanceAssetPair()
+        public string GetAlgoInstanceAssetPairId()
         {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPair;
+            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPairId;
         }
 
         public bool IsAlgoInstanceMarketOrderStraight()
