@@ -39,9 +39,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         public string AlgoClientId { get; set; }
 
-        public double BackTestTradingAssetBalance { get; set; }
+        public double FakeTradingTradingAssetBalance { get; set; }
 
-        public double BackTestAssetTwoBalance { get; set; }
+        public double FakeTradingAssetTwoBalance { get; set; }
 
         public string AuthToken { get; set; }
     }
