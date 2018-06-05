@@ -12,7 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 
         string GetMetadataSetting(string key);
         string GetAlgoInstanceWalletId();
-        string GetAlgoInstanceAssetPair();
+        string GetAlgoInstanceAssetPairId();
         string GetAlgoInstanceClientId();
         string GetAlgoInstanceOppositeAssetId();
         bool IsAlgoInstanceMarketOrderStraight();
