@@ -66,7 +66,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 var result = _tradingService.Buy(volume, candleData);
 
-                HandleResponse(result.Result, true, volume);
+                HandleResponse(result.Result, true, volume, candleData);
 
                 return result.Result.Result;
             }
@@ -109,7 +109,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 var result = _tradingService.Sell(volume, candleData);
 
-                HandleResponse(result.Result, false, volume);
+                HandleResponse(result.Result, false, volume, candleData);
 
                 return result.Result.Result;
             }
@@ -121,7 +121,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
         }
 
-        private void HandleResponse(ResponseModel<double> result, bool isBuy, double volume)
+        private void HandleResponse(ResponseModel<double> result, bool isBuy, double volume, IAlgoCandle candleData = null)
         {
             string action = isBuy ? "buy" : "sell";
 
@@ -133,7 +133,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (result.Result > 0)
             {
                 _statisticsService.OnAction(isBuy, volume, result.Result);
-                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {DateTime.UtcNow.ToDefaultDateTimeFormat()}");
+
+                var dateTime = _algoSettingsService.GetInstanceType() == Models.Enumerators.AlgoInstanceType.Test
+                    ? candleData.DateTime
+                    : DateTime.UtcNow;
+
+                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
             }
         }
     }

@@ -58,7 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
-                var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
+                var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrderAsync(_walletId, _assetPairId,
                     OrderAction.Sell, volume, _straight, _instanceId, null);
 
                 return meaResponse;
@@ -82,7 +82,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
-                var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrder(_walletId, _assetPairId,
+                var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrderAsync(_walletId, _assetPairId,
                     OrderAction.Buy, volume, _straight, _instanceId, null);
 
                 return meaResponse;
