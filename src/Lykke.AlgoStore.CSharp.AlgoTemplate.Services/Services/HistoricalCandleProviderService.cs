@@ -160,16 +160,34 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 }
 
                 var intervalsToUpdate = GetIntervalsForUpdate(currentDate);
+                var filteredIntervals = new HashSet<CandleTimeInterval>();
 
-                intervalsToUpdate = intervalsToUpdate
-                    .Where(c => _providers.ContainsKey(c) &&
-                                _providers[c].Values.Any(csd => (csd.CandleSource.Current == null ||
-                                                                 csd.CandleSource.Current.DateTime < currentDate) &&
-                                                                csd.CandleSource.MoveNext())).ToHashSet();
+                foreach(var interval in intervalsToUpdate)
+                {
+                    if (!_providers.ContainsKey(interval))
+                        continue;
+
+                    var addInterval = false;
+
+                    foreach(var candleSourceData in _providers[interval].Values)
+                    {
+                        if (candleSourceData.CandleSource.Current != null &&
+                            candleSourceData.CandleSource.Current.DateTime >= currentDate)
+                            continue;
+
+                        if (candleSourceData.CandleSource.MoveNext())
+                            addInterval = true;
+                    }
+
+                    if (addInterval)
+                        filteredIntervals.Add(interval);
+                }
+
+                if (filteredIntervals.Count == 0) continue;
 
                 foreach (var subscription in _subscriptions)
                 {
-                    if (!intervalsToUpdate.Contains(subscription.TimeInterval) ||
+                    if (!filteredIntervals.Contains(subscription.TimeInterval) ||
                         subscription.StartDate > currentDate ||
                         subscription.EndDate < currentDate)
                         continue;
