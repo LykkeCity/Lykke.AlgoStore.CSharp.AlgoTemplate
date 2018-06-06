@@ -24,7 +24,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         string GetAuthToken();
         string GetAlgoId();
         string GetInstanceId();
-        string GetTradedAsset();
+        string GetTradedAssetId();
         AlgoInstanceType GetInstanceType();
     }
 }

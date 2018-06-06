@@ -145,7 +145,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var algoSettingsService = new Mock<IAlgoSettingsService>();
 
-            algoSettingsService.Setup(a => a.GetTradedAsset()).Returns(_tradedAsset);
+            algoSettingsService.Setup(a => a.GetTradedAssetId()).Returns(_tradedAsset);
             algoSettingsService.Setup(a => a.GetAlgoInstanceOppositeAssetId()).Returns(_oppositeAsset);
             algoSettingsService.Setup(a => a.GetInstanceId()).Returns(_instanceId);
             algoSettingsService.Setup(a => a.GetAlgoInstanceAssetPairId()).Returns(_assetPair);

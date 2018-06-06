@@ -138,7 +138,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     ? candleData.DateTime
                     : DateTime.UtcNow;
 
-                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAsset()} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
+                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
             }
         }
     }
