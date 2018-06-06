@@ -57,7 +57,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             foreach(var request in _candleRequests)
             {
-                if(isBacktest)
+                if(isBacktest || request.IgnoreHistory)
                 {
                     _subscriptions[request.RequestId].IsHistoryDone = true;
                     resultList.Add(new MultipleCandlesResponse
