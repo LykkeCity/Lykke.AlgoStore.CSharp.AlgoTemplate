@@ -26,6 +26,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService
         public CandleTimeInterval CandleInterval { get; set; }
 
         /// <summary>
+        /// Parameter which should mark if history update is needed
+        /// </summary>
+        public bool IgnoreHistory { get; set; }
+
+        /// <summary>
         /// The start period for the data feed.
         /// </summary>
         public DateTime StartFrom { get; set; }
