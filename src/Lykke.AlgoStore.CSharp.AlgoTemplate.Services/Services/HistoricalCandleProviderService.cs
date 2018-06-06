@@ -73,15 +73,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 AssetPair = assetPair,
                 Callback = callback,
                 TimeInterval = timeInterval,
-                StartDate = serviceRequest.StartFrom,
-                EndDate = serviceRequest.EndOn
+                StartDate = serviceRequest.StartFrom.ToUniversalTime(),
+                EndDate = serviceRequest.EndOn.ToUniversalTime()
             });
 
             if (!_providers[timeInterval].ContainsKey(assetPair))
                 _providers[timeInterval].Add(assetPair, null); // We set this later
 
             var fromDate = _subscriptions.Where(s => s.AssetPair == assetPair && s.TimeInterval == timeInterval)
-                                         .Min(s => s.StartDate);
+                                         .Min(s => s.StartDate).ToUniversalTime();
+
+            var toDate = _subscriptions.Where(s => s.AssetPair == assetPair && s.TimeInterval == timeInterval)
+                                       .Max(s => s.EndDate).ToUniversalTime();
 
             if (fromDate < _startDate)
                 _startDate = fromDate;
@@ -94,7 +97,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     AssetPair = assetPair,
                     Interval = timeInterval,
                     From = fromDate,
-                    To = serviceRequest.EndOn
+                    To = toDate
                 }).GetEnumerator()
             };
         }
@@ -157,16 +160,34 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 }
 
                 var intervalsToUpdate = GetIntervalsForUpdate(currentDate);
+                var filteredIntervals = new HashSet<CandleTimeInterval>();
 
-                intervalsToUpdate = intervalsToUpdate
-                    .Where(c => _providers.ContainsKey(c) &&
-                                _providers[c].Values.Any(csd => (csd.CandleSource.Current == null ||
-                                                                 csd.CandleSource.Current.DateTime < currentDate) &&
-                                                                csd.CandleSource.MoveNext())).ToHashSet();
+                foreach(var interval in intervalsToUpdate)
+                {
+                    if (!_providers.ContainsKey(interval))
+                        continue;
+
+                    var addInterval = false;
+
+                    foreach(var candleSourceData in _providers[interval].Values)
+                    {
+                        if (candleSourceData.CandleSource.Current != null &&
+                            candleSourceData.CandleSource.Current.DateTime >= currentDate)
+                            continue;
+
+                        if (candleSourceData.CandleSource.MoveNext())
+                            addInterval = true;
+                    }
+
+                    if (addInterval)
+                        filteredIntervals.Add(interval);
+                }
+
+                if (filteredIntervals.Count == 0) continue;
 
                 foreach (var subscription in _subscriptions)
                 {
-                    if (!intervalsToUpdate.Contains(subscription.TimeInterval) ||
+                    if (!filteredIntervals.Contains(subscription.TimeInterval) ||
                         subscription.StartDate > currentDate ||
                         subscription.EndDate < currentDate)
                         continue;

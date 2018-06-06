@@ -21,6 +21,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 
         Task UpdateAlgoInstance(AlgoClientInstanceData data);
 
+        string GetAuthToken();
         string GetAlgoId();
         string GetInstanceId();
         string GetTradedAssetId();

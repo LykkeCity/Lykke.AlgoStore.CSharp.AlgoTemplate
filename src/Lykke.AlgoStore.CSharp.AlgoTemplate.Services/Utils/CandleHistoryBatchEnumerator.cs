@@ -50,7 +50,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 Close = candle.Close,
                 High = candle.High,
                 Low = candle.Low,
-                DateTime = candle.DateTime,
+                DateTime = DateTime.SpecifyKind(candle.DateTime, DateTimeKind.Utc),
                 LastTradePrice = candle.LastTradePrice,
                 TradingOppositeVolume = candle.TradingOppositeVolume,
                 TradingVolume = candle.TradingVolume

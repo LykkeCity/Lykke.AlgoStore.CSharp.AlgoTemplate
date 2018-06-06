@@ -46,7 +46,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
-                _matchingEngineAdapterClient.SetClientAndInstanceId(_algoSettingsService.GetAlgoInstanceClientId(), _instanceId);
+                _matchingEngineAdapterClient.SetAuthToken(_algoSettingsService.GetAuthToken());
             }
             else
             {

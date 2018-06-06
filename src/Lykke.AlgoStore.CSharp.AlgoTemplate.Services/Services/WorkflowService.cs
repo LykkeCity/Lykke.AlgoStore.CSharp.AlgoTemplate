@@ -83,6 +83,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 CandleInterval = _algo.CandleInterval,
                 RequestId = _algoSettingsService.GetAlgoId(),
                 StartFrom = _algo.StartFrom,
+                IgnoreHistory = true,
                 EndOn = _algo.EndOn
             });
 
