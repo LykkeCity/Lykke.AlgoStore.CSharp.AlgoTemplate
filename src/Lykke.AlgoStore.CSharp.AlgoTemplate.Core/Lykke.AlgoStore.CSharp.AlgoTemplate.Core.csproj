@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>Lykke.AlgoStore.CSharp.AlgoTemplate.Core</AssemblyName>
+    <RootNamespace>Lykke.AlgoStore.CSharp.AlgoTemplate.Core</RootNamespace>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Domain\Entities\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="Domain\Entities\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="Domain\Entities\**" />
+    <None Remove="Repositories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions" Version="1.0.8" />
+    <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.14" />
+    <PackageReference Include="Lykke.Common" Version="6.8.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Strings\ErrorMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Strings\ErrorMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
