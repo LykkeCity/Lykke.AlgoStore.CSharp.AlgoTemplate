@@ -2,7 +2,7 @@
 {
     public interface IQuoteActions : IActions
     {
-        double Buy(double volume);
-        double Sell(double volume);
+        double Buy(IAlgoQuote quoteData, double volume);
+        double Sell(IAlgoQuote quoteData, double volume);
     }
 }
