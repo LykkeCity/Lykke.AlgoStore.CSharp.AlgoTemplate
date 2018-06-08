@@ -35,7 +35,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             //if (quote.Price < 10000)
             //{
-            context.Actions.Buy(Volume);
+            context.Actions.Buy(quote, Volume);
             Console.Write("Buy " + Volume);
             //}
 
@@ -64,7 +64,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             //if (quote.Price > 7000)
             //{
-            context.Actions.Sell(context.Data.Candle, Volume);
+            context.Actions.Sell(candle, Volume);
             //}
         }
     }
