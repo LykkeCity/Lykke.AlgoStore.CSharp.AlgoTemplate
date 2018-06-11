@@ -92,7 +92,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             try
             {
                 var request = GetTradeRequest(volume, quoteData.Price, quoteData.DateReceived);
-                var result = _tradingService.Sell(GetTradeRequest(volume, quoteData.Price, quoteData.DateReceived));
+                var result = _tradingService.Sell(request);
                 HandleResponse(result.Result, false, request);
 
                 return result.Result.Result;
