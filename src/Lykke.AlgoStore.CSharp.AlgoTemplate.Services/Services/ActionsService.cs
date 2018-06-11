@@ -109,7 +109,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var request = GetTradeRequest(volume, candleData.LastTradePrice, candleData.DateTime);
+                var request = GetTradeRequest(volume, candleData.Close, candleData.DateTime);
                 var result = _tradingService.Sell(request);
                 HandleResponse(result.Result, false, request);
 
