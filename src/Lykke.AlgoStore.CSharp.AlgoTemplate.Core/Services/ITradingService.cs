@@ -10,7 +10,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
     public interface ITradingService
     {
         void Initialize();
-        Task<ResponseModel<double>> Buy(double volume, IAlgoCandle candleData = null);
-        Task<ResponseModel<double>> Sell(double volume, IAlgoCandle candleData = null);
+        Task<ResponseModel<double>> Buy(ITradeRequest tradeRequest);
+        Task<ResponseModel<double>> Sell(ITradeRequest tradeRequest);
     }
 }

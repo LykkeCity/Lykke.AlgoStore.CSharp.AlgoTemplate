@@ -1,18 +1,17 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
+using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
-using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
-using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {
@@ -39,7 +38,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 algoInstanceTradeRepository, statisticsRepository);
 
             service.Initialize(_instanceId, _assetPair, _straightTrue);
-            var result = service.Buy(_volume, GetIAlgoCandle());
+            var result = service.Buy(GetTradeRequest());
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
         }
 
@@ -54,7 +53,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 algoInstanceTradeRepository, statisticsRepository);
 
             service.Initialize(_instanceId, _assetPair, _straightFalse);
-            var result = service.Buy(_volume, GetIAlgoCandle());
+            var result = service.Buy(GetTradeRequest());
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
 
         }
@@ -70,7 +69,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 algoInstanceTradeRepository, statisticsRepository);
 
             service.Initialize(_instanceId, _assetPair, _straightFalse);
-            var result = service.Buy(_volume, GetIAlgoCandle()).Result;
+            var result = service.Buy(GetTradeRequest()).Result;
 
             Assert.IsNotNull(result.Error);
             Assert.AreEqual(ErrorMessages.NotEnoughFunds, result.Error.Message);
@@ -88,7 +87,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 algoInstanceTradeRepository, statisticsRepository);
 
             service.Initialize(_instanceId, _assetPair, _straightFalse);
-            var result = service.Sell(_volume, GetIAlgoCandle()).Result;
+            var result = service.Sell(GetTradeRequest()).Result;
 
             Assert.IsNotNull(result.Error);
             Assert.AreEqual(ErrorMessages.NotEnoughFunds, result.Error.Message);
@@ -106,7 +105,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 algoInstanceTradeRepository, statisticsRepository);
 
             service.Initialize(_instanceId, _assetPair, _straightTrue);
-            var result = service.Sell(_volume, GetIAlgoCandle());
+            var result = service.Sell(GetTradeRequest());
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
         }
 
@@ -121,25 +120,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 algoInstanceTradeRepository, statisticsRepository);
 
             service.Initialize(_instanceId, _assetPair, _straightFalse);
-            var result = service.Sell(_volume, GetIAlgoCandle());
+            var result = service.Sell(GetTradeRequest());
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
         }
 
-        [Test]
-        public void Trading_Service_FakeTrading_ReturnError_Test()
-        {
-            IMatchingEngineAdapterClient clientMEA = new Mock<IMatchingEngineAdapterClient>().Object;
-            IAlgoSettingsService settingsService = GetAlgoSettingsServiceMock();
-            IFakeTradingService fakeTradingService = GetFakeTradingServiceMock();
-            TradingService service = new TradingService(clientMEA, settingsService, fakeTradingService);
-
-            var result = service.Buy(_volume).Result;
-
-            Assert.IsNotNull(result.Error);
-            Assert.AreEqual(ErrorMessages.CandleShouldNotBeNull, result.Error.Message);
-        }
-
         #region Helper Methods
+
+        private ITradeRequest GetTradeRequest()
+        {
+            return new TradeRequest()
+            {
+                Volume = _volume,
+                Date = _dateTime,
+                Price = GetIAlgoCandle().Close
+            };
+        }
 
         private IAlgoSettingsService GetAlgoSettingsServiceMock()
         {
@@ -169,14 +164,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var fakeTradingService = new Mock<IFakeTradingService>();
 
-            fakeTradingService.Setup(a => a.Buy(It.IsAny<double>(), It.IsAny<IAlgoCandle>()))
+            fakeTradingService.Setup(a => a.Buy(It.IsAny<ITradeRequest>()))
                               .Returns(Task.FromResult(
                                         new ResponseModel<double>()
                                         {
                                             Result = 1000
                                         }));
 
-            fakeTradingService.Setup(a => a.Sell(It.IsAny<double>(), It.IsAny<IAlgoCandle>()))
+            fakeTradingService.Setup(a => a.Sell(It.IsAny<ITradeRequest>()))
                               .Returns(Task.FromResult(
                                         new ResponseModel<double>()
                                         {
