@@ -1,4 +1,5 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Extensions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
@@ -42,13 +43,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _onErrorHandler = onErrorHandler;
         }
 
-        public double Buy(double volume)
+        public double Buy(IAlgoQuote quoteData, double volume)
         {
             try
             {
-                var result = _tradingService.Buy(volume);
+                var request = GetTradeRequest(volume, quoteData.Price, quoteData.DateReceived);
+                var result = _tradingService.Buy(request);
 
-                HandleResponse(result.Result, true, volume);
+                HandleResponse(result.Result, true, request);
 
                 return result.Result.Result;
             }
@@ -64,9 +66,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var result = _tradingService.Buy(volume, candleData);
-
-                HandleResponse(result.Result, true, volume, candleData);
+                var request = GetTradeRequest(volume, candleData.Close, candleData.DateTime);
+                var result = _tradingService.Buy(request);
+                HandleResponse(result.Result, true, request);
 
                 return result.Result.Result;
             }
@@ -85,13 +87,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _logService.Write(instanceId, message);
         }
 
-        public double Sell(double volume)
+        public double Sell(IAlgoQuote quoteData, double volume)
         {
             try
             {
-                var result = _tradingService.Sell(volume);
-
-                HandleResponse(result.Result, false, volume);
+                var request = GetTradeRequest(volume, quoteData.Price, quoteData.DateReceived);
+                var result = _tradingService.Sell(request);
+                HandleResponse(result.Result, false, request);
 
                 return result.Result.Result;
             }
@@ -107,9 +109,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             try
             {
-                var result = _tradingService.Sell(volume, candleData);
-
-                HandleResponse(result.Result, false, volume, candleData);
+                var request = GetTradeRequest(volume, candleData.Close, candleData.DateTime);
+                var result = _tradingService.Sell(request);
+                HandleResponse(result.Result, false, request);
 
                 return result.Result.Result;
             }
@@ -121,7 +123,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
         }
 
-        private void HandleResponse(ResponseModel<double> result, bool isBuy, double volume, IAlgoCandle candleData = null)
+        private void HandleResponse(ResponseModel<double> result, bool isBuy, ITradeRequest tradeRequest)
         {
             string action = isBuy ? "buy" : "sell";
 
@@ -132,14 +134,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             if (result.Result > 0)
             {
-                _statisticsService.OnAction(isBuy, volume, result.Result);
+                _statisticsService.OnAction(isBuy, tradeRequest.Volume, result.Result);
 
                 var dateTime = _algoSettingsService.GetInstanceType() == Models.Enumerators.AlgoInstanceType.Test
-                    ? candleData.DateTime
+                    ? tradeRequest.Date
                     : DateTime.UtcNow;
 
-                Log($"A {action} order successful: {volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
+                Log($"A {action} order successful: {tradeRequest.Volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
             }
+        }
+
+        private TradeRequest GetTradeRequest(double volume, double price, DateTime date)
+        {
+            return new TradeRequest()
+            {
+                Volume = volume,
+                Price = price,
+                Date = date
+            };
         }
     }
 }

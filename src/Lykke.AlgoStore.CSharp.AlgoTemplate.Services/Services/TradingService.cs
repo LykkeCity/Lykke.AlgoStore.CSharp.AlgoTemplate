@@ -1,5 +1,4 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using Lykke.AlgoStore.MatchingEngineAdapter.Client;
@@ -54,51 +53,33 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
         }
 
-        public async Task<ResponseModel<double>> Sell(double volume, IAlgoCandle candleData = null)
+        public async Task<ResponseModel<double>> Sell(ITradeRequest tradeRequest)
         {
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
                 var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrderAsync(_walletId, _assetPairId,
-                    OrderAction.Sell, volume, _straight, _instanceId, null);
+                    OrderAction.Sell, tradeRequest.Volume, _straight, _instanceId, null);
 
                 return meaResponse;
             }
             else
             {
-                if (candleData == null)
-                    return new ResponseModel<double>()
-                    {
-                        Error = new ResponseModel.ErrorModel()
-                        {
-                            Message = ErrorMessages.CandleShouldNotBeNull
-                        }
-                    };
-
-                return await _fakeTradingService.Sell(volume, candleData);
+                return await _fakeTradingService.Sell(tradeRequest);
             }
         }
 
-        public async Task<ResponseModel<double>> Buy(double volume, IAlgoCandle candleData = null)
+        public async Task<ResponseModel<double>> Buy(ITradeRequest tradeRequest)
         {
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
                 var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrderAsync(_walletId, _assetPairId,
-                    OrderAction.Buy, volume, _straight, _instanceId, null);
+                    OrderAction.Buy, tradeRequest.Volume, _straight, _instanceId, null);
 
                 return meaResponse;
             }
             else
             {
-                if (candleData == null)
-                    return new ResponseModel<double>()
-                    {
-                        Error = new ResponseModel.ErrorModel()
-                        {
-                            Message = ErrorMessages.CandleShouldNotBeNull
-                        }
-                    };
-
-                return await _fakeTradingService.Buy(volume, candleData);
+                return await _fakeTradingService.Buy(tradeRequest);
             }
         }
     }
