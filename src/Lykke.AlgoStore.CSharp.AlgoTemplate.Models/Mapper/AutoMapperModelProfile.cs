@@ -40,12 +40,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             CreateMap<AlgoInstanceTradeEntity, AlgoInstanceTrade>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.RowKey));
 
-            CreateMap<UserLog, UserLogEntity>()
-                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
-                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
-                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
-                .ForMember(dest => dest.ETag, opt => opt.Ignore());
-
             CreateMap<StatisticsSummary, StatisticsSummaryEntity>()
                  .ForMember(dest => dest.RowKey, opt => opt.Ignore())
                  .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
