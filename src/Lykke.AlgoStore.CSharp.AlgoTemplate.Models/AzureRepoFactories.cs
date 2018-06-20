@@ -8,12 +8,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models
 {
     public class AzureRepoFactories
     {
-        public static UserLogRepository CreateUserLogRepository(IReloadingManager<string> connectionString, ILog log)
-        {
-            return new UserLogRepository(
-                AzureTableStorage<UserLogEntity>.Create(connectionString, UserLogRepository.TableName, log));
-        }
-
         public static StatisticsRepository CreateStatisticsRepository(IReloadingManager<string> connectionString,
             ILog log)
         {
