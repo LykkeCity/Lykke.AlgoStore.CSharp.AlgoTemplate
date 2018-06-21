@@ -31,6 +31,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForMember(src => src.FakeTradingTradingAssetBalance, opt => opt.Ignore())
                 .ForMember(src => src.FakeTradingAssetTwoBalance, opt => opt.Ignore());
 
+            CreateMap<AlgoClientInstanceData, AlgoInstanceStoppingEntity>()
+                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore())
+                .ForMember(dest => dest.AlgoInstanceStatusValue, opt => opt.Ignore());
+
+            CreateMap<AlgoInstanceStoppingEntity, AlgoInstanceStoppingData>()
+                .ForSourceMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.ETag, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.AlgoInstanceStatusValue, opt => opt.Ignore())
+                .ForMember(src => src.AlgoId, opt => opt.Ignore())
+                .ForMember(src => src.ClientId, opt => opt.Ignore());
+
             CreateMap<AlgoInstanceTrade, AlgoInstanceTradeEntity>()
                 .ForMember(dest => dest.RowKey, opt => opt.Ignore())
                 .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
