@@ -1,9 +1,12 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.ResponseModels;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.ResponseModels.ErrorCodes;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Extensions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using System;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -43,41 +46,80 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _onErrorHandler = onErrorHandler;
         }
 
-        public double Buy(IAlgoQuote quoteData, double volume)
+        private TradeResponse ExecuteTradeRequest(Func<ITradeRequest, TradeResponse > tradeRequest, TradeRequest request)
         {
             try
             {
-                var request = GetTradeRequest(volume, quoteData.Price, quoteData.DateReceived);
-                var result = _tradingService.Buy(request);
+                return tradeRequest(request);
+            }
+            catch (AggregateException ex)
+            {
+                var error = ex.Flatten().InnerException.Message;
+                Log($"There was a problem placing your order: {request}. Error: {error}. ");
 
-                HandleResponse(result.Result, true, request);
+                foreach (var inner in ex.Flatten().InnerExceptions)
+                {
+                    if (inner is System.Net.Sockets.SocketException || inner is System.IO.IOException)
+                    {
+                        return TradeResponse.CreateFail(TradeErrorCode.NetworkError);
+                    }
+                    if (inner is TaskCanceledException || inner is OperationCanceledException)
+                    {
+                        return TradeResponse.CreateFail(TradeErrorCode.RequestTimeout);
+                    }
+                }
 
-                return result.Result.Result;
+                return TradeResponse.CreateFail(TradeErrorCode.Runtime);
             }
             catch (Exception e)
             {
-                _onErrorHandler.Invoke(e, "There was a problem placing a buy order.");
-                // If we can not return. re-throw.
-                throw;
+                Log($"There was a problem placing your order: {request}. Error: {e.Message}. ");
+                return TradeResponse.CreateFail(TradeErrorCode.Runtime);
             }
         }
 
-        public double Buy(IAlgoCandle candleData, double volume)
+        public TradeResponse Buy(IAlgoQuote quoteData, double volume)
         {
-            try
+            return ExecuteTradeRequest( (tradeRequest) =>
             {
-                var request = GetTradeRequest(volume, candleData.Close, candleData.DateTime);
-                var result = _tradingService.Buy(request);
-                HandleResponse(result.Result, true, request);
+                var result = _tradingService.Buy(tradeRequest).WithTimeout();
+                var response = HandleResponse(result.Result, true, tradeRequest);
 
-                return result.Result.Result;
-            }
-            catch (Exception e)
+                return response;
+            }, GetTradeRequest(volume, quoteData.Price, quoteData.DateReceived));
+        }
+
+        public TradeResponse Buy(IAlgoCandle candleData, double volume)
+        {
+            return ExecuteTradeRequest((tradeRequest) =>
             {
-                _onErrorHandler.Invoke(e, "There was a problem placing a buy order.");
-                // If we can not return. re-throw.
-                throw;
-            }
+                var result = _tradingService.Buy(tradeRequest).WithTimeout();
+                var response = HandleResponse(result.Result, true, tradeRequest);
+
+                return response;
+            }, GetTradeRequest(volume, candleData.Close, candleData.DateTime));
+        }
+
+        public TradeResponse Sell(IAlgoQuote quoteData, double volume)
+        {
+            return ExecuteTradeRequest((tradeRequest)=>
+            {
+                var result = _tradingService.Sell(tradeRequest).WithTimeout();
+                var response = HandleResponse(result.Result, false, tradeRequest);
+
+                return response;
+            }, GetTradeRequest(volume, quoteData.Price, quoteData.DateReceived));
+
+        }
+
+        public TradeResponse Sell(IAlgoCandle candleData, double volume)
+        {
+            return ExecuteTradeRequest((tradeRequest) =>
+            {
+                var result = _tradingService.Sell(tradeRequest).WithTimeout();
+                var response = HandleResponse(result.Result, false, tradeRequest);
+                return response;
+            }, GetTradeRequest(volume, candleData.Close, candleData.DateTime));
         }
 
         public void Log(string message)
@@ -87,49 +129,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _logService.Write(instanceId, message);
         }
 
-        public double Sell(IAlgoQuote quoteData, double volume)
-        {
-            try
-            {
-                var request = GetTradeRequest(volume, quoteData.Price, quoteData.DateReceived);
-                var result = _tradingService.Sell(request);
-                HandleResponse(result.Result, false, request);
-
-                return result.Result.Result;
-            }
-            catch (Exception e)
-            {
-                _onErrorHandler.Invoke(e, "There was a problem placing a sell order.");
-                // If we can not return. re-throw.
-                throw;
-            }
-        }
-
-        public double Sell(IAlgoCandle candleData, double volume)
-        {
-            try
-            {
-                var request = GetTradeRequest(volume, candleData.Close, candleData.DateTime);
-                var result = _tradingService.Sell(request);
-                HandleResponse(result.Result, false, request);
-
-                return result.Result.Result;
-            }
-            catch (Exception e)
-            {
-                _onErrorHandler.Invoke(e, "There was a problem placing a sell order.");
-                // If we can not return. re-throw.
-                throw;
-            }
-        }
-
-        private void HandleResponse(ResponseModel<double> result, bool isBuy, ITradeRequest tradeRequest)
+        private TradeResponse HandleResponse(ResponseModel<double> result, bool isBuy, ITradeRequest tradeRequest)
         {
             string action = isBuy ? "buy" : "sell";
 
             if (result.Error != null)
             {
                 Log($"There was a problem placing a {action} order. Error: {result.Error.Message} is buying - {isBuy} ");
+                return TradeResponse.CreateFail(result.Error.Code.ToTradeErrorCode(), result.Error.Message);
             }
 
             if (result.Result > 0)
@@ -141,7 +148,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     : DateTime.UtcNow;
 
                 Log($"A {action} order successful: {tradeRequest.Volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
+               
+                return TradeResponse.CreateOk(result.Result);
             }
+
+            return TradeResponse.CreateFail(TradeErrorCode.Runtime, "Unexpected (empty) response.");
         }
 
         private TradeRequest GetTradeRequest(double volume, double price, DateTime date)
