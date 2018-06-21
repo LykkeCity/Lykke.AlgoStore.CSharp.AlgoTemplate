@@ -1,4 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+﻿using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
@@ -11,6 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
         private const string PartitionKeyPattern = "{0}{1}{2}";
         private const string WalletPartitionKeyStatic = "wallet";
         private const string AuthTokenPartitionKeyStatic = "authtoken";
+        private const string EndDatePartitionKeyStatic = "StoppingEntity";
 
         public static string GenerateClientIdPartitionKey(string clientId)
         {
@@ -42,6 +44,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             return string.Format(PartitionKeyPattern, AuthTokenPartitionKeyStatic, PartitionKeySeparator, authToken);
         }
 
+        public static string GenerateStoppingEntityPartitionKey()
+        {
+            return EndDatePartitionKeyStatic;
+        }
+
+        public static string GenerateStoppingEntityRowKey(DateTime instanceEndDate)
+        {
+            return instanceEndDate.Ticks.ToString();
+        }
+
         public static BaseAlgoData ParseKey(string partitionKey)
         {
             var values = partitionKey.Split(PartitionKeySeparator);
@@ -65,6 +77,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 };
             }
             else return null;     
-        }
+        }       
     }
 }
