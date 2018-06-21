@@ -9,6 +9,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.ResponseModels
             return Error == null && Result > 0;
         }
 
+        private TradeResponse()
+        {
+        }
+
         public static TradeResponse CreateOk(double result)
         {
             return new TradeResponse

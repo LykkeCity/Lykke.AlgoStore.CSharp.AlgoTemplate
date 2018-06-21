@@ -82,7 +82,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             return ExecuteTradeRequest( (tradeRequest) =>
             {
-                var result = _tradingService.Buy(tradeRequest).WithCancellation();
+                var result = _tradingService.Buy(tradeRequest).WithTimeout();
                 var response = HandleResponse(result.Result, true, tradeRequest);
 
                 return response;
@@ -93,7 +93,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             return ExecuteTradeRequest((tradeRequest) =>
             {
-                var result = _tradingService.Buy(tradeRequest).WithCancellation();
+                var result = _tradingService.Buy(tradeRequest).WithTimeout();
                 var response = HandleResponse(result.Result, true, tradeRequest);
 
                 return response;
@@ -104,7 +104,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             return ExecuteTradeRequest((tradeRequest)=>
             {
-                var result = _tradingService.Sell(tradeRequest).WithCancellation();
+                var result = _tradingService.Sell(tradeRequest).WithTimeout();
                 var response = HandleResponse(result.Result, false, tradeRequest);
 
                 return response;
@@ -116,7 +116,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             return ExecuteTradeRequest((tradeRequest) =>
             {
-                var result = _tradingService.Sell(tradeRequest).WithCancellation();
+                var result = _tradingService.Sell(tradeRequest).WithTimeout();
                 var response = HandleResponse(result.Result, false, tradeRequest);
                 return response;
             }, GetTradeRequest(volume, candleData.Close, candleData.DateTime));
@@ -148,7 +148,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     : DateTime.UtcNow;
 
                 Log($"A {action} order successful: {tradeRequest.Volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
-
+               
                 return TradeResponse.CreateOk(result.Result);
             }
 
