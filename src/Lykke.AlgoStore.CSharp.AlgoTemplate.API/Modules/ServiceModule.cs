@@ -62,11 +62,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<ShutdownManager>()
                 .As<IShutdownManager>();
 
-            builder.RegisterInstance<IUserLogRepository>(
-                    AzureRepoFactories.CreateUserLogRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log)
-                )
-                .SingleInstance();
-
             builder.RegisterInstance<IStatisticsRepository>(
                     AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log))
                 .SingleInstance();
