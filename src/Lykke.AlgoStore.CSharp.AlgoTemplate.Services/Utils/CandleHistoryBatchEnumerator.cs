@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         private readonly CandlesHistoryRequest _candlesHistoryRequest;
         private readonly ICandleshistoryservice _candlesHistoryService;
 
-        private IList<Service.CandlesHistory.Client.Models.Candle> _buffer = new List<Service.CandlesHistory.Client.Models.Candle>();
+        private IList<Lykke.Service.CandlesHistory.Client.Models.Candle> _buffer = new List<Lykke.Service.CandlesHistory.Client.Models.Candle>();
         private DateTime _currentTimestamp;
         private DateTime _nextTimestamp;
 
@@ -120,8 +120,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         /// </summary>
         private void FillBuffer()
         {
-            var task = _candlesHistoryService.GetCandlesHistoryAsync(_candlesHistoryRequest.AssetPair, Service.CandlesHistory.Client.Models.CandlePriceType.Mid,
-                                                                    (Service.CandlesHistory.Client.Models.CandleTimeInterval)_candlesHistoryRequest.Interval,
+            var task = _candlesHistoryService.GetCandlesHistoryAsync(_candlesHistoryRequest.AssetPair, Lykke.Service.CandlesHistory.Client.Models.CandlePriceType.Mid,
+                                                                    (Lykke.Service.CandlesHistory.Client.Models.CandleTimeInterval)_candlesHistoryRequest.Interval,
                                                                    _currentTimestamp, _nextTimestamp);
 
             task.Wait();
