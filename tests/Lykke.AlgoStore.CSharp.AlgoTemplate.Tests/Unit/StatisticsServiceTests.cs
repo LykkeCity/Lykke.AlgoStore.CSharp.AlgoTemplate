@@ -144,13 +144,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             return result.Object;
         }
 
-        private static UserLogRepository Given_Correct_UserLog_Repository()
-        {
-            return new UserLogRepository(
-                AzureTableStorage<UserLogEntity>.Create(SettingsMock.GetLogsConnectionString(), UserLogRepository.TableName, new LogMock())
-            );
-        }
-
         private static void When_Invoke_Create(IStatisticsService service, out Exception exception)
         {
             exception = null;
