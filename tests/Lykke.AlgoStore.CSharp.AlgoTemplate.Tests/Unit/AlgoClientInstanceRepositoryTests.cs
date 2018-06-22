@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
@@ -55,7 +57,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 IsStraight = true,
                 AlgoClientId = _algoClientId,
                 AlgoInstanceStatus = AlgoInstanceStatus.Started,
-                InstanceName = "Unit test",
+                InstanceName = "Unit Test",
                 AlgoMetaDataInformation = new AlgoMetaDataInformation()
                 {
                     Parameters = new[] {new  AlgoMetaDataParameter()
@@ -93,6 +95,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void AlgoClientInstance_Save_Test()
         {
             var repo = Given_AlgoClientInstance_Repository();
+            var validationResult = ValidateData(_entity);
+            Then_ValidationResult_ShouldBe_Empty(validationResult);
+
             When_Invoke_Save(repo, _entity);
             Then_Data_ShouldBe_Saved(repo, _entity);
         }
@@ -101,6 +106,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void AlgoClientStoppingInstance_Save_Test()
         {
             var repo = Given_AlgoClientInstance_Repository();
+            var validationResult = ValidateData(_entity);
+            Then_ValidationResult_ShouldBe_Empty(validationResult);
+
             When_Invoke_Save(repo, _entity);
             Then_Stopping_Entity_ShouldBe_Saved(repo);
         }
@@ -109,6 +117,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void AlgoClientStoppingInstance_Delete_Test()
         {
             var repo = Given_AlgoClientInstance_Repository();
+            var validationResult = ValidateData(_entity);
+            Then_ValidationResult_ShouldBe_Empty(validationResult);
+
             When_Invoke_Save(repo, _entity);
             Then_Stopping_Entity_ShouldBe_Saved(repo);
 
@@ -120,6 +131,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void AlgoClientInstance_Get_Metadata_Setting_Test()
         {
             var repo = Given_AlgoClientInstance_Repository();
+            var validationResult = ValidateData(_entity);
+            Then_ValidationResult_ShouldBe_Empty(validationResult);
             When_Invoke_Save(repo, _entity);
 
             string clientIdValue = repo.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.ClientId;
@@ -153,7 +166,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
         private static void When_Invoke_Save(AlgoClientInstanceRepository repository, AlgoClientInstanceData data)
         {
-            repository.SaveAlgoInstanceDataAsync(data).Wait();
+            data.Validate(null);
+            repository.SaveAlgoInstanceDataAsync(data).Wait();          
             _entitySaved = true;
         }
 
@@ -183,6 +197,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(expectedJson, actualRetrievedByAlgoIdJson);
             Assert.AreEqual(expectedJson, actualRetrievedByClientId);
             Assert.AreEqual(expectedJson, actualRetrievedByAlgoIdAndInstanceType);
+        }
+
+        private IEnumerable<ValidationResult> ValidateData(AlgoClientInstanceData data)
+        {
+            return data.Validate(null);
+        }
+
+        private void Then_ValidationResult_ShouldBe_Empty(IEnumerable<ValidationResult> validationResults)
+        {
+            Assert.IsEmpty(validationResults);
         }
 
         private void Then_Stopping_Entity_ShouldBe_Saved(AlgoClientInstanceRepository repository)
