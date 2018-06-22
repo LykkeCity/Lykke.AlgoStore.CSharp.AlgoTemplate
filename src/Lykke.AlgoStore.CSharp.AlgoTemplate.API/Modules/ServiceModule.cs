@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using System;
 using System.Dynamic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.Service.Logging.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -140,6 +141,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<TaskAsyncExecutor>()
                 .As<IAsyncExecutor>();
+
+            builder.RegisterType<LoggingClient>()
+                .WithParameter("serviceUrl", _settings.CurrentValue.AlgoStoreLoggingServiceClient.ServiceUrl)
+                .As<ILoggingClient>()
+                .SingleInstance();
 
             builder.RegisterType<UserLogService>()
                 .As<IUserLogService>();
