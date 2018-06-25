@@ -59,6 +59,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _batchBlock.Post(userLog);
         }
 
+        public void Enqueue(string instanceId, string message)
+        {
+            _batchBlock.Post(new UserLogRequest
+            {
+                InstanceId = instanceId,
+                Date = DateTime.UtcNow,
+                Message = message
+            });
+        }
+
         private Task PersistUserLogs(UserLogRequest[] userLogRequests)
         {
             return _userLogClient.WriteAsync(userLogRequests);

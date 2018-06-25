@@ -5,5 +5,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
     public interface IUserLogService
     {
         void Enqueue(UserLogRequest userLog);
+        void Enqueue(string instanceId, string message);
     }
 }

@@ -126,7 +126,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             var instanceId = _algoSettingsService.GetInstanceId();
 
-            _logService.Write(instanceId, message);
+            _logService.Enqueue(instanceId, message);
         }
 
         private TradeResponse HandleResponse(ResponseModel<double> result, bool isBuy, ITradeRequest tradeRequest)
