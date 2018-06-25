@@ -151,7 +151,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<UserLogService>()
                 .WithParameters(new []
                 {
-                    new NamedParameter("maxBatchLifetime", _settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.MaxBatchLifetime),
+                    new NamedParameter("maxBatchLifetime", TimeSpan.FromMilliseconds(_settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.MaxBatchLifetime)),
                     new NamedParameter("batchSizeThreshold", _settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.BatchSizeThreshold)
                 })
                 .As<IUserLogService>();
