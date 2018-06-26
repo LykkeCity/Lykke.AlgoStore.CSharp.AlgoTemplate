@@ -50,8 +50,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             ExtendBatchExpiration();
 
-            //Initiate timer after 1s (1000ms) with a period of 10s (10000ms)
-            _timer = new Timer(HandleTimerTriggered, null, 1000, 10000);
+            //Initiate timer after 1s (1000ms) with a period of 50ms
+            _timer = new Timer(HandleTimerTriggered, null, 1000, 50);
         }
 
         public void Enqueue(UserLogRequest userLog)
