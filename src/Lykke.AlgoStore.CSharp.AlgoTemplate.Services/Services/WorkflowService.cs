@@ -194,7 +194,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnErrorHandler(TradingServiceException e)
         {
-            _logService.Write(_algoSettingsService.GetInstanceId(), e);
+            _logService.Enqueue(_algoSettingsService.GetInstanceId(), e.ToString());
         }
 
         private IQuoteContext CreateQuoteContext(IAlgoQuote quote)

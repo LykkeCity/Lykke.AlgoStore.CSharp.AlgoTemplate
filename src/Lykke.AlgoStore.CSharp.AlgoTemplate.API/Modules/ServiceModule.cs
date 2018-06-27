@@ -28,6 +28,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
         private readonly IReloadingManager<AppSettings> _settings;
         private readonly ILog _log;
         // NOTE: you can remove it if you don't need to use IServiceCollection extensions to register service specific dependencies
+        // ReSharper disable once CollectionNeverUpdated.Local
         private readonly IServiceCollection _services;
 
         /// <summary>
@@ -148,6 +149,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .SingleInstance();
 
             builder.RegisterType<UserLogService>()
+                .WithParameters(new []
+                {
+                    new NamedParameter("maxBatchLifetime", TimeSpan.FromMilliseconds(_settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.MaxBatchLifetime)),
+                    new NamedParameter("batchSizeThreshold", _settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.BatchSizeThreshold)
+                })
                 .As<IUserLogService>();
 
             builder.Populate(_services);

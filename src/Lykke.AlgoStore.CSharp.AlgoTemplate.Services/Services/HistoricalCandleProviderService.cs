@@ -155,7 +155,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 if (currentDate > DateTime.UtcNow)
                 {
-                    _userLogService.Write(_algoSettingsService.GetInstanceId(), "Current date period is reached, execution of back-test historical data is stopped.");
+                    _userLogService.Enqueue(_algoSettingsService.GetInstanceId(),
+                        "Current date period is reached, execution of back-test historical data is stopped.");
                     break;
                 }
 
