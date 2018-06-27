@@ -58,6 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 AlgoClientId = _algoClientId,
                 AlgoInstanceStatus = AlgoInstanceStatus.Started,
                 InstanceName = "Unit Test",
+                AlgoInstanceCreateDate = DateTime.UtcNow,
                 AlgoMetaDataInformation = new AlgoMetaDataInformation()
                 {
                     Parameters = new[] {new  AlgoMetaDataParameter()
