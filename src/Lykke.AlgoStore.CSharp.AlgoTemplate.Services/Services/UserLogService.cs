@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using JetBrains.Annotations;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.Service.Logging.Client;
 using Lykke.Service.Logging.Client.AutorestClient.Models;
 
@@ -22,9 +23,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private DateTime _currentBatchExpirationMoment;
         private readonly Timer _timer;
 
+        private readonly IAlgoSettingsService _algoSettingsService;
+        private string _authToken;
+
         public UserLogService([NotNull] ILoggingClient userLogClient,
             TimeSpan maxBatchLifetime,
-            int batchSizeThreshold)
+            int batchSizeThreshold,
+            IAlgoSettingsService algoSettingsService)
         {
             if (maxBatchLifetime < TimeSpan.Zero)
             {
@@ -40,6 +45,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             _maxBatchLifetime = maxBatchLifetime;
             _userLogClient = userLogClient;
+            _algoSettingsService = algoSettingsService;
 
             _batchBlock = new BatchBlock<UserLogRequest>(batchSizeThreshold);
 
@@ -48,10 +54,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             _batchBlock.LinkTo(_actionBlock);
 
+            SetAuthToken();
+
             ExtendBatchExpiration();
 
             //Initiate timer after 1s (1000ms) with a period of 50ms
             _timer = new Timer(HandleTimerTriggered, null, 1000, 50);
+        }
+
+        private void SetAuthToken()
+        {
+            _authToken = _algoSettingsService.GetAuthToken();
         }
 
         public void Enqueue(UserLogRequest userLog)
@@ -71,7 +84,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private Task PersistUserLogs(UserLogRequest[] userLogRequests)
         {
-            return _userLogClient.WriteAsync(userLogRequests);
+            return _userLogClient.WriteAsync(userLogRequests, _authToken);
         }
 
         private void HandleTimerTriggered(object state)

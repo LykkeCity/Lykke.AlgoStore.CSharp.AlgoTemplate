@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.AlgoStore.Service.Logging.Client;
 using Lykke.Service.Logging.Client.AutorestClient.Models;
@@ -20,12 +22,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void Batch_Persistance_Is_Not_Triggered_If_There_Are_No_Entries()
         {
             var userLogClient = Substitute.For<ILoggingClient>();
+            var algoSettingsService = Substitute.For<IAlgoSettingsService>();
 
-            using (new UserLogService(userLogClient, TimeSpan.FromMilliseconds(100), 1))
+            using (new UserLogService(userLogClient, TimeSpan.FromMilliseconds(100), 1, algoSettingsService))
             {
                 Task.Delay(200).Wait();
 
-                userLogClient.DidNotReceive().WriteAsync("TEST_INSTANCE_ID", "TEST_INSTANCE_MESSAGE");
+                userLogClient.DidNotReceive().WriteAsync("TEST_INSTANCE_ID", "TEST_INSTANCE_MESSAGE", Arg.Any<string>());
             }
         }
 
@@ -33,8 +36,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void Batch_Persistance_Is_Not_Triggered_If_Entries_Amount_Not_Reached_And_Batch_Lifetime_Is_Expired()
         {
             var userLogClient = Substitute.For<ILoggingClient>();
+            var algoSettingsService = Substitute.For<IAlgoSettingsService>();
 
-            using (var service = new UserLogService(userLogClient, TimeSpan.FromHours(1), 100))
+            using (var service = new UserLogService(userLogClient, TimeSpan.FromHours(1), 100, algoSettingsService))
             {
                 var data = _fixture.CreateMany<UserLogRequest>(90);
 
@@ -45,7 +49,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
                 Task.Delay(50);
 
-                userLogClient.DidNotReceive().WriteAsync(Arg.Any<IList<UserLogRequest>>());
+                userLogClient.DidNotReceive().WriteAsync(Arg.Any<IList<UserLogRequest>>(), Arg.Any<string>());
             }
         }
 
@@ -53,8 +57,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void Batch_Persistance_Is_Triggered_By_Entries_Amount()
         {
             var userLogClient = Substitute.For<ILoggingClient>();
+            var algoSettingsService = Substitute.For<IAlgoSettingsService>();
 
-            using (var service = new UserLogService(userLogClient, TimeSpan.FromHours(1), 100))
+            using (var service = new UserLogService(userLogClient, TimeSpan.FromHours(1), 100, algoSettingsService))
             {
                 var data = _fixture.CreateMany<UserLogRequest>(100);
 
@@ -65,7 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
                 Task.Delay(50).Wait();
 
-                userLogClient.Received(1).WriteAsync(Arg.Is<IList<UserLogRequest>>(x => x.Count == 100));
+                userLogClient.Received(1).WriteAsync(Arg.Is<IList<UserLogRequest>>(x => x.Count == 100), Arg.Any<string>());
             }
         }
 
@@ -73,8 +78,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void Batch_Persistance_Is_Triggered_By_Time_Expiration()
         {
             var userLogClient = Substitute.For<ILoggingClient>();
+            var algoSettingsService = Substitute.For<IAlgoSettingsService>();
 
-            userLogClient.WriteAsync(Arg.Any<IList<UserLogRequest>>()).Returns(callInfo =>
+            userLogClient.WriteAsync(Arg.Any<IList<UserLogRequest>>(), Arg.Any<string>()).Returns(callInfo =>
             {
                 var logEntities = callInfo.Arg<IList<UserLogRequest>>();
 
@@ -86,13 +92,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 return Task.CompletedTask;
             });
 
-            using (var service = new UserLogService(userLogClient, TimeSpan.FromSeconds(1), 100))
+            using (var service = new UserLogService(userLogClient, TimeSpan.FromSeconds(1), 100, algoSettingsService))
             {
                 service.Enqueue(new UserLogRequest { Date = DateTime.UtcNow, InstanceId = "TEST_INSTANCE_ID", Message = "TEST_INSTANCE_MESSAGE" });
 
                 Task.Delay(TimeSpan.FromSeconds(2)).Wait();
 
-                userLogClient.Received(1).WriteAsync(Arg.Is<IList<UserLogRequest>>(x => x.Count == 1));
+                userLogClient.Received(1).WriteAsync(Arg.Is<IList<UserLogRequest>>(x => x.Count == 1), Arg.Any<string>());
             }
         }
 
@@ -100,8 +106,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void Batch_Persistance_Is_Triggered_By_Disposing()
         {
             var userLogClient = Substitute.For<ILoggingClient>();
+            var algoSettingsService = Substitute.For<IAlgoSettingsService>();
 
-            using (var service = new UserLogService(userLogClient, TimeSpan.FromHours(1), 10))
+            using (var service = new UserLogService(userLogClient, TimeSpan.FromHours(1), 10, algoSettingsService))
             {
                 service.Enqueue(new UserLogRequest
                 {
@@ -111,17 +118,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 });
             }
 
-            userLogClient.Received(1).WriteAsync(Arg.Is<IList<UserLogRequest>>(x => x.Count == 1));
+            userLogClient.Received(1).WriteAsync(Arg.Is<IList<UserLogRequest>>(x => x.Count == 1), Arg.Any<string>());
         }
 
         [Test]
         public void Batch_Persistence_Is_Triggered_By_Entries_Amount_Extends_Batch_Lifetime()
         {
             var userLogClient = Substitute.For<ILoggingClient>();
+            var algoSettingsService = Substitute.For<IAlgoSettingsService>();
+
             var batchTimes = new List<DateTime>();
             var batchCounts = new List<int>();
 
-            userLogClient.WriteAsync(Arg.Any<IList<UserLogRequest>>()).Returns(callInfo =>
+            userLogClient.WriteAsync(Arg.Any<IList<UserLogRequest>>(), Arg.Any<string>()).Returns(callInfo =>
             {
                 batchTimes.Add(DateTime.UtcNow);
                 batchCounts.Add(callInfo.Arg<IList<UserLogRequest>>().Count);
@@ -129,7 +138,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 return Task.CompletedTask;
             });
 
-            using (var service = new UserLogService(userLogClient, TimeSpan.FromSeconds(1), 10))
+            using (var service = new UserLogService(userLogClient, TimeSpan.FromSeconds(1), 10, algoSettingsService))
             {
                 var data = _fixture.CreateMany<UserLogRequest>(9);
 

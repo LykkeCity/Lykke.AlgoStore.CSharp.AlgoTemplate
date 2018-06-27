@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.Algo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions", "src\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.csproj", "{D67CD857-4195-45CF-9E21-EA2F717DE1D5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.Service.Logging.Client", "..\Lykke.AlgoStore.Service.Logging\client\Lykke.AlgoStore.Service.Logging.Client\Lykke.AlgoStore.Service.Logging.Client.csproj", "{2C90857B-0F48-49DF-BCA6-0D15F57A0AB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{D67CD857-4195-45CF-9E21-EA2F717DE1D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D67CD857-4195-45CF-9E21-EA2F717DE1D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D67CD857-4195-45CF-9E21-EA2F717DE1D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C90857B-0F48-49DF-BCA6-0D15F57A0AB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C90857B-0F48-49DF-BCA6-0D15F57A0AB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C90857B-0F48-49DF-BCA6-0D15F57A0AB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C90857B-0F48-49DF-BCA6-0D15F57A0AB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +100,7 @@ Global
 		{A7A79AC6-CECB-40F3-ABB5-02B6CB17A0E7} = {20D432B3-9A33-49E6-9898-C4C889A4E78F}
 		{8F7B39C3-9198-4A03-87D1-29D1ED9A7930} = {1B91A99B-B77F-45D2-9C15-7C08DFDF8AF2}
 		{D67CD857-4195-45CF-9E21-EA2F717DE1D5} = {CC2067D7-1971-47BB-B491-5649EA3C18B2}
+		{2C90857B-0F48-49DF-BCA6-0D15F57A0AB6} = {C9A2CFDE-EA32-4946-B679-7CE6EFA816B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2725BA66-6731-495C-8984-014387065075}
