@@ -10,6 +10,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 
         public string InstanceId { get; set; }
 
+        public string ClientId { get; set; }
+
         public string EndOnDateTicks => RowKey;
 
         public AlgoInstanceStatus AlgoInstanceStatus
