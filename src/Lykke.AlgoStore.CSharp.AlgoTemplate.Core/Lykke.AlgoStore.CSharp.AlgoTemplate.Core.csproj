@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>Lykke.AlgoStore.CSharp.AlgoTemplate.Core</AssemblyName>
     <RootNamespace>Lykke.AlgoStore.CSharp.AlgoTemplate.Core</RootNamespace>
     <Version>1.0.0</Version>
@@ -19,8 +19,9 @@
   <ItemGroup>
     <PackageReference Include="Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions" Version="1.0.15" />
     <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.15" />
+    <PackageReference Include="Lykke.AlgoStore.Service.History.Client" Version="1.0.1" />
     <PackageReference Include="Lykke.AlgoStore.Service.Logging.Client" Version="1.0.4" />
-    <PackageReference Include="Lykke.Common" Version="6.8.6" />
+    <PackageReference Include="Lykke.Common" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>

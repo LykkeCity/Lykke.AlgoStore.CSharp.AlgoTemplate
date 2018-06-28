@@ -17,6 +17,7 @@ using System;
 using System.Dynamic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.Service.Logging.Client;
+using Lykke.AlgoStore.Service.History.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -133,9 +134,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<FunctionInitializationService>()
                 .As<IFunctionInitializationService>();
 
-            builder.RegisterType<Candleshistoryservice>()
-                .As<ICandleshistoryservice>()
-                .WithParameter(TypedParameter.From(new Uri(_settings.CurrentValue.CandlesHistoryServiceClient.ServiceUrl)));
+            builder.RegisterHistoryClient(_settings.CurrentValue.HistoryServiceClient, _log);
 
             builder.RegisterType<HistoryDataService>()
                 .As<IHistoryDataService>();

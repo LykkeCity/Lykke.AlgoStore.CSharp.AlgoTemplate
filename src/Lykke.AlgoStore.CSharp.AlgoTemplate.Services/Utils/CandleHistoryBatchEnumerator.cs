@@ -1,9 +1,10 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
-using Lykke.Service.CandlesHistory.Client;
 using System;
 using System.Collections.Generic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.Service.History.Client;
+using System.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
@@ -14,9 +15,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
     public class CandleHistoryBatchEnumerator : CandleGapFillEnumeratorBase
     {
         private readonly CandlesHistoryRequest _candlesHistoryRequest;
-        private readonly ICandleshistoryservice _candlesHistoryService;
+        private readonly IHistoryClient _historyClient;
 
-        private IList<Lykke.Service.CandlesHistory.Client.Models.Candle> _buffer = new List<Lykke.Service.CandlesHistory.Client.Models.Candle>();
+        private IList<Service.History.Client.Models.Candle> _buffer = new List<Service.History.Client.Models.Candle>();
         private DateTime _currentTimestamp;
         private DateTime _nextTimestamp;
 
@@ -25,10 +26,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         private bool _isLastBuffer;
         private bool _isDisposed;
 
-        public CandleHistoryBatchEnumerator(CandlesHistoryRequest historyRequest, ICandleshistoryservice candlesHistoryService) : base(historyRequest.Interval)
+        public CandleHistoryBatchEnumerator(CandlesHistoryRequest historyRequest, IHistoryClient historyClient) : base(historyRequest.Interval)
         {
             _candlesHistoryRequest = historyRequest;
-            _candlesHistoryService = candlesHistoryService;
+            _historyClient = historyClient;
 
             // If the from date is after the current moment, immediately set the last buffer flag
             // so that the enumerator becomes empty
@@ -51,9 +52,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 High = candle.High,
                 Low = candle.Low,
                 DateTime = DateTime.SpecifyKind(candle.DateTime, DateTimeKind.Utc),
-                LastTradePrice = candle.LastTradePrice,
-                TradingOppositeVolume = candle.TradingOppositeVolume,
-                TradingVolume = candle.TradingVolume
             };
         }
 
@@ -120,13 +118,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         /// </summary>
         private void FillBuffer()
         {
-            var task = _candlesHistoryService.GetCandlesHistoryAsync(_candlesHistoryRequest.AssetPair, Lykke.Service.CandlesHistory.Client.Models.CandlePriceType.Mid,
-                                                                    (Lykke.Service.CandlesHistory.Client.Models.CandleTimeInterval)_candlesHistoryRequest.Interval,
-                                                                   _currentTimestamp, _nextTimestamp);
+            var task = _historyClient.GetCandles(_currentTimestamp, _nextTimestamp,
+                                                 _candlesHistoryRequest.IndicatorName,
+                                                 _candlesHistoryRequest.AuthToken);
 
-            task.Wait();
+            var history = task.ConfigureAwait(false).GetAwaiter().GetResult();
 
-            _buffer = task.Result.History;
+            _buffer = history.ToList();
             _currentIndex = 0;
         }
     }

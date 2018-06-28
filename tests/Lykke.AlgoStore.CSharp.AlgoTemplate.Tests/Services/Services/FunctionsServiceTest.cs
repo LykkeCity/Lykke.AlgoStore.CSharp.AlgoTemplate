@@ -69,7 +69,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var functionService = CreateFunctionService(function1.Object, function2.Object);
             functionService.Initialize();
 
-            var candleRequests = functionService.GetCandleRequests();
+            var candleRequests = functionService.GetCandleRequests("");
 
             AssertCandleRequest(candleRequests, function1, function2);
         }
@@ -82,7 +82,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var functionService = CreateFunctionService(function1.Object);
             functionService.Initialize();
 
-            var candleRequests = functionService.GetCandleRequests();
+            var candleRequests = functionService.GetCandleRequests("");
 
             AssertCandleRequest(candleRequests, function1);
         }
@@ -93,7 +93,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var functionService = CreateFunctionService();
             functionService.Initialize();
 
-            var candleRequests = functionService.GetCandleRequests();
+            var candleRequests = functionService.GetCandleRequests("");
 
             Assert.AreEqual(0, candleRequests.Count());
         }

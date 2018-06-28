@@ -94,8 +94,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 From = fromDate,
                 CandleSource = _historyDataService.GetHistory(new Core.Domain.CandlesHistoryRequest
                 {
-                    AssetPair = assetPair,
-                    Interval = timeInterval,
+                    AssetPair = serviceRequest.AssetPair,
+                    Interval = serviceRequest.CandleInterval,
+                    AuthToken = serviceRequest.AuthToken,
+                    IndicatorName = serviceRequest.RequestId,
                     From = fromDate,
                     To = toDate
                 }).GetEnumerator()

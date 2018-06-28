@@ -19,7 +19,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         /// executions
         /// </summary>
         /// <returns></returns>
-        IEnumerable<CandleServiceRequest> GetCandleRequests();
+        IEnumerable<CandleServiceRequest> GetCandleRequests(string authToken);
 
         /// <summary>
         /// Perform a warm-up of all function. This will feed the function with historical
