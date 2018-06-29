@@ -57,7 +57,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         /// <returns>True if there are more <see cref="Candle"/>s in the queue, false otherwise</returns>
         protected override bool MoveNextIndex()
         {
-            if(_originalEnumerator.MoveNext())
+            // If we cannot fetch candles 10 times in a row, we will throw here
+            // since in this case the algo is still initialising and wouldn't be a problem if it stopped
+            if(_originalEnumerator.MoveNextWithRetry(10).GetAwaiter().GetResult())
             {
                 _currentCandle = _originalEnumerator.Current;
                 return true;
