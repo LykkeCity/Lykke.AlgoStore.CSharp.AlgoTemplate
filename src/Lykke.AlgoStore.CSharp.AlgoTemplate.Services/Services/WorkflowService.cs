@@ -72,16 +72,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _algoSettingsService.UpdateAlgoInstance(algoInstance).Wait();
             }
 
+            var authToken = _algoSettingsService.GetAuthToken();
+
             // Function service initialization.
             _functionsService.Initialize();
-            var candleServiceCandleRequests = _functionsService.GetCandleRequests().ToList();
+            var candleServiceCandleRequests = _functionsService.GetCandleRequests(authToken).ToList();
 
             // TODO: Replace this with actual algo metadata once it's implemented
             candleServiceCandleRequests.Add(new CandleServiceRequest
             {
                 AssetPair = _algo.AssetPair, //"BTCEUR",
                 CandleInterval = _algo.CandleInterval,
-                RequestId = _algoSettingsService.GetAlgoId(),
+                AuthToken = authToken,
+                RequestId = authToken,
                 StartFrom = _algo.StartFrom,
                 IgnoreHistory = true,
                 EndOn = _algo.EndOn

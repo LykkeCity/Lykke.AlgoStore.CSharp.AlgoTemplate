@@ -19,6 +19,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
         public CandleTimeInterval Interval { get; set; }
 
         /// <summary>
+        /// The name of the indicator to request candles for
+        /// </summary>
+        public string IndicatorName { get; set; }
+
+        /// <summary>
+        /// The auth token of the algo instance
+        /// </summary>
+        public string AuthToken { get; set; }
+
+        /// <summary>
         /// The start date of the history data.
         /// </summary>
         public DateTime From { get; set; }

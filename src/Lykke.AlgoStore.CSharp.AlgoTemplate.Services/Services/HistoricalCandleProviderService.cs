@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -94,8 +95,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 From = fromDate,
                 CandleSource = _historyDataService.GetHistory(new Core.Domain.CandlesHistoryRequest
                 {
-                    AssetPair = assetPair,
-                    Interval = timeInterval,
+                    AssetPair = serviceRequest.AssetPair,
+                    Interval = serviceRequest.CandleInterval,
+                    AuthToken = serviceRequest.AuthToken,
+                    IndicatorName = serviceRequest.RequestId,
                     From = fromDate,
                     To = toDate
                 }).GetEnumerator()
@@ -176,7 +179,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                             candleSourceData.CandleSource.Current.DateTime >= currentDate)
                             continue;
 
-                        if (candleSourceData.CandleSource.MoveNext())
+                        // Wait forever for the history service to come back online - we're running in backtest
+                        // so we wouldn't want to interrupt the algo in the middle of its operation
+                        if (candleSourceData.CandleSource.MoveNextWithRetry(int.MaxValue).GetAwaiter().GetResult())
                             addInterval = true;
                     }
 

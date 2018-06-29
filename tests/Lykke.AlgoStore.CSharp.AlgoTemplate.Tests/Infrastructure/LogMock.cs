@@ -1,11 +1,28 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Common.Log;
+using Lykke.Common.Log;
+using Microsoft.Extensions.Logging;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
 {
     public class LogMock : ILog
     {
+        public IDisposable BeginScope(string scopeMessage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) where TState : LogEntryParameters
+        {
+            throw new NotImplementedException();
+        }
+
         public Task WriteErrorAsync(string component, string process, string context, Exception exception, DateTime? dateTime = null)
         {
             string error = exception == null ? string.Empty : exception.Message;
