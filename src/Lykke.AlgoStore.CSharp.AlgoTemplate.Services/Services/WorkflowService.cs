@@ -151,7 +151,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnFunctionServiceUpdate(IList<SingleCandleResponse> candleUpdates)
         {
-            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAlgoId())?.Candle;
+            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAuthToken())?.Candle;
 
             if (algoCandle != null && algoCandle.DateTime > _algo.EndOn)
                 return;
