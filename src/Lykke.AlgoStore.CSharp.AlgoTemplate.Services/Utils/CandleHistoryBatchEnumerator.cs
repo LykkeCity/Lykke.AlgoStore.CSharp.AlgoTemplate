@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 using Lykke.AlgoStore.Service.History.Client;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Rest;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
@@ -70,7 +72,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             if (_isLastBuffer)
                 return ++_currentIndex < _buffer.Count;
 
-            IncrementBuffer();
+            IncrementBuffer().ConfigureAwait(false).GetAwaiter().GetResult();
 
             return !_isLastBuffer || _buffer.Count > 0;
         }
@@ -87,7 +89,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         /// <summary>
         /// Sets the range and fetches the next buffer from the history service
         /// </summary>
-        private void IncrementBuffer()
+        private async Task IncrementBuffer()
         {
             if (_isLastBuffer) return;
 
@@ -108,7 +110,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                     _isLastBuffer = true;
                 }
 
-                FillBuffer();
+                await FillBuffer();
             }
             while ((_buffer == null || _buffer.Count == 0) && !_isLastBuffer);
         }
@@ -116,16 +118,38 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         /// <summary>
         /// Fills the buffer from the history service
         /// </summary>
-        private void FillBuffer()
+        private async Task FillBuffer()
         {
-            var task = _historyClient.GetCandles(_currentTimestamp, _nextTimestamp,
-                                                 _candlesHistoryRequest.IndicatorName,
-                                                 _candlesHistoryRequest.AuthToken);
+            IEnumerable<Service.History.Client.Models.Candle> history = null;
 
-            var history = task.ConfigureAwait(false).GetAwaiter().GetResult();
+            while (history == null)
+            {
+                try
+                {
+                    history = await _historyClient.GetCandles(_currentTimestamp, _nextTimestamp,
+                                                              _candlesHistoryRequest.IndicatorName,
+                                                              _candlesHistoryRequest.AuthToken);
 
-            _buffer = history.ToList();
-            _currentIndex = 0;
+                    _buffer = history.ToList();
+                    _currentIndex = 0;
+                }
+                catch(TaskCanceledException)
+                {
+                    // Seems to be caused by a timeout, wait for a while and retry
+                    await Task.Delay(TimeSpan.FromSeconds(60));
+                }
+                catch (HttpOperationException e)
+                {
+                    if (e.Response.StatusCode == System.Net.HttpStatusCode.TooManyRequests ||
+                        e.Response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
+                    {
+                        var retryAfter = int.Parse(e.Response.Headers["Retry-After"].First());
+
+                        await Task.Delay(TimeSpan.FromSeconds(retryAfter));
+                    }
+                    else throw;
+                }
+            }
         }
     }
 }
