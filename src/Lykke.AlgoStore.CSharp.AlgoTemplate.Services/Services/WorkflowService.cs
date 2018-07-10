@@ -1,6 +1,8 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using System;
 using System.Collections.Generic;
@@ -8,9 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -72,16 +72,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _algoSettingsService.UpdateAlgoInstance(algoInstance).Wait();
             }
 
+            var authToken = _algoSettingsService.GetAuthToken();
+
             // Function service initialization.
             _functionsService.Initialize();
-            var candleServiceCandleRequests = _functionsService.GetCandleRequests().ToList();
+            var candleServiceCandleRequests = _functionsService.GetCandleRequests(authToken).ToList();
 
             // TODO: Replace this with actual algo metadata once it's implemented
             candleServiceCandleRequests.Add(new CandleServiceRequest
             {
                 AssetPair = _algo.AssetPair, //"BTCEUR",
                 CandleInterval = _algo.CandleInterval,
-                RequestId = _algoSettingsService.GetAlgoId(),
+                AuthToken = authToken,
+                RequestId = authToken,
                 StartFrom = _algo.StartFrom,
                 IgnoreHistory = true,
                 EndOn = _algo.EndOn
@@ -148,7 +151,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnFunctionServiceUpdate(IList<SingleCandleResponse> candleUpdates)
         {
-            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAlgoId())?.Candle;
+            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAuthToken())?.Candle;
 
             if (algoCandle != null && algoCandle.DateTime > _algo.EndOn)
                 return;
@@ -194,7 +197,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private void OnErrorHandler(TradingServiceException e)
         {
-            _logService.Write(_algoSettingsService.GetInstanceId(), e);
+            _logService.Enqueue(_algoSettingsService.GetInstanceId(), e.ToString());
         }
 
         private IQuoteContext CreateQuoteContext(IAlgoQuote quote)

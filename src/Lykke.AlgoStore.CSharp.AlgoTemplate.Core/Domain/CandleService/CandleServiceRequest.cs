@@ -1,6 +1,5 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService
 {
@@ -9,6 +8,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService
     /// </summary>
     public class CandleServiceRequest
     {
+        /// <summary>
+        /// The auth token of the algo instance
+        /// </summary>
+        public string AuthToken { get; set; }
+
         /// <summary>
         /// The id of the request. The id of the request can be used to distinguish the
         /// responses.

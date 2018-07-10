@@ -1,9 +1,9 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
-using Lykke.Service.CandlesHistory.Client;
 using System.Collections.Generic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.Service.History.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -13,16 +13,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// </summary>
     public class HistoryDataService : IHistoryDataService
     {
-        private readonly ICandleshistoryservice _candlesHistoryService;
+        private readonly IHistoryClient _historyClient;
 
-        public HistoryDataService(ICandleshistoryservice candlesHistoryService)
+        public HistoryDataService(IHistoryClient historyClient)
         {
-            _candlesHistoryService = candlesHistoryService;
+            _historyClient = historyClient;
         }
 
         public IEnumerable<Candle> GetHistory(CandlesHistoryRequest request)
         {
-            return new CandleHistoryBatchEnumerable(request, _candlesHistoryService);
+            return new CandleHistoryBatchEnumerable(request, _historyClient);
         }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
-using Lykke.Service.CandlesHistory.Client;
 using System;
 using System.Collections.Generic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.Service.History.Client;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Rest;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
@@ -14,9 +17,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
     public class CandleHistoryBatchEnumerator : CandleGapFillEnumeratorBase
     {
         private readonly CandlesHistoryRequest _candlesHistoryRequest;
-        private readonly ICandleshistoryservice _candlesHistoryService;
+        private readonly IHistoryClient _historyClient;
 
-        private IList<Service.CandlesHistory.Client.Models.Candle> _buffer = new List<Service.CandlesHistory.Client.Models.Candle>();
+        private IList<Service.History.Client.Models.Candle> _buffer = new List<Service.History.Client.Models.Candle>();
         private DateTime _currentTimestamp;
         private DateTime _nextTimestamp;
 
@@ -25,10 +28,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         private bool _isLastBuffer;
         private bool _isDisposed;
 
-        public CandleHistoryBatchEnumerator(CandlesHistoryRequest historyRequest, ICandleshistoryservice candlesHistoryService) : base(historyRequest.Interval)
+        public CandleHistoryBatchEnumerator(CandlesHistoryRequest historyRequest, IHistoryClient historyClient) : base(historyRequest.Interval)
         {
             _candlesHistoryRequest = historyRequest;
-            _candlesHistoryService = candlesHistoryService;
+            _historyClient = historyClient;
 
             // If the from date is after the current moment, immediately set the last buffer flag
             // so that the enumerator becomes empty
@@ -51,9 +54,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 High = candle.High,
                 Low = candle.Low,
                 DateTime = DateTime.SpecifyKind(candle.DateTime, DateTimeKind.Utc),
-                LastTradePrice = candle.LastTradePrice,
-                TradingOppositeVolume = candle.TradingOppositeVolume,
-                TradingVolume = candle.TradingVolume
             };
         }
 
@@ -72,7 +72,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             if (_isLastBuffer)
                 return ++_currentIndex < _buffer.Count;
 
-            IncrementBuffer();
+            IncrementBuffer().ConfigureAwait(false).GetAwaiter().GetResult();
 
             return !_isLastBuffer || _buffer.Count > 0;
         }
@@ -89,7 +89,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         /// <summary>
         /// Sets the range and fetches the next buffer from the history service
         /// </summary>
-        private void IncrementBuffer()
+        private async Task IncrementBuffer()
         {
             if (_isLastBuffer) return;
 
@@ -110,7 +110,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                     _isLastBuffer = true;
                 }
 
-                FillBuffer();
+                await FillBuffer();
             }
             while ((_buffer == null || _buffer.Count == 0) && !_isLastBuffer);
         }
@@ -118,16 +118,38 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         /// <summary>
         /// Fills the buffer from the history service
         /// </summary>
-        private void FillBuffer()
+        private async Task FillBuffer()
         {
-            var task = _candlesHistoryService.GetCandlesHistoryAsync(_candlesHistoryRequest.AssetPair, Service.CandlesHistory.Client.Models.CandlePriceType.Mid,
-                                                                    (Service.CandlesHistory.Client.Models.CandleTimeInterval)_candlesHistoryRequest.Interval,
-                                                                   _currentTimestamp, _nextTimestamp);
+            IEnumerable<Service.History.Client.Models.Candle> history = null;
 
-            task.Wait();
+            while (history == null)
+            {
+                try
+                {
+                    history = await _historyClient.GetCandles(_currentTimestamp, _nextTimestamp,
+                                                              _candlesHistoryRequest.IndicatorName,
+                                                              _candlesHistoryRequest.AuthToken);
 
-            _buffer = task.Result.History;
-            _currentIndex = 0;
+                    _buffer = history.ToList();
+                    _currentIndex = 0;
+                }
+                catch(TaskCanceledException)
+                {
+                    // Seems to be caused by a timeout, wait for a while and retry
+                    await Task.Delay(TimeSpan.FromSeconds(60));
+                }
+                catch (HttpOperationException e)
+                {
+                    if (e.Response.StatusCode == System.Net.HttpStatusCode.TooManyRequests ||
+                        e.Response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
+                    {
+                        var retryAfter = int.Parse(e.Response.Headers["Retry-After"].First());
+
+                        await Task.Delay(TimeSpan.FromSeconds(retryAfter));
+                    }
+                    else throw;
+                }
+            }
         }
     }
 }

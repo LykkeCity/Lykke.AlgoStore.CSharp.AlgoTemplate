@@ -9,13 +9,14 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
-using Lykke.Service.CandlesHistory.Client;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Dynamic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.Service.Logging.Client;
+using Lykke.AlgoStore.Service.History.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -27,6 +28,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
         private readonly IReloadingManager<AppSettings> _settings;
         private readonly ILog _log;
         // NOTE: you can remove it if you don't need to use IServiceCollection extensions to register service specific dependencies
+        // ReSharper disable once CollectionNeverUpdated.Local
         private readonly IServiceCollection _services;
 
         /// <summary>
@@ -61,11 +63,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<ShutdownManager>()
                 .As<IShutdownManager>();
-
-            builder.RegisterInstance<IUserLogRepository>(
-                    AzureRepoFactories.CreateUserLogRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log)
-                )
-                .SingleInstance();
 
             builder.RegisterInstance<IStatisticsRepository>(
                     AzureRepoFactories.CreateStatisticsRepository(_settings.Nested(x => x.CSharpAlgoTemplateService.Db.LogsConnString), _log))
@@ -136,9 +133,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<FunctionInitializationService>()
                 .As<IFunctionInitializationService>();
 
-            builder.RegisterType<Candleshistoryservice>()
-                .As<ICandleshistoryservice>()
-                .WithParameter(TypedParameter.From(new Uri(_settings.CurrentValue.CandlesHistoryServiceClient.ServiceUrl)));
+            builder.RegisterHistoryClient(_settings.CurrentValue.HistoryServiceClient);
 
             builder.RegisterType<HistoryDataService>()
                 .As<IHistoryDataService>();
@@ -146,7 +141,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<TaskAsyncExecutor>()
                 .As<IAsyncExecutor>();
 
+            builder.RegisterType<LoggingClient>()
+                .WithParameter("serviceUrl", _settings.CurrentValue.AlgoStoreLoggingServiceClient.ServiceUrl)
+                .As<ILoggingClient>()
+                .SingleInstance();
+
             builder.RegisterType<UserLogService>()
+                .WithParameters(new []
+                {
+                    new NamedParameter("maxBatchLifetime", TimeSpan.FromMilliseconds(_settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.MaxBatchLifetime)),
+                    new NamedParameter("batchSizeThreshold", _settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.BatchSizeThreshold)
+                })
                 .As<IUserLogService>();
 
             builder.Populate(_services);

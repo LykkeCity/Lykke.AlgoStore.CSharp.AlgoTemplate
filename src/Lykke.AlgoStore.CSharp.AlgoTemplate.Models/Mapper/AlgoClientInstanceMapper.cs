@@ -1,4 +1,7 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
+﻿using System;
+using System.Globalization;
+using System.Linq;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
 using Newtonsoft.Json;
@@ -91,6 +94,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
 
             result = GetEntityResult(data, result);
             result.PartitionKey = KeyGenerator.GenerateAuthTokenPartitionKey(data.AuthToken);
+            return result;
+        }
+
+        public static AlgoInstanceStoppingEntity ToStoppingEntityWithEndDatePartitionKey(this AlgoClientInstanceData data)
+        {
+            var result = new AlgoInstanceStoppingEntity();
+
+            if (data == null)
+                return result;
+
+            var instanceEndDateString = data.AlgoMetaDataInformation.Parameters.Single(p => p.Key == "EndOn").Value;
+            DateTime.TryParseExact(instanceEndDateString, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture,
+                DateTimeStyles.AdjustToUniversal, out var instanceEndDate);
+
+            result = AutoMapper.Mapper.Map<AlgoInstanceStoppingEntity>(data);
+            result.PartitionKey = KeyGenerator.GenerateStoppingEntityPartitionKey();
+            result.RowKey = KeyGenerator.GenerateStoppingEntityRowKey(instanceEndDate);
+            result.ETag = "*";    
             return result;
         }
 

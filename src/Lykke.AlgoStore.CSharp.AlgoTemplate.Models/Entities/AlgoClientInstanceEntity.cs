@@ -19,7 +19,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public string InstanceName { get; set; }
         public bool IsStraight { get; set; }
 
+        public DateTime AlgoInstanceCreateDate { get; set; }
         public DateTime? AlgoInstanceRunDate { get; set; }
+        public DateTime? AlgoInstanceStopDate { get; set; }
 
         public string AlgoInstanceStatusValue { get; set; }
         public string AlgoInstanceTypeValue { get; set; }

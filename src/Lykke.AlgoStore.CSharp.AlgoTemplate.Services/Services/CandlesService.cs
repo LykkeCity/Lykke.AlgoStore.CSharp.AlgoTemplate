@@ -71,9 +71,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var historyRequest = new CandlesHistoryRequest
                 {
-                    AssetPair = request.AssetPair,
+                    AuthToken = request.AuthToken,
+                    IndicatorName = request.RequestId,
                     From = request.StartFrom,
                     To = request.EndOn,
+                    AssetPair = request.AssetPair,
                     Interval = request.CandleInterval
                 };
 

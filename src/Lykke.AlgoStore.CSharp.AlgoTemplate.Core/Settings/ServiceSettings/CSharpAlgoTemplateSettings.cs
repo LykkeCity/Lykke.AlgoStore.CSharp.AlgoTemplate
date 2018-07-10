@@ -5,5 +5,6 @@
         public DbSettings Db { get; set; }
         public QuoteRabbitMqSubscriptionSettings QuoteRabbitMqSettings { get; set; }
         public BaseRabbitMqSubscriptionSettings CandleRabbitMqSettings { get; set; }
+        public LoggingSettings LoggingSettings { get; set; }
     }
 }

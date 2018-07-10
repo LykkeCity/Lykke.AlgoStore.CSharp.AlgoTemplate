@@ -40,12 +40,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
         }
 
-        public IEnumerable<CandleServiceRequest> GetCandleRequests()
+        public IEnumerable<CandleServiceRequest> GetCandleRequests(string authToken)
         {
             foreach (var function in _allFunctions.Values)
             {
                 yield return new CandleServiceRequest()
                 {
+                    AuthToken = authToken,
                     RequestId = function.FunctionParameters.FunctionInstanceIdentifier,
                     AssetPair = function.FunctionParameters.AssetPair,
                     CandleInterval = function.FunctionParameters.CandleTimeInterval,
