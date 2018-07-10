@@ -17,6 +17,7 @@ using System.Dynamic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.Service.Logging.Client;
 using Lykke.AlgoStore.Service.History.Client;
+using Lykke.AlgoStore.Job.Stopping.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -153,6 +154,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                     new NamedParameter("batchSizeThreshold", _settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.BatchSizeThreshold)
                 })
                 .As<IUserLogService>();
+
+            builder.RegisterType<AlgoInstanceStoppingClient>()
+                .As<IAlgoInstanceStoppingClient>()
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.AlgoStoreStoppingServiceClient.ServiceUrl));
+
+            builder.RegisterType<MonitoringService>()
+                .As<IMonitoringService>()
+                .WithParameter(
+                TypedParameter.From(
+                    TimeSpan.FromSeconds(
+                        _settings.CurrentValue.CSharpAlgoTemplateService.MonitoringSettings.InstanceEventTimeoutInSec)));
 
             builder.Populate(_services);
         }
