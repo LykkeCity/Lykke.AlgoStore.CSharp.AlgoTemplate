@@ -20,6 +20,8 @@ using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 using Lykke.Logs;
 using Lykke.SlackNotification.AzureQueue;
 using Microsoft.Extensions.DependencyInjection;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -28,7 +30,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
     /// </summary>
     public class AlgoRunner
     {
-        public const string USER_DEFINED_ALGOS_NAMESPACE = "Lykke.AlgoStore.CSharp.Algo.Implemention.ExecutableClass";
         public static readonly Type DEFAULT_ALGO_CLASS_TO_RUN;
         private static ILog _log;
         private static IAlgoWorkflowService _algoWorkflow;
@@ -110,7 +111,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
             var serviceModule = new ServiceModule(appSettings, _log);
 
-            serviceModule.AlgoType = GetAlgoType();
+            serviceModule.AlgoType = GetAlgoType(appSettings);
 
             builder.RegisterModule(serviceModule);
             builder.RegisterMatchingEngineClient(appSettings.CurrentValue.MatchingEngineAdapterClient.GetClientIpAddress(),
@@ -166,12 +167,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             return aggregateLogger;
         }
 
-        private static Type GetAlgoType()
+        private static Type GetAlgoType(IReloadingManagerWithConfiguration<AppSettings> appSettings)
         {
+            dynamic dynamicSettings =
+                 JsonConvert.DeserializeObject<ExpandoObject>(Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS"));
+
             var userDefinedAlgos = AppDomain.CurrentDomain.GetAssemblies()
                    .SelectMany(t => t.GetTypes())
                    .Where(t => t.IsClass
-                   && t.Namespace == USER_DEFINED_ALGOS_NAMESPACE
+                   && t.Namespace == appSettings.CurrentValue.CSharpAlgoTemplateService.AlgoNamespaceValue
                    && typeof(IAlgo).IsAssignableFrom(t)).ToList();
 
             // Single user defined algo found
@@ -185,7 +189,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             {
                 throw new Exception($"Ambiguous request for running algos. " +
                     $"Found more than one #{typeof(IAlgo).Name} implementation " +
-                    $"in namespace ${USER_DEFINED_ALGOS_NAMESPACE}");
+                    $"in namespace ${appSettings.CurrentValue.CSharpAlgoTemplateService.AlgoNamespaceValue}");
             }
 
             // If no user defined algos found run the default one
