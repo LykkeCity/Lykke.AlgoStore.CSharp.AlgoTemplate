@@ -27,6 +27,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ICandlesService _candlesService;
         private readonly IStatisticsService _statisticsService;
         private readonly IUserLogService _logService;
+        private readonly IMonitoringService _monitoringService;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
         private readonly object _sync = new object();
@@ -40,6 +41,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             ICandlesService candlesService,
             IStatisticsService statisticsService,
             IUserLogService logService,
+            IMonitoringService monitoringService,
             IAlgo algo)
         {
             _algoSettingsService = algoSettingsService;
@@ -50,6 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _logService = logService;
             _tradingService = tradingService;
             _candlesService = candlesService;
+            _monitoringService = monitoringService;
             actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler);
             _algo = algo;
         }
@@ -145,13 +148,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 _functionsService.WarmUp(warmupData);
 
+                var token = _monitoringService.StartAlgoEvent();
+
                 _algo.OnStartUp(_functionsService.GetFunctionResults());
+
+                token.Cancel();
             }
         }
 
         private void OnFunctionServiceUpdate(IList<SingleCandleResponse> candleUpdates)
         {
-            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAlgoId())?.Candle;
+            var algoCandle = candleUpdates.FirstOrDefault(scr => scr.RequestId == _algoSettingsService.GetAuthToken())?.Candle;
 
             if (algoCandle != null && algoCandle.DateTime > _algo.EndOn)
                 return;
@@ -166,7 +173,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 {
                     // Allow time for all functions to recalculate before sending the event
                     Thread.Sleep(100);
+
+                    var token = _monitoringService.StartAlgoEvent();
+
                     _algo.OnCandleReceived(ctx);
+
+                    token.Cancel();
                 }
             }
         }
@@ -184,7 +196,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 lock (_sync)
                 {
+                    var token = _monitoringService.StartAlgoEvent();
+
                     _algo.OnQuoteReceived(ctx);
+
+                    token.Cancel();
                 }
             }
             catch (TradingServiceException e)

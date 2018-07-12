@@ -1,7 +1,6 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
-using Lykke.Service.CandlesHistory.Client;
 using System.Collections.Generic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 using Lykke.AlgoStore.Service.History.Client;

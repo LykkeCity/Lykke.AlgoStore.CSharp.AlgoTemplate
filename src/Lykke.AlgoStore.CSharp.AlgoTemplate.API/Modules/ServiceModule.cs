@@ -9,7 +9,6 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Async;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
-using Lykke.Service.CandlesHistory.Client;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -18,6 +17,7 @@ using System.Dynamic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.Service.Logging.Client;
 using Lykke.AlgoStore.Service.History.Client;
+using Lykke.AlgoStore.Job.Stopping.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -134,7 +134,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<FunctionInitializationService>()
                 .As<IFunctionInitializationService>();
 
-            builder.RegisterHistoryClient(_settings.CurrentValue.HistoryServiceClient, _log);
+            builder.RegisterHistoryClient(_settings.CurrentValue.HistoryServiceClient);
 
             builder.RegisterType<HistoryDataService>()
                 .As<IHistoryDataService>();
@@ -148,12 +148,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .SingleInstance();
 
             builder.RegisterType<UserLogService>()
-                .WithParameters(new []
+                .WithParameters(new[]
                 {
                     new NamedParameter("maxBatchLifetime", TimeSpan.FromMilliseconds(_settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.MaxBatchLifetime)),
                     new NamedParameter("batchSizeThreshold", _settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.BatchSizeThreshold)
                 })
                 .As<IUserLogService>();
+
+            builder.RegisterType<AlgoInstanceStoppingClient>()
+                .As<IAlgoInstanceStoppingClient>()
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.AlgoStoreStoppingClient.ServiceUrl));
+
+            builder.RegisterType<MonitoringService>()
+                .As<IMonitoringService>()
+                .WithParameter(
+                TypedParameter.From(
+                    TimeSpan.FromSeconds(
+                        _settings.CurrentValue.CSharpAlgoTemplateService.MonitoringSettings.InstanceEventTimeoutInSec)));
 
             builder.Populate(_services);
         }
