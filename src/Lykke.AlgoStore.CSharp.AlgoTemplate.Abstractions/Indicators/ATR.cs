@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Lykke.AlgoStore.Algo.Indicators
 {
-    public class ATR : IIndicator
+    public class ATR : BaseIndicator
     {
         /// <summary>
         /// True ranges for the initial calculation of Average True Range
@@ -15,23 +15,31 @@ namespace Lykke.AlgoStore.Algo.Indicators
         /// <summary>
         /// The Previous Average True Range which will be used for the calculation of the new one
         /// </summary>
-        private double? _previousAtr { get; set; }
+        private double? _previousAtr;
         private Candle _previousInput;
         private double _trueRange;
-        private int _samples { get; set; }
 
-        public DateTime StartingDate { get; set; }
-        public DateTime EndingDate { get; set; }
-        public CandleTimeInterval CandleTimeInterval { get; set; }
-        public string AssetPair { get; set; }
+        private int _samples;
+        private double? _value;
 
-        public bool IsReady => _samples > Period + 1;
+        public override bool IsReady => _samples > Period + 1;
 
-        public double? Value { get; private set; }
+        public override double? Value => _value;
 
-        public int Period { get; set; }
+        public int Period { get; }
 
-        public double? WarmUp(IEnumerable<Candle> values)
+        public ATR(
+            int period,
+            DateTime startingDate,
+            DateTime endingDate,
+            CandleTimeInterval candleTimeInterval,
+            string assetPair)
+            : base(startingDate, endingDate, candleTimeInterval, assetPair)
+        {
+            Period = period;
+        }
+
+        public override double? WarmUp(IEnumerable<Candle> values)
         {
             if (values == null)
                 throw new ArgumentException();
@@ -50,13 +58,13 @@ namespace Lykke.AlgoStore.Algo.Indicators
 
                 isFirstElement = false;
 
-                Value = CalculateAverageTrueRange();
+                _value = CalculateAverageTrueRange();
                 _previousInput = value;
             }
-            return Value;
+            return _value;
         }
 
-        public double? AddNewValue(Candle value)
+        public override double? AddNewValue(Candle value)
         {
             if (value == null)
                 throw new ArgumentException();
@@ -74,10 +82,10 @@ namespace Lykke.AlgoStore.Algo.Indicators
                 }
             }
 
-            Value = CalculateAverageTrueRange();
+            _value = CalculateAverageTrueRange();
             _previousInput = value;
 
-            return Value;
+            return _value;
         }
 
         /// <summary>

@@ -10,19 +10,14 @@ namespace Lykke.AlgoStore.Algo.Indicators
     /// ability to the function to be evaluated with MIN/MAX/OPEN/CLOSE
     /// values of a <see cref="Candle"/>
     /// </summary>
-    public abstract class AbstractIndicator : IIndicator
+    public abstract class AbstractIndicator : BaseIndicator
     {
         /// <summary>
         /// The candle value on which the function is operating. The 
         /// same function can be operating on Min/Max or Open/Close
         /// of a Candle
         /// </summary>
-        public abstract CandleOperationMode CandleOperationMode { get; set; }
-
-        public DateTime StartingDate { get; set; }
-        public DateTime EndingDate { get; set; }
-        public CandleTimeInterval CandleTimeInterval { get; set; }
-        public string AssetPair { get; set; }
+        public CandleOperationMode CandleOperationMode { get; }
 
         /// <summary>
         /// Base exception for function invocation exceptions
@@ -55,13 +50,6 @@ namespace Lykke.AlgoStore.Algo.Indicators
                 : base(message, innerException) { }
         }
 
-        /// <summary>
-        /// The latest value of a function.
-        /// </summary>
-        public abstract double? Value { get; }
-
-        public abstract bool IsReady { get; }
-
         private Dictionary<CandleOperationMode, Func<Candle, double>> _candleProjections
             = new Dictionary<CandleOperationMode, Func<Candle, double>>()
             {
@@ -71,6 +59,17 @@ namespace Lykke.AlgoStore.Algo.Indicators
                 { CandleOperationMode.HIGH, (Candle c) => c.High }
             };
 
+        public AbstractIndicator(
+            DateTime startingDate,
+            DateTime endingDate,
+            CandleTimeInterval candleTimeInterval,
+            string assetPair,
+            CandleOperationMode candleOperationMode)
+            : base(startingDate, endingDate, candleTimeInterval, assetPair)
+        {
+            CandleOperationMode = candleOperationMode;
+        }
+
         /// <summary>
         /// Initialize the function with the initial values.
         /// </summary>
@@ -78,7 +77,7 @@ namespace Lykke.AlgoStore.Algo.Indicators
         /// computed by the function</param>
         public abstract double? WarmUp(IEnumerable<double> values);
 
-        public double? WarmUp(IEnumerable<Candle> values)
+        public override double? WarmUp(IEnumerable<Candle> values)
         {
             try
             {
@@ -100,7 +99,7 @@ namespace Lykke.AlgoStore.Algo.Indicators
         /// <param name="value"></param>
         public abstract double? AddNewValue(double value);
 
-        public double? AddNewValue(Candle value)
+        public override double? AddNewValue(Candle value)
         {
             if (value == null)
             {

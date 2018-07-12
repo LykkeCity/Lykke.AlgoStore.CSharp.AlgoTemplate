@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.Algo.Indicators
 {
@@ -24,7 +25,6 @@ namespace Lykke.AlgoStore.Algo.Indicators
         public override double? Value => _currentValue;
 
         public override bool IsReady => _currentValue != null;
-        public override CandleOperationMode CandleOperationMode { get; set; }
 
         /// <summary>
         /// Returns the histogram component of the MACD function (MACD line - Signal line)
@@ -71,6 +71,22 @@ namespace Lykke.AlgoStore.Algo.Indicators
         {
             get => GetEmaPeriod(_signalLine);
             set => SetEmaPeriod(value, ref _signalLine);
+        }
+
+        public MACD(
+            int fastEmaPeriod,
+            int slowEmaPeriod,
+            int signalLinePeriod,
+            DateTime startingDate,
+            DateTime endingDate,
+            CandleTimeInterval candleTimeInterval,
+            string assetPair,
+            CandleOperationMode candleOperationMode)
+            : base(startingDate, endingDate, candleTimeInterval, assetPair, candleOperationMode)
+        {
+            _fastEmaPeriod = fastEmaPeriod;
+            _slowEmaPeriod = slowEmaPeriod;
+            _signalLinePeriod = signalLinePeriod;
         }
 
         /// <summary>
@@ -125,7 +141,7 @@ namespace Lykke.AlgoStore.Algo.Indicators
 
         private int GetEmaPeriod(EMA ema)
         {
-            return ema?.FunctionParameters.EmaPeriod;
+            return ema.Period;
         }
 
         private void SetEmaPeriod(int period, ref EMA ema)
@@ -133,7 +149,7 @@ namespace Lykke.AlgoStore.Algo.Indicators
             if (ema != null)
                 throw new InvalidOperationException("Cannot set EMA period more than once");
 
-            ema = new EMA(new EmaParameters { EmaPeriod = period });
+            ema = new EMA(period, StartingDate, EndingDate, CandleTimeInterval, AssetPair, CandleOperationMode);
         }
     }
 }

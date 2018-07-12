@@ -5,151 +5,93 @@ using System.Linq;
 
 namespace Lykke.AlgoStore.Algo.Indicators
 {
-    public class ADX : IIndicator
+    public class ADX : BaseIndicator
     {
-        private DMIPlus _dmiPlusFucn;
-        private DMIMinus _dmiMinusFucn;
-        private ATR _atrFunction;
-
-        private int _period;
         private int _samples;
 
         private double? _currentADX { get; set; }
 
-        public double? Value => _currentADX;
+        public override double? Value => _currentADX;
 
-        public int Period
-        {
-            get => _period;
-            set
-            {
-                _period = value;
-                InitIndicators(value);
-            }
-        }
-
-        public DateTime StartingDate { get; set; }
-        public DateTime EndingDate { get; set; }
-        public CandleTimeInterval CandleTimeInterval { get; set; }
-        public string AssetPair { get; set; }
+        public int Period { get; }
 
         #region Additional Parameters
 
-        public bool IsReady => _samples > _period * 2;
+        public override bool IsReady => _samples > Period * 2;
 
-        private double? DirectionalMovementIndexMinus { get; set; }
-        private double? DirectionalMovementIndexPlus { get; set; }
+        private Queue<double> _directionalMovementIndices;
 
-        private double DirectionalMovementIndex { get; set; }
-        private Queue<double> DirectionalMovementIndexes { get; set; }
+        private double? _previousAdx;
 
-        private double? PreviousADX { get; set; }
-        private double? AverageTrueRange { get; set; }
-
-        public DMIPlus DMIPlusFucn => _dmiPlusFucn;
-        public DMIMinus DMIMinusFucn => _dmiMinusFucn;
-        public ATR ATRFunction => _atrFunction;
+        public DMI DMI { get; }
         #endregion
 
-        public ADX()
+        public ADX(
+            int period,
+            DateTime startingDate,
+            DateTime endingDate,
+            CandleTimeInterval candleTimeInterval,
+            string assetPair)
+            : base(startingDate, endingDate, candleTimeInterval, assetPair)
         {
-            DirectionalMovementIndexes = new Queue<double>();
-            AverageTrueRange = 0.0d;
+            Period = period;
+
+            DMI = new DMI(period, startingDate, endingDate, candleTimeInterval, assetPair);
+
+            _directionalMovementIndices = new Queue<double>();
         }
 
-        public double? WarmUp(IEnumerable<Candle> values)
+        public override double? WarmUp(IEnumerable<Candle> values)
         {
             if (values == null)
                 throw new ArgumentException();
 
             foreach (var value in values)
             {
-                _samples++;
-
-                AverageTrueRange = ATRFunction.AddNewValue(value);
-
-                DMIPlusFucn.AverageTrueRange = AverageTrueRange;
-                DMIMinusFucn.AverageTrueRange = AverageTrueRange;
-
-                DirectionalMovementIndexPlus = DMIPlusFucn.AddNewValue(value);
-                DirectionalMovementIndexMinus = DMIMinusFucn.AddNewValue(value);
-
-                if (_samples >= _period + 1)
-                {
-                    if (DirectionalMovementIndexPlus == 0 && DirectionalMovementIndexMinus == 0)
-                        DirectionalMovementIndex = 0;
-                    else
-                        DirectionalMovementIndex = (Math.Abs(DirectionalMovementIndexPlus.Value - DirectionalMovementIndexMinus.Value)
-                                                        / (DirectionalMovementIndexPlus.Value + DirectionalMovementIndexMinus.Value)) * 100;
-
-                    DirectionalMovementIndexes.Enqueue(DirectionalMovementIndex);
-                }
-
-                if (_samples == _period * 2)
-                {
-                    _currentADX = DirectionalMovementIndexes.Average();
-                }
-                else if (IsReady)
-                {
-                    _currentADX = ((_period - 1) * PreviousADX + DirectionalMovementIndex) / _period;
-                }
-                else
-                    _currentADX = null;
-
-                PreviousADX = _currentADX;
+                AddNewValue(value);
             }
 
             return _currentADX;
         }
 
-        public double? AddNewValue(Candle value)
+        public override double? AddNewValue(Candle value)
         {
             if (value == null)
                 throw new ArgumentException();
 
-            if (!IsReady)
-                _samples++;
+            _samples++;
 
-            AverageTrueRange = ATRFunction.AddNewValue(value);
+            DMI.AddNewValue(value);
 
-            DMIPlusFucn.AverageTrueRange = AverageTrueRange;
-            DMIMinusFucn.AverageTrueRange = AverageTrueRange;
+            var directionalMovementIndexPlus = DMI.UpwardDirectionalIndex;
+            var directionalMovementIndexMinus = DMI.DownwardDirectionalIndex;
+            var directionalMovementIndex = 0d;
 
-            DirectionalMovementIndexPlus = DMIPlusFucn.AddNewValue(value);
-            DirectionalMovementIndexMinus = DMIMinusFucn.AddNewValue(value);
-
-            if (_samples >= _period + 1)
+            if (_samples >= Period + 1)
             {
-                DirectionalMovementIndex = (Math.Abs(DirectionalMovementIndexPlus.Value - DirectionalMovementIndexMinus.Value)
-                                                        / (DirectionalMovementIndexPlus.Value + DirectionalMovementIndexMinus.Value)) * 100;
-                DirectionalMovementIndexes.Enqueue(DirectionalMovementIndex);
+                if (directionalMovementIndexPlus == 0 && directionalMovementIndexMinus == 0)
+                    directionalMovementIndex = 0;
+                else
+                    directionalMovementIndex = (Math.Abs(directionalMovementIndexPlus.Value - directionalMovementIndexMinus.Value)
+                                                    / (directionalMovementIndexPlus.Value + directionalMovementIndexMinus.Value)) * 100;
+
+                _directionalMovementIndices.Enqueue(directionalMovementIndex);
             }
 
-            if (_samples == _period * 2)
+            if (_samples == Period * 2)
             {
-                _currentADX = DirectionalMovementIndexes.Average();
-                PreviousADX = _currentADX;
+                _currentADX = _directionalMovementIndices.Average();
             }
             else if (IsReady)
             {
-                _currentADX = ((_period - 1) * PreviousADX + DirectionalMovementIndex) / _period;
+                _currentADX = ((Period - 1) * _previousAdx + directionalMovementIndex) / Period;
             }
             else
                 _currentADX = null;
 
-            PreviousADX = _currentADX;
+            _previousAdx = _currentADX;
+
             return _currentADX;
-        }
-
-        private void InitIndicators(int period)
-        {
-            if (_dmiPlusFucn != null)
-                throw new InvalidOperationException("Cannot set period more than once");
-
-            _dmiPlusFucn = new DMIPlus(period);
-            _dmiMinusFucn = new DMIMinus(period);
-            _atrFunction = new ATR { Period = period };
         }
     }
 }
-

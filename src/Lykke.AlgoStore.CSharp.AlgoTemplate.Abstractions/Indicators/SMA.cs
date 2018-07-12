@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.Algo.Indicators
 {
@@ -11,10 +12,22 @@ namespace Lykke.AlgoStore.Algo.Indicators
     {
         private readonly Queue<double> _storageQueue = new Queue<double>();
 
-        public int Capacity { get; set; }
+        public int Period { get; }
 
         public override double? Value => GetSmaValue();
         public override bool IsReady => Value != null;
+
+        public SMA(
+            int period,
+            DateTime startingDate,
+            DateTime endingDate,
+            CandleTimeInterval candleTimeInterval,
+            string assetPair,
+            CandleOperationMode candleOperationMode)
+            : base(startingDate, endingDate, candleTimeInterval, assetPair, candleOperationMode)
+        {
+            Period = period;
+        }
 
         /// <summary>
         /// Warm up function with data
@@ -49,7 +62,7 @@ namespace Lykke.AlgoStore.Algo.Indicators
         /// <param name="value">New value that will be used in future calculus</param>
         public override double? AddNewValue(double value)
         {
-            if (_storageQueue.Count >= Capacity && Capacity > 0)
+            if (_storageQueue.Count >= Period && Period > 0)
                 _storageQueue.Dequeue();
 
             _storageQueue.Enqueue(value);

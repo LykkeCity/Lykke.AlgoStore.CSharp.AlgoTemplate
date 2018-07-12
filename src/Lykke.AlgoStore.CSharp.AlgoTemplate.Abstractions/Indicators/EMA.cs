@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.Algo.Indicators
 {
     public class EMA : AbstractIndicator
     {
-        private double _k;
-        private int _period;
+        private readonly double _k;
 
         private Queue<double> _storageQueue;
         private double? _emaPreviousPeriod;
@@ -16,18 +16,23 @@ namespace Lykke.AlgoStore.Algo.Indicators
 
         private bool _isReady = false;
 
-        public int Period
-        {
-            get => _period;
-            set
-            {
-                _period = value;
-                _k = GetWeightingMultiplier(_period);
-            }
-        }
+        public int Period { get; }
 
         public override double? Value => _value;
         public override bool IsReady => _isReady;
+
+        public EMA(
+            int period,
+            DateTime startingDate,
+            DateTime endingDate,
+            CandleTimeInterval candleTimeInterval,
+            string assetPair,
+            CandleOperationMode candleOperationMode)
+            : base(startingDate, endingDate, candleTimeInterval, assetPair, candleOperationMode)
+        {
+            Period = period;
+            _k = GetWeightingMultiplier(period);
+        }
 
         /// <summary>Calculates weighting multiplier for an EmaFunction
         /// </summary>
@@ -79,12 +84,12 @@ namespace Lykke.AlgoStore.Algo.Indicators
 
         private double? GetInitialValue(double value)
         {
-            if (_storageQueue.Count >= _period && _period > 0)
+            if (_storageQueue.Count >= Period && Period > 0)
                 _storageQueue.Dequeue();
 
             _storageQueue.Enqueue(value);
 
-            if (_storageQueue.Count < _period)
+            if (_storageQueue.Count < Period)
                 return null;
 
             _isReady = true;

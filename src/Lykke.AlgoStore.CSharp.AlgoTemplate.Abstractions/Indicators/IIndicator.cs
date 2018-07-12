@@ -15,25 +15,25 @@ namespace Lykke.AlgoStore.Algo.Indicators
         /// <summary>
         /// The asset pair on which the function is operating
         /// </summary>
-        string AssetPair { get; set; }
+        string AssetPair { get; }
 
         /// <summary>
         /// The start date from which the function should be start to do
         /// calculations.
         /// </summary>
-        DateTime StartingDate { get; set; }
+        DateTime StartingDate { get; }
 
         /// <summary>
         /// The end date after which the function will stop receiving updates
         /// </summary>
-        DateTime EndingDate { get; set; }
+        DateTime EndingDate { get; }
 
         /// <summary>
         /// The interval of the candles the function is going to work on
         /// Example: If you set it to <see cref="CandleTimeInterval.Minute"/> 
         /// the function will work with candles per minute.
         /// </summary>
-        CandleTimeInterval CandleTimeInterval { get; set; }
+        CandleTimeInterval CandleTimeInterval { get; }
 
         double? Value { get; }
 
