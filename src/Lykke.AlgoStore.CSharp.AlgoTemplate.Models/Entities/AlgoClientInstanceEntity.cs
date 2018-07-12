@@ -50,5 +50,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 
         public string AlgoClientId { get; set; }
         public string AuthToken { get; set; }
+        public string TcBuildId { get; set; }
     }
 }

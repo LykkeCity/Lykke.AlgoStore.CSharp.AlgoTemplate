@@ -115,6 +115,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             return result;
         }
 
+        public static AlgoInstanceTcBuildEntity ToEntityWithTcBuildIdPartitionKey(this AlgoClientInstanceData data)
+        {
+            var result = new AlgoInstanceTcBuildEntity();
+
+            if (data == null)
+                return result;
+
+            result = AutoMapper.Mapper.Map<AlgoInstanceTcBuildEntity>(data);
+            result.PartitionKey = KeyGenerator.GenerateTcBuildEntityPartitionKey();
+            result.RowKey = data.TcBuildId;
+            result.ETag = "*";
+            return result;
+        }
+
         private static AlgoClientInstanceEntity GetEntityResult(AlgoClientInstanceData data, AlgoClientInstanceEntity result)
         {
             result = AutoMapper.Mapper.Map<AlgoClientInstanceEntity>(data);

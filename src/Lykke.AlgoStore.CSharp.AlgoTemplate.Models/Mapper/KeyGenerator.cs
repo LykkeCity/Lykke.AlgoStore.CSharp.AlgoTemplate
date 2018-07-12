@@ -13,6 +13,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
         private const string WalletPartitionKeyStatic = "wallet";
         private const string AuthTokenPartitionKeyStatic = "authtoken";
         private const string EndDatePartitionKeyStatic = "StoppingEntity";
+        private const string TcBuildPartitionKeyStatic = "TcBuildEntity";
 
         public static string GenerateClientIdPartitionKey(string clientId)
         {
@@ -47,6 +48,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
         public static string GenerateStoppingEntityPartitionKey()
         {
             return EndDatePartitionKeyStatic;
+        }
+
+        public static string GenerateTcBuildEntityPartitionKey()
+        {
+            return TcBuildPartitionKeyStatic;
         }
 
         public static string GenerateStoppingEntityRowKey(DateTime instanceEndDate)
