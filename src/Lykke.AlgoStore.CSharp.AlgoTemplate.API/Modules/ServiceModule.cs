@@ -148,7 +148,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .SingleInstance();
 
             builder.RegisterType<UserLogService>()
-                .WithParameters(new []
+                .WithParameters(new[]
                 {
                     new NamedParameter("maxBatchLifetime", TimeSpan.FromMilliseconds(_settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.MaxBatchLifetime)),
                     new NamedParameter("batchSizeThreshold", _settings.CurrentValue.CSharpAlgoTemplateService.LoggingSettings.BatchSizeThreshold)
@@ -157,7 +157,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<AlgoInstanceStoppingClient>()
                 .As<IAlgoInstanceStoppingClient>()
-                .WithParameter(TypedParameter.From(_settings.CurrentValue.AlgoStoreStoppingServiceClient.ServiceUrl));
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.AlgoStoreStoppingClient.ServiceUrl));
 
             builder.RegisterType<MonitoringService>()
                 .As<IMonitoringService>()
