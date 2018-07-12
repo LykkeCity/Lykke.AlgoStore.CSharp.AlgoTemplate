@@ -37,7 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Models", "5 - Models", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.AlgoTemplate.Models", "src\Lykke.AlgoStore.CSharp.AlgoTemplate.Models\Lykke.AlgoStore.CSharp.AlgoTemplate.Models.csproj", "{8F7B39C3-9198-4A03-87D1-29D1ED9A7930}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions", "src\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions\Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.csproj", "{D67CD857-4195-45CF-9E21-EA2F717DE1D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.AlgoStore.Algo", "src\Lykke.AlgoStore.Algo\Lykke.AlgoStore.Algo.csproj", "{D67CD857-4195-45CF-9E21-EA2F717DE1D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
