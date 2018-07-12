@@ -26,7 +26,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models
         {
             return new AlgoClientInstanceRepository(
                 AzureTableStorage<AlgoClientInstanceEntity>.Create(connectionString, AlgoClientInstanceRepository.TableName, log),
-                AzureTableStorage<AlgoInstanceStoppingEntity>.Create(connectionString, AlgoClientInstanceRepository.TableName, log));
+                AzureTableStorage<AlgoInstanceStoppingEntity>.Create(connectionString, AlgoClientInstanceRepository.TableName, log),
+                AzureTableStorage<AlgoInstanceTcBuildEntity>.Create(connectionString , AlgoClientInstanceRepository.TableName, log));
         }
     }
 }

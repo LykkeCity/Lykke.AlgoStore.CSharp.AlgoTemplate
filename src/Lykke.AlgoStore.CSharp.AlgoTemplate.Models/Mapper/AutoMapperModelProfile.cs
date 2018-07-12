@@ -46,6 +46,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 .ForSourceMember(dest => dest.AlgoInstanceStatusValue, opt => opt.Ignore())
                 .ForMember(src => src.AlgoId, opt => opt.Ignore());
 
+            CreateMap<AlgoClientInstanceData, AlgoInstanceTcBuildEntity>()
+                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore());
+
+            CreateMap<AlgoInstanceTcBuildEntity, AlgoInstanceTcBuildData>()
+                .ForSourceMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.ETag, opt => opt.Ignore())
+                .ForMember(src => src.AlgoId, opt => opt.Ignore());
+
             CreateMap<AlgoInstanceTrade, AlgoInstanceTradeEntity>()
                 .ForMember(dest => dest.RowKey, opt => opt.Ignore())
                 .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
