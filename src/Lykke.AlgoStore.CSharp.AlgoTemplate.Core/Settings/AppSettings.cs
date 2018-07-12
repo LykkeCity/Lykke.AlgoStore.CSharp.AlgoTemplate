@@ -13,6 +13,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings
         public MatchingEngineAdapterSettings MatchingEngineAdapterClient { get; set; }
         public HistoryServiceClientSettings HistoryServiceClient { get; set; }
         public LoggingServiceClientSettings AlgoStoreLoggingServiceClient { get; set; }
-        public AlgoStoreStoppingClientSettings AlgoStoreStoppingServiceClient { get; set; }
+        public AlgoStoreStoppingClientSettings AlgoStoreStoppingClient { get; set; }
     }
 }
