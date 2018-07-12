@@ -26,6 +26,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private AlgoClientInstanceData _entity;
         private static bool _entitySaved;
         private static DateTime _instanceEndOnDate;
+        private static string _tcBuildId;
 
         [SetUp]
         public void SetUp()
@@ -41,6 +42,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _walletId = "123456walletId";
             _algoClientId = "9d66eed3-7b54-431e-970e-979d0d735426";
             _instanceEndOnDate = new DateTime(2018, 06, 19, 15, 30, 00, DateTimeKind.Utc);
+            _tcBuildId = Guid.NewGuid().ToString();
 
             _entity = new AlgoClientInstanceData
             {
@@ -128,7 +130,38 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Then_Stopping_Entity_ShouldBe_Deleted(repo);
         }
 
-       [Test]
+        [Test, Explicit("Should run manually only. Manipulate data in Table Storage")]
+        public void AlgoClientTcBuildInstance_Save_Test()
+        {
+            var repo = Given_AlgoClientInstance_Repository();
+            var validationResult = ValidateData(_entity);
+            Then_ValidationResult_ShouldBe_Empty(validationResult);
+
+            When_Invoke_Save(repo, _entity);
+            Then_Data_ShouldBe_Saved(repo, _entity);
+
+            When_Invoke_Save_And_Add_TcBuild_Row(repo, _entity);
+            Then_TcBuild_Entity_ShouldBe_Saved(repo);           
+        }
+
+        [Test, Explicit("Should run manually only. Manipulate data in Table Storage")]
+        public void AlgoClientTcBuildInstance_Delete_Test()
+        {
+            var repo = Given_AlgoClientInstance_Repository();
+            var validationResult = ValidateData(_entity);
+            Then_ValidationResult_ShouldBe_Empty(validationResult);
+
+            When_Invoke_Save(repo, _entity);
+            Then_Data_ShouldBe_Saved(repo, _entity);
+
+            When_Invoke_Save_And_Add_TcBuild_Row(repo, _entity);
+            Then_TcBuild_Entity_ShouldBe_Saved(repo);
+
+            When_Invoke_DeleteAlgoInstance(repo, _entity);
+            Then_TcBuild_Entity_ShouldBe_Deleted(repo);
+        }
+
+        [Test]
         public void AlgoClientInstance_Get_Metadata_Setting_Test()
         {
             var repo = Given_AlgoClientInstance_Repository();
@@ -162,6 +195,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             return new AlgoClientInstanceRepository(AzureTableStorage<AlgoClientInstanceEntity>.Create(
                 SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()),
                 AzureTableStorage<AlgoInstanceStoppingEntity>.Create(
+                    SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()),
+                AzureTableStorage<AlgoInstanceTcBuildEntity>.Create(
                     SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()));
         }
 
@@ -172,11 +207,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _entitySaved = true;
         }
 
+        private static void When_Invoke_Save_And_Add_TcBuild_Row(AlgoClientInstanceRepository repository, AlgoClientInstanceData data)
+        {
+            data.Validate(null);
+            data.TcBuildId = _tcBuildId;
+            repository.SaveAlgoInstanceDataAsync(data).Wait();
+            _entitySaved = true;
+        }
+
         private void When_Update_Instance_Status_To_Stopped(AlgoClientInstanceRepository repository, AlgoClientInstanceData data)
         {
             data.AlgoInstanceStatus = AlgoInstanceStatus.Stopped;
             repository.SaveAlgoInstanceDataAsync(data).Wait();
             _entitySaved = true;
+        }
+
+        private static void When_Invoke_DeleteAlgoInstance(AlgoClientInstanceRepository repository, AlgoClientInstanceData data)
+        {
+            repository.DeleteAlgoInstanceDataAsync(data).Wait();
+            _entitySaved = false;
         }
 
         private static void Then_Data_ShouldBe_Saved(AlgoClientInstanceRepository repository, AlgoClientInstanceData data)
@@ -218,7 +267,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             Should_Be_Equal(retrievedAllEntitiesWithPassedEndDate.First());
         }
-
+        
         private void Then_Stopping_Entity_ShouldBe_Deleted(AlgoClientInstanceRepository repository)
         {
             var retrievedAllEntitiesWithPassedEndDate = repository.GetAllAlgoInstancesPastEndDate(_instanceEndOnDate.AddMinutes(5)).Result;
@@ -226,10 +275,34 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.IsTrue(!retrievedAllEntitiesWithPassedEndDate.Any());
         }
 
+        private void Then_TcBuild_Entity_ShouldBe_Saved(AlgoClientInstanceRepository repository)
+        {
+            var retrievedTcBuildEntity = repository.GetAlgoInstanceDataByTcBuildIdAsync(_tcBuildId).Result;
+
+            Assert.IsNotNull(retrievedTcBuildEntity);
+
+            Should_Be_Equal(retrievedTcBuildEntity);
+        }
+
+        private void Then_TcBuild_Entity_ShouldBe_Deleted(AlgoClientInstanceRepository repository)
+        {
+            var retrivedTcBuildEntity = repository.GetAlgoInstanceDataByTcBuildIdAsync(_tcBuildId).Result;
+
+            Assert.IsNull(retrivedTcBuildEntity);
+        }
+
         private void Should_Be_Equal(AlgoInstanceStoppingData data)
         {
             Assert.AreEqual(_instanceEndOnDate.Ticks, long.Parse(data.EndOnDateTicks));
             Assert.AreEqual(_entity.InstanceId, data.InstanceId);
+            Assert.AreEqual(_entity.ClientId, data.ClientId);
+        }
+
+        private void Should_Be_Equal(AlgoInstanceTcBuildData data)
+        {
+            Assert.AreEqual(_entity.InstanceId, data.InstanceId);
+            Assert.AreEqual(_entity.ClientId, data.ClientId);
+            Assert.AreEqual(_tcBuildId, data.TcBuildId);
         }
 
         #endregion Private Methods

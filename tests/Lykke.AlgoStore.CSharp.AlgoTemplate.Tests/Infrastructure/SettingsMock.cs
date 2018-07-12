@@ -134,6 +134,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
             return new AlgoClientInstanceRepository(AzureTableStorage<AlgoClientInstanceEntity>.Create(
                 SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()),
                 AzureTableStorage<AlgoInstanceStoppingEntity>.Create(
+                    SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()),
+                AzureTableStorage<AlgoInstanceTcBuildEntity>.Create(
                     SettingsMock.GetTableStorageConnectionString(), AlgoClientInstanceRepository.TableName, new LogMock()));
         }
     }
