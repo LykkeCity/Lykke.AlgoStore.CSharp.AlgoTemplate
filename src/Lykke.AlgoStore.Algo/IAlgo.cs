@@ -11,8 +11,7 @@ namespace Lykke.AlgoStore.Algo
         /// <summary>
         /// Perform actions on algo startup
         /// </summary>
-        /// <param name="functions">The algo function provider</param>
-        void OnStartUp(IFunctionProvider functions);
+        void OnStartUp();
 
         /// <summary>
         /// Perform action on each quote

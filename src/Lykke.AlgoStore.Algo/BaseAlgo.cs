@@ -159,7 +159,7 @@ namespace Lykke.AlgoStore.Algo
         {
         }
 
-        public virtual void OnStartUp(IFunctionProvider functions)
+        public virtual void OnStartUp()
         {
         }
 
