@@ -100,7 +100,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 else
                     _currentTimestamp = _nextTimestamp;
 
-                _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 9999);
+                _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 5000);
 
                 var timeLimit = DateTime.UtcNow > _candlesHistoryRequest.To ? _candlesHistoryRequest.To : DateTime.UtcNow;
 
