@@ -11,22 +11,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         private readonly IAlgoSettingsService _settingsService;
         private readonly IAlgoInstanceStoppingClient _stoppingClient;
+        private readonly IUserLogService _userLogService;
         private readonly ILog _log;
         private readonly TimeSpan _timeout;
 
         public MonitoringService(
             IAlgoSettingsService settingsService,
             IAlgoInstanceStoppingClient stoppingClient,
+            IUserLogService userLogService,
             ILog log,
             TimeSpan timeout)
         {
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _stoppingClient = stoppingClient ?? throw new ArgumentNullException(nameof(stoppingClient));
+            _userLogService = userLogService ?? throw new ArgumentNullException(nameof(userLogService));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _timeout = timeout;
         }
 
-        public CancellationTokenSource StartAlgoEvent()
+        public CancellationTokenSource StartAlgoEvent(string shutdownReason)
         {
             var cts = new CancellationTokenSource();
 
@@ -36,6 +39,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 if (t.IsCanceled)
                     return;
+
+                _userLogService.Enqueue(_settingsService.GetInstanceId(), shutdownReason);
+                await _log.WriteWarningAsync(nameof(MonitoringService), nameof(StartAlgoEvent),
+                            $"Algo instance event timed out and is being shut down with the following reason: {shutdownReason}");
 
                 // Try three times if an error occurs
                 for (var i = 0; i < 3; i++)
