@@ -169,11 +169,11 @@ namespace Lykke.AlgoStore.Algo
         {
         }
 
-        public string AssetPair { get; set; }
-        public CandleTimeInterval CandleInterval { get; set; }
-        public DateTime StartFrom { get; set; }
-        public DateTime EndOn { get; set; }
-        public double Volume { get; set; }
-        public string TradedAsset { get; set; }
+        public string AssetPair { get; }
+        public CandleTimeInterval CandleInterval { get; }
+        public DateTime StartFrom { get; }
+        public DateTime EndOn { get; }
+        public double Volume { get; }
+        public string TradedAsset { get; }
     }
 }
