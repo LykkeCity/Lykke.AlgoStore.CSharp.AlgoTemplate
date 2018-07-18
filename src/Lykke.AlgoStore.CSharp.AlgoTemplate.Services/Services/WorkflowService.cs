@@ -148,7 +148,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 _functionsService.WarmUp(warmupData);
 
-                var token = _monitoringService.StartAlgoEvent();
+                var token = _monitoringService.StartAlgoEvent(
+                    "The instance is being stopped because OnStartUp took too long to execute.");
 
                 _algo.OnStartUp(_functionsService.GetFunctionResults());
 
@@ -174,7 +175,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     // Allow time for all functions to recalculate before sending the event
                     Thread.Sleep(100);
 
-                    var token = _monitoringService.StartAlgoEvent();
+                    var token = _monitoringService.StartAlgoEvent(
+                        "The instance is being stopped because OnCandleReceived took too long to execute.");
 
                     _algo.OnCandleReceived(ctx);
 
@@ -196,7 +198,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 lock (_sync)
                 {
-                    var token = _monitoringService.StartAlgoEvent();
+                    var token = _monitoringService.StartAlgoEvent(
+                        "The instance is being stopped because OnQuoteReceived took too long to execute.");
 
                     _algo.OnQuoteReceived(ctx);
 
