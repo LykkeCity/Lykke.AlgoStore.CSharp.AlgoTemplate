@@ -131,9 +131,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<CandlesService>()
                 .As<ICandlesService>();
 
-            builder.RegisterType<FunctionInitializationService>()
-                .As<IFunctionInitializationService>();
-
             builder.RegisterHistoryClient(_settings.CurrentValue.HistoryServiceClient);
 
             builder.RegisterType<HistoryDataService>()
