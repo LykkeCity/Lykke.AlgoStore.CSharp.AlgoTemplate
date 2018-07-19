@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+﻿using Lykke.AlgoStore.Algo.Indicators;
+using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
@@ -12,6 +12,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         /// Get all the functions required to run an algo
         /// </summary>
         /// <returns></returns>
-        IList<IFunction> GetAllFunctions();
+        IList<IIndicator> GetAllFunctions();
     }
 }

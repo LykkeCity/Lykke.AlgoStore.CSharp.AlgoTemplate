@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 
@@ -16,7 +16,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private IFunctionInitializationService _functionInitializationService;
 
         // Fields:
-        private Dictionary<string, IFunction> _allFunctions;
+        private Dictionary<string, IIndicator> _allFunctions;
 
         /// <summary>
         /// Initializes new instance of <see cref="FunctionsService"/>
@@ -31,7 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public void Initialize()
         {
             // Initialize/Re-initialize the function instances and results
-            _allFunctions = new Dictionary<string, IFunction>();
+            _allFunctions = new Dictionary<string, IIndicator>();
 
             foreach (var function in _functionInitializationService.GetAllFunctions())
             {
@@ -48,10 +48,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 {
                     AuthToken = authToken,
                     RequestId = function.FunctionParameters.FunctionInstanceIdentifier,
-                    AssetPair = function.FunctionParameters.AssetPair,
-                    CandleInterval = function.FunctionParameters.CandleTimeInterval,
-                    StartFrom = function.FunctionParameters.StartingDate,
-                    EndOn = function.FunctionParameters.EndingDate
+                    AssetPair = function.AssetPair,
+                    CandleInterval = function.CandleTimeInterval,
+                    StartFrom = function.StartingDate,
+                    EndOn = function.EndingDate
                 };
             }
         }
@@ -90,8 +90,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var function = _allFunctions[functionId];
 
-                if (function.FunctionParameters.StartingDate > candlesResponse.Candle.DateTime ||
-                    function.FunctionParameters.EndingDate < candlesResponse.Candle.DateTime)
+                if (function.StartingDate > candlesResponse.Candle.DateTime ||
+                    function.EndingDate < candlesResponse.Candle.DateTime)
                     continue;
 
                 function.AddNewValue(candlesResponse.Candle);
@@ -103,7 +103,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return this;
         }
 
-        public T GetFunction<T>(string functionName) where T : IFunction
+        public T GetFunction<T>(string functionName) where T : IIndicator
         {
             if (!_allFunctions.ContainsKey(functionName))
                 return default(T);
@@ -111,7 +111,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return (T)_allFunctions[functionName];
         }
 
-        public IFunction GetFunction(string functionName)
+        public IIndicator GetFunction(string functionName)
         {
             if (!_allFunctions.ContainsKey(functionName))
                 return null;

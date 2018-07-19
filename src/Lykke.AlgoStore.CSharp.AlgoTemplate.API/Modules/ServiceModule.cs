@@ -14,10 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Dynamic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.Service.Logging.Client;
 using Lykke.AlgoStore.Service.History.Client;
 using Lykke.AlgoStore.Job.Stopping.Client;
+using Lykke.AlgoStore.Algo;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {

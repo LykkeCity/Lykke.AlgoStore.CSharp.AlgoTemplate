@@ -1,8 +1,8 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+﻿using Lykke.AlgoStore.Algo.Indicators;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -19,11 +19,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algoSettingsService = algoSettingsService;
         }
 
-        public IList<IFunction> GetAllFunctions()
+        public IList<IIndicator> GetAllFunctions()
         {
             var algoInstance = _algoSettingsService.GetAlgoInstance();
 
-            IList<IFunction> functions = new List<IFunction>();
+            IList<IIndicator> functions = new List<IIndicator>();
 
             if (algoInstance == null || algoInstance.AlgoMetaDataInformation.Functions == null)
                 return functions;
@@ -60,7 +60,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     }
                 }
 
-                var functionObject = (IFunction)Activator.CreateInstance(functionType, paramObject);
+                var functionObject = (IIndicator)Activator.CreateInstance(functionType, paramObject);
                 //functionObject.FunctionParameters.FunctionInstanceIdentifier = function.Id;
                 functions.Add(functionObject);
             }

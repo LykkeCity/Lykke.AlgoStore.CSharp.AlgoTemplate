@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services

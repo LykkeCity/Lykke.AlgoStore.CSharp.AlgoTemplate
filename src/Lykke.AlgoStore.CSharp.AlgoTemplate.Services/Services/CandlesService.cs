@@ -1,4 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
@@ -6,7 +7,6 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {

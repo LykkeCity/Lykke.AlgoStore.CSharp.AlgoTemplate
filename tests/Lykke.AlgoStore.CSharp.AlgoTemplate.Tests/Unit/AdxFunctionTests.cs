@@ -1,5 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -48,10 +48,31 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private readonly string _fileNameCorrectData = "Adx_Examples2.txt";
         public readonly string _fileNameNotFullData = "Adx_Examples.txt";
 
+        private ADX DefaultAdx => new ADX(
+            DEFAULT_PERCISION,
+            default(DateTime),
+            default(DateTime),
+            Models.Enumerators.CandleTimeInterval.Unspecified,
+            "");
+
+        private ATR DefaultAtr => new ATR(
+            DEFAULT_PERCISION,
+            default(DateTime),
+            default(DateTime),
+            Models.Enumerators.CandleTimeInterval.Unspecified,
+            "");
+
+        private DMI DefaultDmi => new DMI(
+            DEFAULT_PERCISION,
+            default(DateTime),
+            default(DateTime),
+            Models.Enumerators.CandleTimeInterval.Unspecified,
+            "");
+
         [Test]
         public void CalculateAdxWarmUp()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
+            var function = DefaultAdx;
             var values = GetTestCandles("Adx_Examples2.txt");
 
             double? adxValue = 0.0d;
@@ -66,7 +87,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxWarmUpBiggerData()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
+            var function = DefaultAdx;
             var values = GetTestCandles("Adx_Examples3.txt");
 
             double? adxValue = 0.0d;
@@ -83,7 +104,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxWarmUpAndAddTheRest()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
+            var function = DefaultAdx;
             var values = GetTestCandles("Adx_Examples2.txt").ToList();
 
             var valuesToWarmUp = values.GetRange(0, 28);
@@ -110,7 +131,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxWarmUpReturnNull()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
+            var function = DefaultAdx;
             var values = GetTestCandles(_fileNameNotFullData);
 
             double? adxValue = 0.0d;
@@ -122,7 +143,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateAdxAddNew()
         {
-            var function = new AdxFunction(new AdxParameters() { AdxPeriod = DEFAULT_PERCISION });
+            var function = DefaultAdx;
             var values = GetTestCandles(_fileNameCorrectData);
 
             double? adxValue = 0.0d;
@@ -139,7 +160,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateATRFunction()
         {
-            var function = new ATRFunction(new AtrParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultAtr;
             var values = GetTestCandles(_fileNameCorrectData);
 
             var atrValue = function.WarmUp(values);
@@ -152,7 +173,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateATRFunctionAddNew()
         {
-            var function = new ATRFunction(new AtrParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultAtr;
             var values = GetTestCandles(_fileNameCorrectData);
 
             double? atrValue = 0.0d;
@@ -170,10 +191,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIPlusFunction()
         {
-            var function = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultDmi;
             var values = GetTestCandles(_fileNameCorrectData);
 
-            var dmiPlusValue = function.WarmUp(values);
+            function.WarmUp(values);
+            var dmiPlusValue = function.UpwardDirectionalIndex;
 
             double valueToCheck = 19.26;
 
@@ -184,19 +206,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIPlusFunctionReturnNull()
         {
-            var function = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultDmi;
             var values = GetTestCandles(_fileNameNotFullData);
 
-            double? dmiPlues = 0.0d;
-
-            dmiPlues = function.WarmUp(values);
-            Assert.AreEqual(0.0d, dmiPlues.Value);
+            function.WarmUp(values);
+            Assert.AreEqual(0.0d, function.UpwardDirectionalIndex.Value);
         }
 
         [Test]
         public void CalculateDMIPlusFunctionAddNew()
         {
-            var function = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultDmi;
             var values = GetTestCandles(_fileNameCorrectData);
 
             double? dmiPlusValue = 0.0d;
@@ -209,13 +229,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             double valueToCheck = 19.26;
 
             Assert.NotNull(dmiPlusValue);
-            Assert.AreEqual(valueToCheck, Math.Round(dmiPlusValue.Value, 2));
+            Assert.AreEqual(valueToCheck, Math.Round(function.UpwardDirectionalIndex.Value, 2));
         }
 
         [Test]
         public void CalculateDMIPlusFunctionWarmUpAndAddTheRest()
         {
-            var function = new DirectionalMovementIndexPlusFunction(new DMIParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultDmi;
             var values = GetTestCandles("Adx_Examples2.txt").ToList();
 
             var valuesToWarmUp = values.GetRange(0, 15);
@@ -228,7 +248,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             dmiPlus = function.WarmUp(valuesToWarmUp);
 
             Assert.NotNull(dmiPlus);
-            Assert.AreEqual(valueFirstDMIPlusCheck, Math.Round(dmiPlus.Value, 2));
+            Assert.AreEqual(valueFirstDMIPlusCheck, Math.Round(function.UpwardDirectionalIndex.Value, 2));
 
             foreach (var val in valuesToAdd)
             {
@@ -236,13 +256,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             }
 
             Assert.NotNull(dmiPlus);
-            Assert.AreEqual(valueFinalDMIPlusToCheck, Math.Round(dmiPlus.Value, 2));
+            Assert.AreEqual(valueFinalDMIPlusToCheck, Math.Round(function.UpwardDirectionalIndex.Value, 2));
         }
 
         [Test]
         public void CalculateDMIMinusFunction()
         {
-            var function = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultDmi;
             var values = GetTestCandles(_fileNameCorrectData);
 
             var dmiMinusValue = function.WarmUp(values);
@@ -250,13 +270,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             double valueToCheck = 29.47;
 
             Assert.NotNull(dmiMinusValue);
-            Assert.AreEqual(valueToCheck, Math.Round(dmiMinusValue.Value, 2));
+            Assert.AreEqual(valueToCheck, Math.Round(function.DownwardDirectionalIndex.Value, 2));
         }
 
         [Test]
         public void CalculateDMIMinusFunctionAddNew()
         {
-            var function = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultDmi;
             var values = GetTestCandles(_fileNameCorrectData);
 
             double? dmiMinusValue = 0.0d;
@@ -269,13 +289,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             double valueToCheck = 29.47;
 
             Assert.NotNull(dmiMinusValue);
-            Assert.AreEqual(valueToCheck, Math.Round(dmiMinusValue.Value, 2));
+            Assert.AreEqual(valueToCheck, Math.Round(function.DownwardDirectionalIndex.Value, 2));
         }
 
         [Test]
         public void CalculateDMIMinusFunctionReturnNull()
         {
-            var function = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultDmi;
             var values = GetTestCandles(_fileNameNotFullData);
 
             double? dmiMinus = 0.0d;
@@ -287,7 +307,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateDMIMinusFunctionWarmUpAndAddTheRest()
         {
-            var function = new DirectionalMovementIndexMinusFunction(new DMIParameters() { Period = DEFAULT_PERCISION });
+            var function = DefaultDmi;
             var values = GetTestCandles("Adx_Examples2.txt").ToList();
 
             var valuesToWarmUp = values.GetRange(0, 15);
@@ -300,7 +320,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             dmiMinus = function.WarmUp(valuesToWarmUp);
 
             Assert.NotNull(dmiMinus);
-            Assert.AreEqual(valueFirstDMIMinusCheck, Math.Round(dmiMinus.Value, 2));
+            Assert.AreEqual(valueFirstDMIMinusCheck, Math.Round(function.DownwardDirectionalIndex.Value, 2));
 
             foreach (var val in valuesToAdd)
             {
@@ -308,7 +328,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             }
 
             Assert.NotNull(dmiMinus);
-            Assert.AreEqual(valueFinalDMIMinusToCheck, Math.Round(dmiMinus.Value, 2));
+            Assert.AreEqual(valueFinalDMIMinusToCheck, Math.Round(function.DownwardDirectionalIndex.Value, 2));
         }
     }
 }

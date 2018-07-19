@@ -1,6 +1,6 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Implemention;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.MACD;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
+using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Moq;
 using NUnit.Framework;
 
@@ -18,9 +18,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             algo.HoldingStep = 2;
             algo.Tolerance = 0.0025;
 
-            var macd = context.Functions.GetFunction<MacdFunction>("MACD");
+            var macd = context.Functions.GetFunction<MACD>("MACD");
 
-            algo.OnStartUp(context.Functions);
+            algo.OnStartUp();
 
             algo.OnCandleReceived(context);
             Assert.AreEqual(2, algo.Holdings);

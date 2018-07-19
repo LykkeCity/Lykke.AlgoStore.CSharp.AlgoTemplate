@@ -1,4 +1,6 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
@@ -10,9 +12,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {
@@ -98,22 +97,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             Assert.AreEqual(0, candleRequests.Count());
         }
 
-        private void AssertCandleRequest(IEnumerable<CandleServiceRequest> candleRequests, params Mock<IFunction>[] functions)
+        private void AssertCandleRequest(IEnumerable<CandleServiceRequest> candleRequests, params Mock<IIndicator>[] functions)
         {
             Assert.AreEqual(functions.Length, candleRequests.Count());
 
             foreach (var function in functions)
             {
-                var functionParams = function.Object.FunctionParameters;
+                var functionObj = function.Object;
                 var requestForFunction = candleRequests
-                    .FirstOrDefault(r => r.RequestId == functionParams.FunctionInstanceIdentifier);
+                    .FirstOrDefault(r => r.RequestId == functionObj.FunctionInstanceIdentifier);
                 Assert.NotNull(requestForFunction,
-                    $"Found request for function with id {functionParams.FunctionInstanceIdentifier}");
+                    $"Found request for function with id {functionObj.FunctionInstanceIdentifier}");
 
-                Assert.AreEqual(functionParams.FunctionInstanceIdentifier, requestForFunction.RequestId);
-                Assert.AreEqual(functionParams.AssetPair, requestForFunction.AssetPair);
-                Assert.AreEqual(functionParams.CandleTimeInterval, requestForFunction.CandleInterval);
-                Assert.AreEqual(functionParams.StartingDate, requestForFunction.StartFrom);
+                Assert.AreEqual(functionObj.FunctionInstanceIdentifier, requestForFunction.RequestId);
+                Assert.AreEqual(functionObj.AssetPair, requestForFunction.AssetPair);
+                Assert.AreEqual(functionObj.CandleTimeInterval, requestForFunction.CandleInterval);
+                Assert.AreEqual(functionObj.StartingDate, requestForFunction.StartFrom);
             }
         }
 
@@ -731,12 +730,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             FunctionInitializationService service = new FunctionInitializationService(algoSettingsService);
 
             var functions = service.GetAllFunctions();
-            var result = new List<IFunction>();
+            var result = new List<IIndicator>();
 
             Then_Data_ShouldBe_Equal(functions, result);
         }
 
-        private static void Then_Data_ShouldBe_Equal(IList<IFunction> first, IList<IFunction> second)
+        private static void Then_Data_ShouldBe_Equal(IList<IIndicator> first, IList<IIndicator> second)
         {
             string serializedFirst = JsonConvert.SerializeObject(first);
             string serializedSecond = JsonConvert.SerializeObject(second);
@@ -744,11 +743,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         }
 
 
-        private IList<IFunction> GetExampleFunctionResult()
+        private IList<IIndicator> GetExampleFunctionResult()
         {
-            var result = new List<IFunction>();
+            var result = new List<IIndicator>();
 
-            result.Add(new SmaFunction(
+            result.Add(new SMA(
                 new SmaParameters()
                 {
                     Capacity = 10,
@@ -820,16 +819,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             return service.Object;
         }
 
-        private FunctionsService CreateFunctionService(params IFunction[] functions)
+        private FunctionsService CreateFunctionService(params IIndicator[] functions)
         {
-            var functionInitializationService = new Mock<IFunctionInitializationService>();
+            var functionInitializationService = new Mock<IIndicatorInitializationService>();
             functionInitializationService.Setup(fis => fis.GetAllFunctions()).Returns(functions.ToList());
             return new FunctionsService(functionInitializationService.Object);
         }
 
-        private Mock<IFunction> CreateStrictFunctionMock(string functionId)
+        private Mock<IIndicator> CreateStrictFunctionMock(string functionId)
         {
-            var result = new Mock<IFunction>(MockBehavior.Strict);
+            var result = new Mock<IIndicator>(MockBehavior.Strict);
             result.SetupGet(f => f.FunctionParameters)
                   .Returns(new FunctionParamsBase()
                   {
@@ -838,13 +837,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             return result;
         }
 
-        private Mock<IFunction> CreateFunctionMockByParams(
+        private Mock<IIndicator> CreateFunctionMockByParams(
             string functionId,
             string assetPair,
             CandleTimeInterval candleTimeInterval,
             DateTime startFrom)
         {
-            var result = new Mock<IFunction>(MockBehavior.Strict);
+            var result = new Mock<IIndicator>(MockBehavior.Strict);
             result.SetupGet(f => f.FunctionParameters)
                   .Returns(new FunctionParamsBase()
                   {

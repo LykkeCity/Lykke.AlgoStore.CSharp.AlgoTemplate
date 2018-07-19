@@ -1,5 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
 using System;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention
@@ -10,13 +10,13 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
     /// </summary>
     public class DummyAlgo : BaseAlgo
     {
-        public SmaFunction _shortSma { get; set; }
-        public SmaFunction _longSma { get; set; }
+        public SMA _shortSma { get; set; }
+        public SMA _longSma { get; set; }
 
-        public override void OnStartUp(IFunctionProvider functions)
+        public override void OnStartUp()
         {
-            _shortSma = functions.GetFunction<SmaFunction>("SMA_Short");
-            _longSma = functions.GetFunction<SmaFunction>("SMA_Long");
+            _shortSma = SMA("SMA_Short");
+            _longSma = SMA("SMA_Long");
         }
 
         public override void OnQuoteReceived(IQuoteContext context)

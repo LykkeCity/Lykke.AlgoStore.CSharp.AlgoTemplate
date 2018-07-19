@@ -1,6 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.ResponseModels;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.ResponseModels.ErrorCodes;
+﻿using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Extensions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;

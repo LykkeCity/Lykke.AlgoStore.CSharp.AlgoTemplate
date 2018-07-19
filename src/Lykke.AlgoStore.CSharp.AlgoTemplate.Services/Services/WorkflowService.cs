@@ -1,4 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+﻿using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
@@ -151,7 +151,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 var token = _monitoringService.StartAlgoEvent(
                     "The instance is being stopped because OnStartUp took too long to execute.");
 
-                _algo.OnStartUp(_functionsService.GetFunctionResults());
+                _algo.OnStartUp();
 
                 token.Cancel();
             }

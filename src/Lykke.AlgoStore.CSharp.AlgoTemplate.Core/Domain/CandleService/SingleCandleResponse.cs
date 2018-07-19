@@ -1,4 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+﻿using Lykke.AlgoStore.Algo;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService
 {
