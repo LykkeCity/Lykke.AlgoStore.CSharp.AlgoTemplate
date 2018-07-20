@@ -32,6 +32,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ActionsService actions;
         private readonly object _sync = new object();
 
+        private bool _isWarmUpDone;
+
         public WorkflowService(
             IAlgoSettingsService algoSettingsService,
             IQuoteProviderService quoteProviderService,
@@ -77,8 +79,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             var authToken = _algoSettingsService.GetAuthToken();
 
-            // Function service initialization.
-            _functionsService.Initialize();
+            var token = _monitoringService.StartAlgoEvent(
+                "The instance is being stopped because OnStartUp took too long to execute.");
+
+            _algo.OnStartUp();
+
+            token.Cancel();
+
             var candleServiceCandleRequests = _functionsService.GetCandleRequests(authToken).ToList();
 
             // TODO: Replace this with actual algo metadata once it's implemented
@@ -148,12 +155,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 _functionsService.WarmUp(warmupData);
 
-                var token = _monitoringService.StartAlgoEvent(
-                    "The instance is being stopped because OnStartUp took too long to execute.");
-
-                _algo.OnStartUp();
-
-                token.Cancel();
+                _isWarmUpDone = true;
             }
         }
 
@@ -170,7 +172,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 _functionsService.Recalculate(candleUpdates);
 
-                if (algoCandle != null)
+                if (_isWarmUpDone && algoCandle != null)
                 {
                     // Allow time for all functions to recalculate before sending the event
                     Thread.Sleep(100);
@@ -257,16 +259,28 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             Type parameterType = _algo.GetType();
 
+            var baseAlgo = parameterType.BaseType;
+            baseAlgo.GetField("_paramProvider", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(_algo, _functionsService);
+
             foreach (var parameter in algoInstance.AlgoMetaDataInformation.Parameters)
             {
-                PropertyInfo prop = parameterType.GetProperty(parameter.Key);
+                var currentType = parameterType;
+                FieldInfo field = null;
 
-                if (prop != null && prop.CanWrite)
+                while (field == null && currentType != null)
                 {
-                    if (prop.PropertyType.IsEnum)
-                        prop.SetValue(_algo, Enum.ToObject(prop.PropertyType, Convert.ToInt32(parameter.Value)), null);
+                    field = currentType
+                        .GetField($"<{parameter.Key}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+                    currentType = currentType.BaseType;
+                }
+
+                if (field != null)
+                {
+                    if (field.FieldType.IsEnum)
+                        field.SetValue(_algo, Enum.ToObject(field.FieldType, Convert.ToInt32(parameter.Value)));
                     else
-                        prop.SetValue(_algo, Convert.ChangeType(parameter.Value, prop.PropertyType), null);
+                        field.SetValue(_algo, Convert.ChangeType(parameter.Value, field.FieldType));
                 }
             }
         }
