@@ -28,6 +28,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateMacd_ForNullInput_ThrowsException()
         {
             var function = DefaultMacd;
+
             double[] values = null;
 
             Assert.Throws<ArgumentNullException>(() => function.WarmUp(values));
@@ -38,6 +39,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var function = DefaultMacd;
 
+            // Temporary, should be removed once the properties become immutable
+            function.FastEmaPeriod = DEFAULT_PERIOD_FAST;
+            function.SlowEmaPeriod = DEFAULT_PERIOD_SLOW;
+            function.SignalLinePeriod = DEFAULT_PERIOD_SIGNAL;
+
             var result = function.WarmUp(FixedPriceValues);
 
             Assert.AreEqual(0.5, result);
@@ -47,6 +53,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateMacd_ForPartialWarmupThenAddRest_ReturnsCorrectResult()
         {
             var function = DefaultMacd;
+
+            // Temporary, should be removed once the properties become immutable
+            function.FastEmaPeriod = DEFAULT_PERIOD_FAST;
+            function.SlowEmaPeriod = DEFAULT_PERIOD_SLOW;
+            function.SignalLinePeriod = DEFAULT_PERIOD_SIGNAL;
 
             function.WarmUp(FixedPriceValues.Take(1).ToArray());
             function.AddNewValue(FixedPriceValues[1]);

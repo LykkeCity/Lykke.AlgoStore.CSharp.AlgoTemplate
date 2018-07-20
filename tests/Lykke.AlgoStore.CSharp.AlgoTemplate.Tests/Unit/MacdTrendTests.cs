@@ -80,8 +80,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             paramProviderMock.Setup(m => m.RegisterIndicator("MACD", It.IsAny<IIndicator>()))
                 .Callback((string name, IIndicator indicator) =>
                 {
-                    ((AbstractIndicator)indicator).WarmUp(new double[] { 500, 500, 500, 500, 500, 530 });
-                    macdCallback((MACD)indicator);
+                    var macd = (MACD)indicator;
+
+                    // Temporary, should be removed once the properties become immutable
+                    macd.FastEmaPeriod = 1;
+                    macd.SlowEmaPeriod = 2;
+                    macd.SignalLinePeriod = 2;
+
+                    macd.WarmUp(new double[] { 500, 500, 500, 500, 500, 530 });
+                    macdCallback(macd);
                 });
 
             field.SetValue(algo, paramProviderMock.Object);
