@@ -1,4 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+﻿using Common.Log;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.AlgoStore.Job.Stopping.Client;
 using Lykke.AlgoStore.Job.Stopping.Client.Models.ResponseModels;
@@ -23,9 +24,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var monitoringService = new MonitoringService(
                 settingsServiceMock.Object,
                 stoppingClientMock.Object,
+                Mock.Of<IUserLogService>(),
+                Mock.Of<ILog>(),
                 TimeSpan.FromMilliseconds(500));
 
-            monitoringService.StartAlgoEvent();
+            monitoringService.StartAlgoEvent("");
 
             await Task.Delay(1000);
 
@@ -39,9 +42,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var monitoringService = new MonitoringService(
                 Mock.Of<IAlgoSettingsService>(),
                 Given_Failing_InstanceStoppingClient(),
+                Mock.Of<IUserLogService>(),
+                Mock.Of<ILog>(),
                 TimeSpan.FromMilliseconds(500));
 
-            monitoringService.StartAlgoEvent().Cancel();
+            monitoringService.StartAlgoEvent("").Cancel();
 
             await Task.Delay(1000);
         }

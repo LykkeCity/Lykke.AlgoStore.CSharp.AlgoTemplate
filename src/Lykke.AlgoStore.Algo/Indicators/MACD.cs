@@ -13,10 +13,6 @@ namespace Lykke.AlgoStore.Algo.Indicators
         private EMA _fastEma;
         private EMA _signalLine;
 
-        private int _slowEmaPeriod;
-        private int _fastEmaPeriod;
-        private int _signalLinePeriod;
-
         private double? _currentValue;
 
         /// <summary>
@@ -84,9 +80,9 @@ namespace Lykke.AlgoStore.Algo.Indicators
             CandleOperationMode candleOperationMode)
             : base(startingDate, endingDate, candleTimeInterval, assetPair, candleOperationMode)
         {
-            _fastEmaPeriod = fastEmaPeriod;
-            _slowEmaPeriod = slowEmaPeriod;
-            _signalLinePeriod = signalLinePeriod;
+            SetEmaPeriod(fastEmaPeriod, ref _fastEma);
+            SetEmaPeriod(slowEmaPeriod, ref _slowEma);
+            SetEmaPeriod(signalLinePeriod, ref _signalLine);
         }
 
         /// <summary>

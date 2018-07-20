@@ -1,4 +1,4 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.ResponseModels.ErrorCodes;
+﻿using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions

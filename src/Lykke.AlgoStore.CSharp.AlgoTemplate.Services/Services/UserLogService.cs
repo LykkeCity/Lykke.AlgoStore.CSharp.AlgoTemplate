@@ -46,7 +46,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _maxBatchLifetime = maxBatchLifetime;
             _userLogClient = userLogClient;
             _algoSettingsService = algoSettingsService;
-            _algoSettingsService.Initialize();
 
             _batchBlock = new BatchBlock<UserLogRequest>(batchSizeThreshold);
 

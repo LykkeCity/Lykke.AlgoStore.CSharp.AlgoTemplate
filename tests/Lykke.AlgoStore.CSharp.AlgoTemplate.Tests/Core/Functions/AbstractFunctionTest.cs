@@ -1,19 +1,17 @@
-﻿using NUnit.Framework;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
-using static Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions.AbstractFunction;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
 {
     [TestFixture]
     public class AbstractFunctionTest
     {
-        private class AbstractFunctionUnderTestImpl : AbstractFunction
+        private class AbstractFunctionUnderTestImpl : AbstractIndicator
         {
-            private FunctionParamsBase _functionParams = new FunctionParamsBase();
             private double? _latestAddNewValue;
             private double[] _latestWarmUp;
             private double? _latestValue;
@@ -21,15 +19,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
             public Action<double[]> WarmupAction { get; set; }
             public Action<double> AddNewValueAction { get; set; }
 
-            public override FunctionParamsBase FunctionParameters => _functionParams;
             public double? LatestAddNewValue => _latestAddNewValue;
             public double[] LatestWarmUp => _latestWarmUp;
             public override double? Value => _latestValue;
             public override bool IsReady => Value != null;
 
-            public AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue candleValue)
+            public AbstractFunctionUnderTestImpl(CandleOperationMode candleValue)
+                : base(
+                     default(DateTime), 
+                     default(DateTime), 
+                     Models.Enumerators.CandleTimeInterval.Unspecified,
+                     "",
+                     candleValue)
             {
-                _functionParams.CandleOperationMode = candleValue;
             }
 
             public override double? AddNewValue(double value)
@@ -59,7 +61,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void WarmUp_CandleValues_Open()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.OPEN);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.OPEN);
             var warmupData = CreateCandlesList(2);
 
             function.WarmUp(warmupData);
@@ -74,7 +76,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void WarmUp_CandleValues_Close()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.CLOSE);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.CLOSE);
             var warmupData = CreateCandlesList(2);
 
             function.WarmUp(warmupData);
@@ -89,7 +91,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void WarmUp_CandleValues_Low()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.LOW);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.LOW);
             var warmupData = CreateCandlesList(2);
 
             function.WarmUp(warmupData);
@@ -104,7 +106,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void WarmUp_CandleValues_High()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.HIGH);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.HIGH);
             var warmupData = CreateCandlesList(2);
 
             function.WarmUp(warmupData);
@@ -119,8 +121,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void WarmUp_CanInvokeWithAllCandleValues()
         {
-            var allSupportedCandleValues = Enum.GetValues(typeof(FunctionParamsBase.CandleValue))
-                .Cast<FunctionParamsBase.CandleValue>();
+            var allSupportedCandleValues = Enum.GetValues(typeof(CandleOperationMode))
+                .Cast<CandleOperationMode>();
 
             var warmupData = CreateCandlesList(2);
 
@@ -136,7 +138,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void WarmUp_WhenInvokedWith_EmptyList()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.OPEN);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.OPEN);
             var warmupData = new List<Candle>();
 
             function.WarmUp(warmupData);
@@ -148,7 +150,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void WarmUp_WhenInvokedWith_Null()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.OPEN);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.OPEN);
 
             function.WarmUp((List<Candle>)null);
 
@@ -161,15 +163,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         {
             var exceptionThrownWhileAddingNewValue =
                 new Exception("Some exception is thrown during warm-up");
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.OPEN)
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.OPEN)
             {
                 WarmupAction = x => throw exceptionThrownWhileAddingNewValue
             };
 
             var invokedWith = new List<Candle>();
-            var ex = Assert.Throws<WarmUpException>(() => function.WarmUp(invokedWith));
+            var ex = Assert.Throws<AbstractIndicator.WarmUpException>(() => function.WarmUp(invokedWith));
             Assert.That(ex.Message, Is.EqualTo("Exception thrown while warming up function 'AbstractFunctionUnderTestImpl'"));
-            Assert.That(ex.FunctionParameters, Is.EqualTo(function.FunctionParameters));
             Assert.That(ex.ValueInvokedWith, Is.EqualTo(invokedWith));
             Assert.That(ex.InnerException, Is.EqualTo(exceptionThrownWhileAddingNewValue));
         }
@@ -177,7 +178,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void AddNewValue_CandleValues_Open()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.OPEN);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.OPEN);
             var addNewValueData = CreateCandle();
 
             function.AddNewValue(addNewValueData);
@@ -188,7 +189,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void AddNewValue_CandleValues_Close()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.CLOSE);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.CLOSE);
             var addNewValueData = CreateCandle();
 
             function.AddNewValue(addNewValueData);
@@ -199,7 +200,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void AddNewValue_CandleValues_Low()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.LOW);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.LOW);
             var addNewValueData = CreateCandle();
 
             function.AddNewValue(addNewValueData);
@@ -210,7 +211,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void AddNewValue_CandleValues_High()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.HIGH);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.HIGH);
             var addNewValueData = CreateCandle();
 
             function.AddNewValue(addNewValueData);
@@ -221,8 +222,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void AddNewValue_CanInvokeWithAllCandleValues()
         {
-            var allSupportedCandleValues = Enum.GetValues(typeof(FunctionParamsBase.CandleValue))
-                .Cast<FunctionParamsBase.CandleValue>();
+            var allSupportedCandleValues = Enum.GetValues(typeof(CandleOperationMode))
+                .Cast<CandleOperationMode>();
 
             var addNewValueData = CreateCandle();
 
@@ -237,11 +238,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         [Test]
         public void AddNewValue_WhenInvokedWith_Null()
         {
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.OPEN);
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.OPEN);
 
-            var ex = Assert.Throws<AddNewValueException>(() => function.AddNewValue(null));
+            var ex = Assert.Throws<AbstractIndicator.AddNewValueException>(() => function.AddNewValue(null));
             Assert.That(ex.Message, Is.EqualTo("Invalid value of null provided for add new value"));
-            Assert.That(ex.FunctionParameters, Is.EqualTo(function.FunctionParameters));
             Assert.That(ex.ValueInvokedWith, Is.EqualTo(null));
         }
 
@@ -251,15 +251,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Core.Functions
         {
             var exceptionThrownWhileAddingNewValue =
                 new Exception("Some exception is thrown during add new value evaluation");
-            var function = new AbstractFunctionUnderTestImpl(FunctionParamsBase.CandleValue.OPEN)
+            var function = new AbstractFunctionUnderTestImpl(CandleOperationMode.OPEN)
             {
                 AddNewValueAction = x => throw exceptionThrownWhileAddingNewValue
             };
 
             var invokedWith = new Candle();
-            var ex = Assert.Throws<AddNewValueException>(() => function.AddNewValue(invokedWith));
+            var ex = Assert.Throws<AbstractIndicator.AddNewValueException>(() => function.AddNewValue(invokedWith));
             Assert.That(ex.Message, Is.EqualTo("Exception thrown while adding new value for a function 'AbstractFunctionUnderTestImpl'"));
-            Assert.That(ex.FunctionParameters, Is.EqualTo(function.FunctionParameters));
             Assert.That(ex.ValueInvokedWith, Is.EqualTo(invokedWith));
             Assert.That(ex.InnerException, Is.EqualTo(exceptionThrownWhileAddingNewValue));
         }

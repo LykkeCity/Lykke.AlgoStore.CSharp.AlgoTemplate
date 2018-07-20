@@ -2,11 +2,11 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using System;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 using Lykke.AlgoStore.Service.History.Client;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Rest;
+using Lykke.AlgoStore.Algo;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {

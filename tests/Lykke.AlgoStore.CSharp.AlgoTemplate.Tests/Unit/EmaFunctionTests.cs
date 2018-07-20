@@ -1,8 +1,8 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
+﻿using Lykke.AlgoStore.Algo.Indicators;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using NUnit.Framework;
 using System;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.EMA;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -13,11 +13,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private static readonly double[] FixedPriceValues = { 10, 15, 5, 10, 2, 5, 10 };
         private const int DEFAULT_PERIOD = 3;
 
+        private EMA DefaultEma => new EMA(
+            DEFAULT_PERIOD,
+            default(DateTime),
+            default(DateTime),
+            Models.Enumerators.CandleTimeInterval.Unspecified,
+            "",
+            AlgoStore.Algo.CandleOperationMode.CLOSE);
+
         [Test]
         public void CalculateEmaForEmptyInputAndReturnNull()
         {
             var values = new double[] { };
-            var function = new EmaFunction(new EmaParameters() { EmaPeriod = DEFAULT_PERIOD });
+            var function = DefaultEma;
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -29,7 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateEmaForNullInputAndReturnException()
         {
             double[] values = null;
-            var function = new EmaFunction(new EmaParameters() { EmaPeriod = DEFAULT_PERIOD });
+            var function = DefaultEma;
 
             Assert.Throws<ArgumentException>(() => function.WarmUp(values));
         }
@@ -39,7 +47,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             double[] values = FixedPriceValues.Take(3).ToArray();
 
-            var function = new EmaFunction(new EmaParameters() { EmaPeriod = DEFAULT_PERIOD });
+            var function = DefaultEma;
             var warmupValue = function.WarmUp(values);
 
             Assert.AreEqual(10, warmupValue);
@@ -51,7 +59,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             double[] values = FixedPriceValues.Take(3).ToArray();
 
-            var function = new EmaFunction(new EmaParameters() { EmaPeriod = DEFAULT_PERIOD });
+            var function = DefaultEma;
             var warmupValue = function.WarmUp(values);
 
             Assert.AreEqual(10, warmupValue);
@@ -67,7 +75,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             double[] values = FixedPriceValues.Take(4).ToArray();
 
-            var function = new EmaFunction(new EmaParameters() { EmaPeriod = DEFAULT_PERIOD });
+            var function = DefaultEma;
             var warmupValue = function.WarmUp(values);
 
             Assert.AreEqual(10, warmupValue);
@@ -82,7 +90,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             double[] values = FixedPriceValues.Take(1).ToArray();
 
-            var function = new EmaFunction(new EmaParameters() { EmaPeriod = DEFAULT_PERIOD });
+            var function = DefaultEma;
             var warmupValue = function.WarmUp(values);
 
             Assert.AreEqual(null, warmupValue);

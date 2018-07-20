@@ -1,8 +1,11 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Implemention;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.MACD;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
+using Lykke.AlgoStore.CSharp.Algo.Implemention;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Reflection;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -14,13 +17,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var context = CreateContextMock();
             var algo = new MacdTrendAlgo();
+            MACD macd = null;
+
+            SetUpAlgo(algo, (m) => macd = m);
 
             algo.HoldingStep = 2;
             algo.Tolerance = 0.0025;
 
-            var macd = context.Functions.GetFunction<MacdFunction>("MACD");
-
-            algo.OnStartUp(context.Functions);
+            algo.OnStartUp();
 
             algo.OnCandleReceived(context);
             Assert.AreEqual(2, algo.Holdings);
@@ -41,23 +45,53 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             candleContextMock.SetupGet(c => c.Actions)
                 .Returns(Mock.Of<ICandleActions>());
 
-            var macd = new MacdFunction(new MacdParameters
-            {
-                FastEmaPeriod = 1,
-                SlowEmaPeriod = 2,
-                SignalLinePeriod = 2
-            });
-
-            macd.WarmUp(new double[] { 500, 500, 500, 500, 500, 530 });
-
-            var functionsMock = new Mock<IFunctionProvider>();
-            functionsMock.Setup(c => c.GetFunction<MacdFunction>("MACD"))
-                .Returns(macd);
-
-            candleContextMock.Setup(c => c.Functions)
-                .Returns(functionsMock.Object);
-
             return candleContextMock.Object;
+        }
+
+        private void SetUpAlgo(MacdTrendAlgo algo, Action<MACD> macdCallback)
+        {
+            var field = algo.GetType()
+                            .BaseType
+                            .GetField("_paramProvider", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            var paramProviderMock = new Mock<IIndicatorManager>(MockBehavior.Strict);
+
+            paramProviderMock.Setup(m => m.GetParam<DateTime>("MACD", It.IsAny<string>()))
+                .Returns(default(DateTime));
+
+            paramProviderMock.Setup(m => m.GetParam<CandleTimeInterval>("MACD", It.IsAny<string>()))
+                .Returns(default(CandleTimeInterval));
+
+            paramProviderMock.Setup(m => m.GetParam<CandleOperationMode>("MACD", It.IsAny<string>()))
+                .Returns(default(CandleOperationMode));
+
+            paramProviderMock.Setup(m => m.GetParam<string>("MACD", It.IsAny<string>()))
+                .Returns("");
+
+            paramProviderMock.Setup(m => m.GetParam<int>("MACD", "fastEmaPeriod"))
+                .Returns(1);
+
+            paramProviderMock.Setup(m => m.GetParam<int>("MACD", "slowEmaPeriod"))
+                .Returns(2);
+
+            paramProviderMock.Setup(m => m.GetParam<int>("MACD", "signalLinePeriod"))
+                .Returns(2);
+
+            paramProviderMock.Setup(m => m.RegisterIndicator("MACD", It.IsAny<IIndicator>()))
+                .Callback((string name, IIndicator indicator) =>
+                {
+                    var macd = (MACD)indicator;
+
+                    // Temporary, should be removed once the properties become immutable
+                    macd.FastEmaPeriod = 1;
+                    macd.SlowEmaPeriod = 2;
+                    macd.SignalLinePeriod = 2;
+
+                    macd.WarmUp(new double[] { 500, 500, 500, 500, 500, 530 });
+                    macdCallback(macd);
+                });
+
+            field.SetValue(algo, paramProviderMock.Object);
         }
     }
 }

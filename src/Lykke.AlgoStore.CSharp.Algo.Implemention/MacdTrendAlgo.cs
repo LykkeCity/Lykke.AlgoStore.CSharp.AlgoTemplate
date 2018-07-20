@@ -1,5 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.MACD;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 {
@@ -8,14 +8,14 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
         public double HoldingStep { get; set; }
         public double Tolerance { get; set; }
 
-        private MacdFunction _macd;
+        private MACD _macd;
         private double _holdings;
 
         public double Holdings => _holdings;
 
-        public override void OnStartUp(IFunctionProvider functions)
+        public override void OnStartUp()
         {
-            _macd = functions.GetFunction<MacdFunction>("MACD");
+            _macd = MACD("MACD");
         }
 
         public override void OnCandleReceived(ICandleContext context)

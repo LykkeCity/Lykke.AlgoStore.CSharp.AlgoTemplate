@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions" Version="1.0.15" />
+    <PackageReference Include="Lykke.AlgoStore.Algo" Version="1.0.18" />
     <PackageReference Include="Lykke.AlgoStore.Job.Stopping.Client" Version="1.0.5" />
     <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.15" />
     <PackageReference Include="Lykke.AlgoStore.Service.History.Client" Version="1.0.2" />
