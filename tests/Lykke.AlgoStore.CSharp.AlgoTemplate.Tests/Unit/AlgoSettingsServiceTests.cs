@@ -29,9 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "");
 
-            var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
-
-            Assert.Throws<ArgumentException>(settingsService.Initialize);
+            Assert.Throws<ArgumentException>(() => new AlgoSettingsService(Given_AlgoClientInstance_Repository()));
         }
 
         [Test]
@@ -58,18 +56,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var result = settingsService.GetSetting("AlgoId");
 
             Assert.AreEqual(result, "123456");
-        }
-
-        [Test]
-        public void IsAlive_ForNonInitializedService_ShouldReturnFalse()
-        {
-            Environment.SetEnvironmentVariable("ALGO_INSTANCE_PARAMS", "{ \"AlgoId\": \"123456\", \"InstanceId\": \"654321\", \"InstanceType\": \"Live\" }");
-
-            var settingsService = new AlgoSettingsService(Given_AlgoClientInstance_Repository());
-
-            var result = settingsService.IsAlive();
-
-            Assert.AreEqual(result, false);
         }
 
         [Test]

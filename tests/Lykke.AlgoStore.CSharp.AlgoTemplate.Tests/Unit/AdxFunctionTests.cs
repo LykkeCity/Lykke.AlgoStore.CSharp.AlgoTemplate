@@ -301,7 +301,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             double? dmiMinus = 0.0d;
 
             dmiMinus = function.WarmUp(values);
-            Assert.IsNull(dmiMinus);
+            Assert.AreEqual(0.0d, dmiMinus);
         }
 
         [Test]

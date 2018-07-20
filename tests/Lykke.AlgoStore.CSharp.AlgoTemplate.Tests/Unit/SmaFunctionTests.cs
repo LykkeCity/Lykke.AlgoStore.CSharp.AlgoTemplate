@@ -13,19 +13,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private static readonly double[] FixedPriceValues = { 11, 12, 13, 14, 15, 16, 17 };
         private const int DEFAULT_PERCISION = 10;
 
-        private SMA DefaultSma => new SMA(
-            DEFAULT_PERCISION,
-            default(DateTime),
-            default(DateTime),
-            Models.Enumerators.CandleTimeInterval.Unspecified,
-            "",
-            AlgoStore.Algo.CandleOperationMode.CLOSE);
+        private SMA DefaultSma(int precision = DEFAULT_PERCISION)
+        {
+            return new SMA(
+                precision,
+                default(DateTime),
+                default(DateTime),
+                Models.Enumerators.CandleTimeInterval.Unspecified,
+                "",
+                AlgoStore.Algo.CandleOperationMode.CLOSE);
+        }
 
         [Test]
         public void CalculateSmaForEmptyInputAndOneAddedValueReturnsThatValue()
         {
             var values = new double[] { };
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -43,7 +46,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSmaForEmptyInputAndTwoAddedValueReturnsAverageValue()
         {
             var values = new double[] { };
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -63,7 +66,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSmaForEmptyInputAndThreeAddedValueReturnsAverageValue()
         {
             var values = new double[] { };
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -85,7 +88,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSmaForEmptyInputReturnsZero()
         {
             var values = new double[] { };
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -99,7 +102,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSmaForOneValueInputReturnsThatValue()
         {
             var values = FixedPriceValues.Take(1).ToArray();
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -113,7 +116,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSmaForTwoValuesInputReturnsAverageValue()
         {
             var values = FixedPriceValues.Take(2).ToArray();
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -127,7 +130,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSmaForThreeValuesInputReturnsAverageValue()
         {
             var values = FixedPriceValues.Take(3).ToArray();
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -142,7 +145,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var percision = 1;
             var values = FixedPriceValues.Take(percision).ToArray();
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -160,7 +163,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSmaForOneValueInputAndMultipleAddedValuesReturnsAverageValue()
         {
             var values = FixedPriceValues.Take(1).ToArray();
-            var function = DefaultSma;
+            var function = DefaultSma(0);
 
             function.WarmUp(values);
             function.AddNewValue(12);
@@ -177,7 +180,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSma_WhenExceedingPercision_With1_Warmup()
         {
             var values = FixedPriceValues.Take(2).ToArray();
-            var function = DefaultSma;
+            var function = DefaultSma(1);
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -190,22 +193,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateSma_WhenExceedingPercision_With2_Warmup()
         {
-            var values = FixedPriceValues.Take(3).ToArray();
-            var function = DefaultSma;
+            var values = FixedPriceValues.Take(2).ToArray();
+            var function = DefaultSma(2);
 
             // Warming up
             var warmupValue = function.WarmUp(values);
-            Assert.AreEqual(12.5, warmupValue);
+            Assert.AreEqual(11.5, warmupValue);
 
             var sma = function.GetSmaValue();
-            Assert.AreEqual(12.5, sma);
+            Assert.AreEqual(11.5, sma);
         }
 
         [Test]
         public void CalculateSma_WhenExceedingPercision_With3_Warmup()
         {
             var values = FixedPriceValues.Take(4).ToArray();
-            var function = DefaultSma;
+            var function = DefaultSma(3);
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -219,7 +222,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void CalculateSma_WhenExceedingPercision_AddinNewValues()
         {
             var values = FixedPriceValues.Take(1).ToArray();
-            var function = DefaultSma;
+            var function = DefaultSma(3);
 
             // Warming up
             var warmupValue = function.WarmUp(values);
@@ -242,7 +245,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void SmaFunction_AddNewValue_RunsCorrectlyWithoutWarmup()
         {
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             var result = function.AddNewValue(1);
 
@@ -252,7 +255,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void SmaFunction_Value_ReturnsCorrectlyWithoutWarmup()
         {
-            var function = DefaultSma;
+            var function = DefaultSma();
 
             var result = function.Value;
 

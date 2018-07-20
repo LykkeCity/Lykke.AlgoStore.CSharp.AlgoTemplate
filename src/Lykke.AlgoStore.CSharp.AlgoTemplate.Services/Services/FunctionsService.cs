@@ -52,7 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 yield return new CandleServiceRequest()
                 {
                     AuthToken = authToken,
-                    RequestId = _indicatorData[kvp.Key].Id,
+                    RequestId = kvp.Key,
                     AssetPair = function.AssetPair,
                     CandleInterval = function.CandleTimeInterval,
                     StartFrom = function.StartingDate,
