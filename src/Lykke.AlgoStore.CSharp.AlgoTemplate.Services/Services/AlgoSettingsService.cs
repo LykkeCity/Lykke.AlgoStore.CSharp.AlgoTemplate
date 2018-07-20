@@ -36,10 +36,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
         {
             _algoClientInstanceMetadataRepository = algoClientInstanceMetadataRepository;
-        }
 
-        public void Initialize()
-        {
             _settingsJson = Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS");
 
             if (String.IsNullOrEmpty(_settingsJson))
@@ -54,6 +51,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _tradedAssetId = GetAlgoInstanceTradedAssetId();
             _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType), GetSetting("InstanceType"));
             _isAlive = true;
+        }
+
+        public void Initialize()
+        {
+            
         }
 
         public string GetSetting(string key)
