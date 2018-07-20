@@ -17,9 +17,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         private string _settingsJson;
         private IDictionary<string, object> _settings;
-        private bool _isAlive;
 
-        public bool IsAlive() => _isAlive;
         private readonly IAlgoClientInstanceRepository _algoClientInstanceMetadataRepository;
         private string _authToken;
         private string _instanceId;
@@ -50,7 +48,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _authToken = GetSetting("AuthToken");
             _tradedAssetId = GetAlgoInstanceTradedAssetId();
             _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType), GetSetting("InstanceType"));
-            _isAlive = true;
         }
 
         public void Initialize()

@@ -61,9 +61,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public Task StartAsync()
         {
-            // read settings/metadata/env. var
-            _algoSettingsService.Initialize();
-
             var algoInstance = _algoSettingsService.GetAlgoInstance();
             var isBacktest = _algoSettingsService.GetSetting("InstanceType") == AlgoInstanceType.Test.ToString();
 
