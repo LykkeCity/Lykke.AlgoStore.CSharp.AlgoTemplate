@@ -19,8 +19,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         // Fields:
         private readonly AlgoMetaDataInformation _algoMetaData;
-        private Dictionary<string, IIndicator> _allFunctions;
-        private Dictionary<string, AlgoMetaDataFunction> _indicatorData;
+        private readonly Dictionary<string, IIndicator> _allFunctions = new Dictionary<string, IIndicator>();
+        private readonly Dictionary<string, AlgoMetaDataFunction> _indicatorData 
+            = new Dictionary<string, AlgoMetaDataFunction>();
 
         /// <summary>
         /// Initializes new instance of <see cref="FunctionsService"/>
@@ -32,6 +33,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             _algoSettingsService = algoSettingsService;
             _algoMetaData = _algoSettingsService.GetAlgoInstance().AlgoMetaDataInformation;
+
+            foreach(var indicator in _algoMetaData.Functions)
+                _indicatorData.Add(indicator.Id, indicator);
         }
 
         // This is now obsolete - indicators are created through BaseAlgo
@@ -152,7 +156,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     $"An indicator with the name \"{name}\" is already registered");
 
             _allFunctions.Add(name, indicator);
-            _indicatorData.Add(name, _algoMetaData.Functions.FirstOrDefault(f => f.Id == name));
         }
     }
 }
