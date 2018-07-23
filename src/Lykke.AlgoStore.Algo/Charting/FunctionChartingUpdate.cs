@@ -9,6 +9,7 @@ namespace Lykke.AlgoStore.Algo.Charting
         public string FunctionName { get; set; }
         public double Value { get; set; }
         public string InstanceId { get; set; }
+        public DateTime CalculatedOn { get; set; }
         public List<FunctionChartingUpdate> InnerFunctions { get; set; }
     }
 }
