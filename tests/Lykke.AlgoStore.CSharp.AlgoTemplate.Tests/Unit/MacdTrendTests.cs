@@ -82,11 +82,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 {
                     var macd = (MACD)indicator;
 
-                    // Temporary, should be removed once the properties become immutable
-                    macd.FastEmaPeriod = 1;
-                    macd.SlowEmaPeriod = 2;
-                    macd.SignalLinePeriod = 2;
-
                     macd.WarmUp(new double[] { 500, 500, 500, 500, 500, 530 });
                     macdCallback(macd);
                 });
