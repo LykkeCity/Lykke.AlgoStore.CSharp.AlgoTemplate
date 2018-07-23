@@ -50,12 +50,12 @@ namespace Lykke.AlgoStore.Algo.Indicators
         /// <summary>
         /// The fast moving EMA period
         /// </summary>
-        public int FastEmaPeriod => _slowEma.Period;
+        public int FastEmaPeriod => _fastEma.Period;
 
         /// <summary>
         /// The signal line EMA period
         /// </summary>
-        public int SignalLinePeriod => _slowEma.Period;
+        public int SignalLinePeriod => _signalLine.Period;
 
         public MACD(
             int fastEmaPeriod,
