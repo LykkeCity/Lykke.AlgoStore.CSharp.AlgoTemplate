@@ -126,9 +126,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             {
                 try
                 {
-                    history = await _historyClient.GetCandles(_currentTimestamp, _nextTimestamp,
-                                                              _candlesHistoryRequest.IndicatorName,
-                                                              _candlesHistoryRequest.AuthToken);
+                    history = await _historyClient.GetCandles(
+                        _currentTimestamp, _nextTimestamp,
+                        _candlesHistoryRequest.AssetPair,
+                        (Service.History.Client.Models.CandleTimeInterval)_candlesHistoryRequest.Interval,
+                        _candlesHistoryRequest.IndicatorName,
+                        _candlesHistoryRequest.AuthToken);
 
                     _buffer = history.ToList();
                     _currentIndex = 0;
