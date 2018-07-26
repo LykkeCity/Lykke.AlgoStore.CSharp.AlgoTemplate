@@ -52,6 +52,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _tableSummary.InsertOrMergeAsync(entity);
         }
 
+        public async Task DeleteSummaryAsync(string instanceId)
+        {
+            await _tableSummary.DeleteIfExistAsync(GeneratePartitionKey(instanceId), GenerateSummaryRowKey());
+        }
+
         public async Task<bool> SummaryExistsAsync(string instanceId)
         {
             return await _tableSummary.RecordExistsAsync(new StatisticsSummaryEntity
