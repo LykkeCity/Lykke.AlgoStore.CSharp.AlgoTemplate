@@ -271,9 +271,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             while (true)
             {
                 var timeSpan = nextCandleTime - DateTime.UtcNow;
+
                 try
                 {
-                    Thread.Sleep(timeSpan);
+                    if (timeSpan < TimeSpan.Zero)
+                        _log.WriteWarning(nameof(RabbitMqCandleProviderService), nameof(GeneratorThread),
+                            "Candle sleep span is negative. The handlers might be running too slow.");
+                    else
+                        Thread.Sleep(timeSpan);
                 }
                 catch (ThreadInterruptedException)
                 {
