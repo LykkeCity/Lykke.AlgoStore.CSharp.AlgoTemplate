@@ -393,14 +393,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             storage.Setup(s => s.DeleteIfExistAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns((string partionKey, string rowKey) =>
                 {
-                    CheckIfIntanceIdAndRowKeyAreTheSame(partionKey, rowKey);
+                    CheckIfInstanceIdAndRowKeyAreTheSame(partionKey, rowKey);
                     return Task.FromResult(true);
                 });
 
             storage.Setup(s => s.DeleteIfExistAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns((string partionKey, string rowKey) =>
                 {
-                    CheckIfIntanceIdAndRowKeyAreTheSame(partionKey, rowKey);
+                    CheckIfInstanceIdAndRowKeyAreTheSame(partionKey, rowKey);
                     return Task.FromResult(false);
                 });
 
@@ -408,7 +408,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             repository.DeleteSummaryAsync(_instanceId).Wait();
         }
 
-        private void CheckIfIntanceIdAndRowKeyAreTheSame(string instanceIdToCheck, string rowKeyToCheck)
+        private void CheckIfInstanceIdAndRowKeyAreTheSame(string instanceIdToCheck, string rowKeyToCheck)
         {
             Assert.AreEqual(_instanceId, instanceIdToCheck);
             Assert.AreEqual(_rowKey, rowKeyToCheck);
