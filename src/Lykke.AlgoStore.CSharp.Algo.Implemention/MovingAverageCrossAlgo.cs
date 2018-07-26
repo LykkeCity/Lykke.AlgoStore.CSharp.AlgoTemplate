@@ -1,6 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 {
@@ -22,15 +21,15 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
         private double _currentSMALong;
         private double? _currentADX;
 
-        private SmaFunction _smaShortPeriod;
-        private SmaFunction _smaLongPeriod;
-        private AdxFunction _adx;
+        private SMA _smaShortPeriod;
+        private SMA _smaLongPeriod;
+        private ADX _adx;
 
-        public override void OnStartUp(IFunctionProvider functions)
+        public override void OnStartUp()
         {
-            _smaShortPeriod = functions.GetFunction<SmaFunction>("SMA_Short");
-            _smaLongPeriod = functions.GetFunction<SmaFunction>("SMA_Long");
-            _adx = functions.GetFunction<AdxFunction>("ADX");
+            _smaShortPeriod = SMA("SMA_Short");
+            _smaLongPeriod = SMA("SMA_Long");
+            _adx = ADX("ADX");
 
             _currentSMAShort = _smaShortPeriod.Value ?? 0;
             _currentSMALong = _smaLongPeriod.Value ?? 0;
@@ -44,8 +43,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
         public override void OnCandleReceived(ICandleContext contextCandle)
         {
             contextCandle.Actions.Log($"Algo ADX Threshold {ADXThreshold}");
-            contextCandle.Actions.Log($"SMA_Short Asset Pair: {_smaShortPeriod.FunctionParameters.AssetPair}, " +
-                                      $"SMA_Long Asset Pair: {_smaLongPeriod.FunctionParameters.AssetPair}");
+            contextCandle.Actions.Log($"SMA_Short Asset Pair: {_smaShortPeriod.AssetPair}, " +
+                                      $"SMA_Long Asset Pair: {_smaLongPeriod.AssetPair}");
 
             _currentSMAShort = _smaShortPeriod.Value ?? 0;
             _currentSMALong = _smaLongPeriod.Value ?? 0;

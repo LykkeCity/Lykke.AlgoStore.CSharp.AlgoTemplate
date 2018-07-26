@@ -1,9 +1,6 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Implemention;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.ADX;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.SMA;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Indicators;
+using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Moq;
 using NUnit.Framework;
@@ -11,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -54,46 +52,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             candleContextMock.SetupGet(c => c.Actions)
                 .Returns(Mock.Of<ICandleActions>());
 
-            var smaShort = new SmaFunction(new SmaParameters
-            {
-                Capacity = 10,
-                CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                CandleTimeInterval = CandleTimeInterval.Day,
-            });
-
-            var smaLong = new SmaFunction(new SmaParameters
-            {
-                Capacity = 30,
-                CandleOperationMode = FunctionParamsBase.CandleValue.CLOSE,
-                CandleTimeInterval = CandleTimeInterval.Day,
-            });
-
-            var adx = new AdxFunction(new AdxParameters
-            {
-                CandleTimeInterval = CandleTimeInterval.Day,
-                AdxPeriod = 14
-            });
-
-            var candles = GetTestCandles(_fileNameCorrectData);
-
-            smaShort.WarmUp(candles.Select(c => c.Close).ToArray());
-            smaLong.WarmUp(candles.Select(c => c.Close).ToArray());
-            adx.WarmUp(candles);
-
-
-            var functionsMock = new Mock<IFunctionProvider>();
-            functionsMock.Setup(c => c.GetFunction<SmaFunction>("SMA_Short"))
-                .Returns(smaShort);
-
-            functionsMock.Setup(c => c.GetFunction<SmaFunction>("SMA_Long"))
-               .Returns(smaLong);
-
-            functionsMock.Setup(c => c.GetFunction<AdxFunction>("ADX"))
-               .Returns(adx);
-
-            candleContextMock.Setup(c => c.Functions)
-                .Returns(functionsMock.Object);
-
             return candleContextMock.Object;
         }
 
@@ -103,12 +61,27 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var mockedContext = CreateContextMock();
             var algo = new MovingAverageCrossAlgo();
 
-            var smaShort = mockedContext.Functions.GetFunction<SmaFunction>("SMA_Short");
-            var smaLong = mockedContext.Functions.GetFunction<SmaFunction>("SMA_Long");
-            var adx = mockedContext.Functions.GetFunction<AdxFunction>("ADX");
+            SMA smaShort = null;
+            SMA smaLong = null;
+            ADX adx = null;
 
+            var candles = GetTestCandles(_fileNameCorrectData);
 
-            algo.OnStartUp(mockedContext.Functions);
+            SetUpAlgo(algo, (sma) =>
+            {
+                smaShort = sma;
+                smaShort.WarmUp(candles.Select(c => c.Close).ToArray());
+            }, (sma) =>
+            {
+                smaLong = sma;
+                smaLong.WarmUp(candles.Select(c => c.Close).ToArray());
+            }, (a) =>
+            {
+                adx = a;
+                adx.WarmUp(candles);
+            });
+
+            algo.OnStartUp();
 
             Assert.AreEqual(20.96, Math.Round(algo.GetADX().Value, 2));
             Assert.AreEqual(45.85, Math.Round(algo.GetSMAShortTerm(), 2));
@@ -128,11 +101,27 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var mockedContext = CreateContextMock();
             var algo = new MovingAverageCrossAlgo();
 
-            var smaShort = mockedContext.Functions.GetFunction<SmaFunction>("SMA_Short");
-            var smaLong = mockedContext.Functions.GetFunction<SmaFunction>("SMA_Long");
-            var adx = mockedContext.Functions.GetFunction<AdxFunction>("ADX");
+            SMA smaShort = null;
+            SMA smaLong = null;
+            ADX adx = null;
 
-            algo.OnStartUp(mockedContext.Functions);
+            var candles = GetTestCandles(_fileNameCorrectData);
+
+            SetUpAlgo(algo, (sma) =>
+            {
+                smaShort = sma;
+                smaShort.WarmUp(candles.Select(c => c.Close).ToArray());
+            }, (sma) =>
+            {
+                smaLong = sma;
+                smaLong.WarmUp(candles.Select(c => c.Close).ToArray());
+            }, (a) =>
+            {
+                adx = a;
+                adx.WarmUp(candles);
+            });
+
+            algo.OnStartUp();
 
             Assert.AreEqual(20.96, Math.Round(algo.GetADX().Value, 2));
             Assert.AreEqual(45.85, Math.Round(algo.GetSMAShortTerm(), 2));
@@ -184,6 +173,59 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             Assert.AreEqual(false, algo.GetCrossSMAShortAbove());
             Assert.AreEqual(true, algo.GetCrossSMAShortBelow());
+        }
+
+        private void SetUpAlgo(
+            MovingAverageCrossAlgo algo,
+            Action<SMA> shortCallback,
+            Action<SMA> longCallback,
+            Action<ADX> adxCallback)
+        {
+            var field = algo.GetType()
+                            .BaseType
+                            .GetField("_paramProvider", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            var paramProviderMock = new Mock<IIndicatorManager>(MockBehavior.Strict);
+
+            paramProviderMock.Setup(m => m.GetParam<DateTime>(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(default(DateTime));
+
+            paramProviderMock.Setup(m => m.GetParam<CandleTimeInterval>(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(CandleTimeInterval.Day);
+
+            paramProviderMock.Setup(m => m.GetParam<CandleOperationMode>(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(CandleOperationMode.CLOSE);
+
+            paramProviderMock.Setup(m => m.GetParam<string>(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns("");
+
+            paramProviderMock.Setup(m => m.GetParam<int>("SMA_Short", "period"))
+                .Returns(10);
+
+            paramProviderMock.Setup(m => m.GetParam<int>("SMA_Long", "period"))
+                .Returns(30);
+
+            paramProviderMock.Setup(m => m.GetParam<int>("ADX", "period"))
+                .Returns(14);
+
+            paramProviderMock.Setup(m => m.RegisterIndicator(It.IsAny<string>(), It.IsAny<IIndicator>()))
+                .Callback((string name, IIndicator indicator) =>
+                {
+                    switch(name)
+                    {
+                        case "SMA_Short":
+                            shortCallback((SMA)indicator);
+                            break;
+                        case "SMA_Long":
+                            longCallback((SMA)indicator);
+                            break;
+                        case "ADX":
+                            adxCallback((ADX)indicator);
+                            break;
+                    }
+                });
+
+            field.SetValue(algo, paramProviderMock.Object);
         }
     }
 }

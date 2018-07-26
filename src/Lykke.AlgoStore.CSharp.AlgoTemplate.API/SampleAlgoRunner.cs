@@ -15,11 +15,11 @@ using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using AzureStorage.Tables;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 using Lykke.Logs;
 using Lykke.SlackNotification.AzureQueue;
 using Microsoft.Extensions.DependencyInjection;
+using Lykke.AlgoStore.Algo;
 using System.Dynamic;
 using Newtonsoft.Json;
 

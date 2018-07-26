@@ -2,11 +2,11 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using System;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 using Lykke.AlgoStore.Service.History.Client;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Rest;
+using Lykke.AlgoStore.Algo;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
@@ -100,7 +100,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 else
                     _currentTimestamp = _nextTimestamp;
 
-                _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 9999);
+                _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 5000);
 
                 var timeLimit = DateTime.UtcNow > _candlesHistoryRequest.To ? _candlesHistoryRequest.To : DateTime.UtcNow;
 
@@ -126,9 +126,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             {
                 try
                 {
-                    history = await _historyClient.GetCandles(_currentTimestamp, _nextTimestamp,
-                                                              _candlesHistoryRequest.IndicatorName,
-                                                              _candlesHistoryRequest.AuthToken);
+                    history = await _historyClient.GetCandles(
+                        _currentTimestamp, _nextTimestamp,
+                        _candlesHistoryRequest.AssetPair,
+                        (Service.History.Client.Models.CandleTimeInterval)_candlesHistoryRequest.Interval,
+                        _candlesHistoryRequest.IndicatorName,
+                        _candlesHistoryRequest.AuthToken);
 
                     _buffer = history.ToList();
                     _currentIndex = 0;
