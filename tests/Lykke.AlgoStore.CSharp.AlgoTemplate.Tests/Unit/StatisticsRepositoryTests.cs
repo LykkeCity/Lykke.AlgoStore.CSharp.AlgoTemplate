@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Threading.Tasks;
+using AutoMapper;
+using AzureStorage;
 using AzureStorage.Tables;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
+using Moq;
 using NUnit.Framework;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
@@ -13,6 +16,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
     public class StatisticsRepositoryTests
     {
         private StatisticsSummary _entitySummary;
+
+        private readonly string _instanceId = "18169b36-a51c-4f8c-8d17-09a45f0f41m6";
+        private readonly string _rowKey = "Summary";
 
         [SetUp]
         public void SetUp()
@@ -379,13 +385,41 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
 
+        [Test]
+        public void StatisticsSummary_TestDeleteSummaryAsync()
+        {
+            var storage = new Mock<INoSQLTableStorage<StatisticsSummaryEntity>>();
+
+            storage.Setup(s => s.DeleteIfExistAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns((string partionKey, string rowKey) =>
+                {
+                    CheckIfInsatanceIsTheSame(partionKey, rowKey);
+                    return Task.FromResult(true);
+                });
+
+            storage.Setup(s => s.DeleteIfExistAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns((string partionKey, string rowKey) =>
+                {
+                    CheckIfInsatanceIsTheSame(partionKey, rowKey);
+                    return Task.FromResult(false);
+                });
+
+            StatisticsRepository repository = new StatisticsRepository(storage.Object);
+            repository.DeleteSummaryAsync(_instanceId).Wait();
+        }
+
+        private void CheckIfInsatanceIsTheSame(string instanceIdToCheck, string rowKeyToCheck)
+        {
+            Assert.AreEqual(_instanceId, instanceIdToCheck);
+            Assert.AreEqual(_rowKey, rowKeyToCheck);
+        }
+
         private static void WhenInvokeCreateStatisticsEntityWithSummary(
             StatisticsRepository repository,
             StatisticsSummary summary)
         {
             repository.CreateAsync(summary).Wait();
         }
-
 
         private static StatisticsSummary WhenInvokeGetSummary(
             StatisticsRepository repository,
@@ -404,5 +438,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             return new StatisticsRepository(AzureTableStorage<StatisticsSummaryEntity>.Create(
                     SettingsMock.GetLogsConnectionString(), StatisticsRepository.TableName, new LogMock()));
         }
+
     }
 }
