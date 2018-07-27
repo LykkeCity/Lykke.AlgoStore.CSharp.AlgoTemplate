@@ -112,10 +112,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             string toFilter = TableQuery.GenerateFilterConditionForDate("DateOfTrade", QueryComparisons.LessThanOrEqual, to);
 
             var query = new TableQuery<AlgoInstanceTradeEntity>().Where(TableQuery.CombineFilters(TableQuery.CombineFilters(pkFilter, TableOperators.And, fromFilter), TableOperators.And, toFilter));
-             
+
             var result = new List<AlgoInstanceTrade>();
 
-            await _tableStorage.ExecuteAsync(query, (items) => result.AddRange(AutoMapper.Mapper.Map<List<AlgoInstanceTrade>>(items)), () => false);
+            await _tableStorage.GetDataByChunksAsync(query, (items) => result.AddRange(AutoMapper.Mapper.Map<List<AlgoInstanceTrade>>(items)));
 
             return result;
         }
