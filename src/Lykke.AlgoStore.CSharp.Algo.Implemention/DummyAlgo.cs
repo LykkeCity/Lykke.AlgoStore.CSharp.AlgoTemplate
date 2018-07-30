@@ -15,8 +15,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         public override void OnStartUp()
         {
-            _shortSma = SMA("SMA_Short", 1, null, null, "BTCUSD", AlgoTemplate.Models.Enumerators.CandleTimeInterval.Minute, CandleOperationMode.CLOSE);
-            _longSma = SMA("SMA_Long", 1, null, null, "BTCUSD", AlgoTemplate.Models.Enumerators.CandleTimeInterval.Minute, CandleOperationMode.CLOSE);
+            _shortSma = SMA("SMA_Short");
+            _longSma = SMA("SMA_Long");
         }
 
         public override void OnQuoteReceived(IQuoteContext context)
