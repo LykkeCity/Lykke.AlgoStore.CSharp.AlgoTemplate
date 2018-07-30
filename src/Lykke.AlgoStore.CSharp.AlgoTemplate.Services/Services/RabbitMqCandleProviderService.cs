@@ -1,9 +1,11 @@
 ﻿using Common.Log;
 using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
+using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using Lykke.Job.CandlesProducer.Contract;
 using Lykke.RabbitMqBroker;
 using Lykke.RabbitMqBroker.Subscriber;
@@ -40,6 +42,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IReloadingManager<BaseRabbitMqSubscriptionSettings> _settings;
         private readonly ILog _log;
         private readonly IAlgoSettingsService _algoSettingsService;
+        private readonly IInstanceEventHandlerClient _instanceEventHandler;
 
         private RabbitMqSubscriber<CandlesUpdatedEvent> _subscriber;
         private bool _disposed;
@@ -47,11 +50,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         // Fast subscription lookup by asset pair and candle time interval
         private readonly Dictionary<string, Dictionary<CandleTimeInterval, SubscriptionData>> _subscriptions = new Dictionary<string, Dictionary<CandleTimeInterval, SubscriptionData>>();
 
-        public RabbitMqCandleProviderService(IReloadingManager<BaseRabbitMqSubscriptionSettings> settings, ILog log, IAlgoSettingsService algoSettingsService)
+        public RabbitMqCandleProviderService(IReloadingManager<BaseRabbitMqSubscriptionSettings> settings, ILog log, IAlgoSettingsService algoSettingsService,
+            IInstanceEventHandlerClient instanceEventHandler)
         {
             _settings = settings;
             _log = log;
-            _algoSettingsService = algoSettingsService;
+            _algoSettingsService = algoSettingsService;            
+            _instanceEventHandler = instanceEventHandler;
         }
 
         public void Subscribe(CandleServiceRequest serviceRequest, Action<Candle> callback)
@@ -191,8 +196,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     if (subscriptionData.PrevCandle != null && candle.CandleTimestamp <= subscriptionData.PrevCandle.DateTime)
                         continue;
 
-                    subscriptionData.CurrentCandle = algoCandle;
-                }
+                    subscriptionData.CurrentCandle = algoCandle;                  
+                }               
             }
 
             return Task.CompletedTask;
@@ -314,6 +319,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     subscriptionData.CurrentCandle = null;
                 }
 
+                var candleChartingUpdate = AutoMapper.Mapper.Map<CandleChartingUpdate>(currentCandle);
+                candleChartingUpdate.InstanceId = _algoSettingsService.GetInstanceId();
+
+                _instanceEventHandler.HandleCandlesAsync(new List<CandleChartingUpdate> { candleChartingUpdate }).GetAwaiter().GetResult();
+               
                 // To prevent any possible deadlocks, run callbacks outside of lock with a copy of the callback list
                 foreach (var callbackInfo in callbacks)
                 {

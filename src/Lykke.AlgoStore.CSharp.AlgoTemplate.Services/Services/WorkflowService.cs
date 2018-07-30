@@ -4,6 +4,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IStatisticsService _statisticsService;
         private readonly IUserLogService _logService;
         private readonly IMonitoringService _monitoringService;
+        private readonly IInstanceEventHandlerClient _instanceEventHandlerService;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
         private readonly object _sync = new object();
@@ -44,6 +46,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IStatisticsService statisticsService,
             IUserLogService logService,
             IMonitoringService monitoringService,
+            IInstanceEventHandlerClient instanceEventHandlerService,
             IAlgo algo)
         {
             _algoSettingsService = algoSettingsService;
@@ -55,7 +58,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _tradingService = tradingService;
             _candlesService = candlesService;
             _monitoringService = monitoringService;
-            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler);
+            _instanceEventHandlerService = instanceEventHandlerService;
+            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler, _instanceEventHandlerService);
             _algo = algo;
         }
 

@@ -18,6 +18,7 @@ using Lykke.AlgoStore.Service.Logging.Client;
 using Lykke.AlgoStore.Service.History.Client;
 using Lykke.AlgoStore.Job.Stopping.Client;
 using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -163,6 +164,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                     TimeSpan.FromSeconds(
                         _settings.CurrentValue.CSharpAlgoTemplateService.MonitoringSettings.InstanceEventTimeoutInSec)));
 
+            var authHandler = new AlgoAuthorizationHeaderHttpClientHandler(dynamicSettings.AuthToken);
+
+            var instanceEventHandler = HttpClientGenerator.HttpClientGenerator
+                 .BuildForUrl(_settings.CurrentValue.InstanceEventHandlerServiceClient.ServiceUrl)
+                 .WithAdditionalDelegatingHandler(authHandler);
+                 
+            builder.RegisterInstance(instanceEventHandler.Create().Generate<IInstanceEventHandlerClient>())
+                .As<IInstanceEventHandlerClient>();
+                
             builder.Populate(_services);
         }
     }

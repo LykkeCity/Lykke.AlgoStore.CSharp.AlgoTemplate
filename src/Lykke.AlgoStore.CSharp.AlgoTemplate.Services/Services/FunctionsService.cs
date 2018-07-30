@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
 using Lykke.AlgoStore.Algo.Indicators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
+using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -16,6 +18,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         // Dependencies:
         private readonly IAlgoSettingsService _algoSettingsService;
+        private readonly IInstanceEventHandlerClient _instanceEventHandler;
 
         // Fields:
         private readonly AlgoMetaDataInformation _algoMetaData;
@@ -29,9 +32,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// <param name="functionInitializationService"><see cref="IFunctionInitializationService"/> 
         /// implementation for accessing the function instances</param>
         public FunctionsService(
-            IAlgoSettingsService algoSettingsService)
+            IAlgoSettingsService algoSettingsService,
+            IInstanceEventHandlerClient instanceEventHandler)
         {
             _algoSettingsService = algoSettingsService;
+            _instanceEventHandler = instanceEventHandler;
             _algoMetaData = _algoSettingsService.GetAlgoInstance().AlgoMetaDataInformation;
 
             foreach(var indicator in _algoMetaData.Functions)
@@ -86,6 +91,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 return;
             }
 
+            var instanceId = _algoSettingsService.GetInstanceId();
+
             foreach (var candlesResponse in candles)
             {
                 if (!_allFunctions.ContainsKey(candlesResponse.RequestId))
@@ -99,7 +106,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     function.EndingDate < candlesResponse.Candle.DateTime)
                     continue;
 
-                function.AddNewValue(candlesResponse.Candle);
+                var functionNewValue = function.AddNewValue(candlesResponse.Candle);
+
+                var functionChartingUpdate = new FunctionChartingUpdate
+                {
+                    CalculatedOn = DateTime.UtcNow,
+                    FunctionName = functionId,
+                    InstanceId = instanceId,
+                    Value = functionNewValue?? 0
+                };
+
+                _instanceEventHandler.HandleFunctionsAsync(new List<FunctionChartingUpdate> { functionChartingUpdate }).GetAwaiter().GetResult();
             }
         }
 

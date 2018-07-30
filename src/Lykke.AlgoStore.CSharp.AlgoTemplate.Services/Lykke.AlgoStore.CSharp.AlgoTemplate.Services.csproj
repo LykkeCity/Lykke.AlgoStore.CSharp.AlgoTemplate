@@ -10,12 +10,13 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.15" />
+    <PackageReference Include="Lykke.AlgoStore.Service.InstanceEventHandler.Client" Version="1.0.2" />
     <PackageReference Include="Lykke.AlgoStore.Service.Logging.Client" Version="1.0.4" />
     <PackageReference Include="Lykke.Common" Version="7.0.2" />
     <PackageReference Include="Lykke.Job.CandlesProducer.Contract" Version="4.1.1" />
     <PackageReference Include="Lykke.Job.QuotesProducer.Contract" Version="1.0.0" />
     <PackageReference Include="Lykke.RabbitMqBroker" Version="7.1.0" />
-    <PackageReference Include="Lykke.SettingsReader" Version="2.4.0" />
+    <PackageReference Include="Lykke.SettingsReader" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -98,7 +98,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure
         {
             var settingsService = InitSettingsService();
 
-            return settingsService.GetAlgoInstanceWalletId();
+            return settingsService.GetWalletId();
         }
 
         public static IReloadingManager<QuoteRabbitMqSubscriptionSettings> GetQuoteSettings()

@@ -1,9 +1,12 @@
 ﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Extensions;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
+using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -18,6 +21,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ITradingService _tradingService;
         private readonly Action<Exception, string> _onErrorHandler;
         private readonly IStatisticsService _statisticsService;
+        private readonly IInstanceEventHandlerClient _instanceEventHandler;
 
         /// <summary>
         /// Initializes new instance of ActionsService
@@ -35,13 +39,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IStatisticsService statisticsService,
             IUserLogService logService,
             IAlgoSettingsService algoSettingsService,
-            Action<Exception, string> onErrorHandler)
+            Action<Exception, string> onErrorHandler,
+            IInstanceEventHandlerClient instanceEventHandler)
         {
             _tradingService = tradingService;
             _statisticsService = statisticsService;
             _logService = logService;
             _algoSettingsService = algoSettingsService;
             _onErrorHandler = onErrorHandler;
+            _instanceEventHandler = instanceEventHandler;
         }
 
         private TradeResponse ExecuteTradeRequest(Func<ITradeRequest, TradeResponse > tradeRequest, TradeRequest request)
@@ -145,8 +151,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     ? tradeRequest.Date
                     : DateTime.UtcNow;
 
-                Log($"A {action} order successful: {tradeRequest.Volume} {_algoSettingsService.GetTradedAssetId()} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
-               
+                var tradedAssetId = _algoSettingsService.GetTradedAssetId();
+                var assetPairId = _algoSettingsService.GetAlgoInstanceAssetPairId();
+
+                Log($"A {action} order successful: {tradeRequest.Volume} {tradedAssetId} - price {result.Result} at {dateTime.ToDefaultDateTimeFormat()}");
+
+                var tradeChartingUpdate = new TradeChartingUpdate
+                {
+                    Amount = tradeRequest.Volume,
+                    AssetId = tradedAssetId,
+                    AssetPairId = assetPairId,
+                    DateOfTrade = tradeRequest.Date,
+                    InstanceId = _algoSettingsService.GetInstanceId(),
+                    IsBuy = isBuy,
+                    Price = tradeRequest.Price,
+                    WalletId = _algoSettingsService.GetWalletId(),
+                    Id = Guid.NewGuid().ToString()
+                };
+
+                 _instanceEventHandler.HandleTradesAsync(new List<TradeChartingUpdate>() { tradeChartingUpdate }).GetAwaiter().GetResult();
+
                 return TradeResponse.CreateOk(result.Result);
             }
 
