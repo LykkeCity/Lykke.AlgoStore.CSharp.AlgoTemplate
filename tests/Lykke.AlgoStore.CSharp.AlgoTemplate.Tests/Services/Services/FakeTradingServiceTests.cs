@@ -143,7 +143,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             algoSettingsService.Setup(a => a.GetAlgoInstanceOppositeAssetId()).Returns(_oppositeAsset);
             algoSettingsService.Setup(a => a.GetInstanceId()).Returns(_instanceId);
             algoSettingsService.Setup(a => a.GetAlgoInstanceAssetPairId()).Returns(_assetPair);
-            algoSettingsService.Setup(a => a.GetAlgoInstanceWalletId()).Returns("testwal2-2108-4b39-97ed-61ca1f4df59c");
+            algoSettingsService.Setup(a => a.GetWalletId()).Returns("testwal2-2108-4b39-97ed-61ca1f4df59c");
             algoSettingsService.Setup(a => a.IsAlgoInstanceMarketOrderStraight()).Returns(_straightTrue);
             algoSettingsService.Setup(a => a.GetAlgoInstance()).Returns(
                 new AlgoClientInstanceData()

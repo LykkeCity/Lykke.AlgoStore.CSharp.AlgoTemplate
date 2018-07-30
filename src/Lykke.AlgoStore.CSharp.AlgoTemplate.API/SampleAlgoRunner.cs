@@ -22,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Lykke.AlgoStore.Algo;
 using System.Dynamic;
 using Newtonsoft.Json;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Mapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -49,11 +50,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             try
             {
                 // Initialize AutoMapper
-                Mapper.Initialize(cfg =>
+                AutoMapper.Mapper.Initialize(cfg =>
                 {
-                     cfg.AddProfiles(typeof(AutoMapperModelProfile));
+                     cfg.AddProfiles(new[] { typeof(AutoMapperModelProfile), typeof(AutoMapperAlgoProfile) });
                 });
-                Mapper.AssertConfigurationIsValid();
+
+                AutoMapper.Mapper.AssertConfigurationIsValid();
 
                 var services = new ServiceCollection();
 

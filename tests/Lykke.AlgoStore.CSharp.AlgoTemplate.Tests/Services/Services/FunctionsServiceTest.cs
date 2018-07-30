@@ -1,4 +1,5 @@
 ﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
 using Lykke.AlgoStore.Algo.Indicators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
@@ -6,12 +7,14 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
+using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
 {
@@ -774,9 +777,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                     {
                         Functions = new List<AlgoMetaDataFunction>()
                     }
-                }));
+                }),
+                Mock.Of<IInstanceEventHandlerClient>(
+                    c => c.HandleFunctionsAsync(It.IsAny<List<FunctionChartingUpdate>>()) == Task.CompletedTask)
+                );
 
-            foreach(var indicator in functions)
+            foreach (var indicator in functions)
                 fService.RegisterIndicator(indicator.Item1, indicator.Item2);
 
             return fService;

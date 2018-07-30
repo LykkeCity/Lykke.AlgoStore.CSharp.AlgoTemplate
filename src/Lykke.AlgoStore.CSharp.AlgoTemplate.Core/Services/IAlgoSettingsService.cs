@@ -9,7 +9,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         string GetSetting(string key);
 
         string GetMetadataSetting(string key);
-        string GetAlgoInstanceWalletId();
         string GetAlgoInstanceAssetPairId();
         string GetAlgoInstanceClientId();
         string GetAlgoInstanceOppositeAssetId();
@@ -23,6 +22,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         string GetAlgoId();
         string GetInstanceId();
         string GetTradedAssetId();
+        string GetWalletId();
         AlgoInstanceType GetInstanceType();
     }
 }

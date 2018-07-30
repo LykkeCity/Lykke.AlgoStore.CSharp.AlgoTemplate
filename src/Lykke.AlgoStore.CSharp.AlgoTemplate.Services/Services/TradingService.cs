@@ -40,7 +40,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             _instanceId = _algoSettingsService.GetInstanceId();
             _assetPairId = _algoSettingsService.GetAlgoInstanceAssetPairId();
-            _walletId = _algoSettingsService.GetAlgoInstanceWalletId();
+            _walletId = _algoSettingsService.GetWalletId();
             _straight = _algoSettingsService.IsAlgoInstanceMarketOrderStraight();
 
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)

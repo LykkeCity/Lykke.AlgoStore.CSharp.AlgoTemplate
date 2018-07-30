@@ -23,12 +23,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _instanceId;
         private string _algoId;
         private string _tradedAssetId;
+        private string _walletId;
         private AlgoInstanceType _instanceType;
 
         public string GetAuthToken() => _authToken;
         public string GetAlgoId() => _algoId;
         public string GetInstanceId() => _instanceId;
         public string GetTradedAssetId() => _tradedAssetId;
+        public string GetWalletId() => _walletId;
         public AlgoInstanceType GetInstanceType() => _instanceType;
 
         public AlgoSettingsService(IAlgoClientInstanceRepository algoClientInstanceMetadataRepository)
@@ -47,6 +49,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algoId = GetSetting("AlgoId");
             _authToken = GetSetting("AuthToken");
             _tradedAssetId = GetAlgoInstanceTradedAssetId();
+            _walletId = GetAlgoInstanceWalletId();
             _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType), GetSetting("InstanceType"));
         }
 
@@ -78,7 +81,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceMetadataSetting(_algoId, _instanceId, key).Result;
         }
 
-        public string GetAlgoInstanceWalletId()
+        private string GetAlgoInstanceWalletId()
         {
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.WalletId;
         }
