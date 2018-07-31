@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -52,6 +53,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             CheckDisposed();
 
             _batchBlock.Post(item);
+        }
+
+        public void Enqueue(IEnumerable<T> items)
+        {
+            CheckDisposed();
+
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            foreach (var item in items)
+                _batchBlock.Post(item);
         }
 
         public void Dispose()

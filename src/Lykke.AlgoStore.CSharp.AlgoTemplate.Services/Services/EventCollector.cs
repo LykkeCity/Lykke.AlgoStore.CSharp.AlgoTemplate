@@ -4,6 +4,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -61,6 +62,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             await PostEvent(_tradeSubmitter, _eventHandlerClient.HandleTradesAsync, trade);
         }
 
+        public async Task SubmitCandleEvents(IEnumerable<CandleChartingUpdate> candles)
+        {
+            await PostEvents(_candleSubmitter, _eventHandlerClient.HandleCandlesAsync, candles);
+        }
+
+        public async Task SubmitFunctionEvents(IEnumerable<FunctionChartingUpdate> functions)
+        {
+            await PostEvents(_functionSubmitter, _eventHandlerClient.HandleFunctionsAsync, functions);
+        }
+
+        public async Task SubmitTradeEvents(IEnumerable<TradeChartingUpdate> trades)
+        {
+            await PostEvents(_tradeSubmitter, _eventHandlerClient.HandleTradesAsync, trades);
+        }
+
         private async Task PostEvent<T>(
             BatchSubmitter<T> submitter,
             Func<List<T>, Task> eventHandlerMethod,
@@ -70,6 +86,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 submitter.Enqueue(eventUpdate);
             else
                 await eventHandlerMethod(new List<T> { eventUpdate });
+        }
+
+        private async Task PostEvents<T>(
+            BatchSubmitter<T> submitter,
+            Func<List<T>, Task> eventHandlerMethod,
+            IEnumerable<T> eventUpdates)
+        {
+            if (eventUpdates == null)
+                throw new ArgumentNullException(nameof(eventUpdates));
+
+            if (_isBacktest)
+                submitter.Enqueue(eventUpdates);
+            else
+                await eventHandlerMethod(eventUpdates.ToList());
         }
 
         private BatchSubmitter<T> MakeSubmitter<T>(Func<List<T>, Task> eventHandlerMethod)

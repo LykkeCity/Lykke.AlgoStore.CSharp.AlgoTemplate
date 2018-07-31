@@ -157,6 +157,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IAlgoInstanceStoppingClient>()
                 .WithParameter(TypedParameter.From(_settings.CurrentValue.AlgoStoreStoppingClient.ServiceUrl));
 
+            builder.RegisterType<EventCollector>()
+                .As<IEventCollector>()
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.CSharpAlgoTemplateService.EventHandlerSettings.MaxBatchLifetime))
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.CSharpAlgoTemplateService.EventHandlerSettings.BatchSizeThreshold))
+                .SingleInstance();
+
             builder.RegisterType<MonitoringService>()
                 .As<IMonitoringService>()
                 .WithParameter(

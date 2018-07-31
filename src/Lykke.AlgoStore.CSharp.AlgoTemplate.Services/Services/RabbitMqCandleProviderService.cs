@@ -42,7 +42,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IReloadingManager<BaseRabbitMqSubscriptionSettings> _settings;
         private readonly ILog _log;
         private readonly IAlgoSettingsService _algoSettingsService;
-        private readonly IInstanceEventHandlerClient _instanceEventHandler;
+        private readonly IEventCollector _eventCollector;
 
         private RabbitMqSubscriber<CandlesUpdatedEvent> _subscriber;
         private bool _disposed;
@@ -51,12 +51,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly Dictionary<string, Dictionary<CandleTimeInterval, SubscriptionData>> _subscriptions = new Dictionary<string, Dictionary<CandleTimeInterval, SubscriptionData>>();
 
         public RabbitMqCandleProviderService(IReloadingManager<BaseRabbitMqSubscriptionSettings> settings, ILog log, IAlgoSettingsService algoSettingsService,
-            IInstanceEventHandlerClient instanceEventHandler)
+            IEventCollector eventCollector)
         {
             _settings = settings;
             _log = log;
             _algoSettingsService = algoSettingsService;            
-            _instanceEventHandler = instanceEventHandler;
+            _eventCollector = eventCollector;
         }
 
         public void Subscribe(CandleServiceRequest serviceRequest, Action<Candle> callback)
@@ -322,7 +322,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 var candleChartingUpdate = AutoMapper.Mapper.Map<CandleChartingUpdate>(currentCandle);
                 candleChartingUpdate.InstanceId = _algoSettingsService.GetInstanceId();
 
-                _instanceEventHandler.HandleCandlesAsync(new List<CandleChartingUpdate> { candleChartingUpdate }).GetAwaiter().GetResult();
+                _eventCollector.SubmitCandleEvent(candleChartingUpdate).GetAwaiter().GetResult();
                
                 // To prevent any possible deadlocks, run callbacks outside of lock with a copy of the callback list
                 foreach (var callbackInfo in callbacks)

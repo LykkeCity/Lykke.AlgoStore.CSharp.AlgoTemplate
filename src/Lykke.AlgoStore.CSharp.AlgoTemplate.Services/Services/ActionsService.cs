@@ -21,7 +21,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ITradingService _tradingService;
         private readonly Action<Exception, string> _onErrorHandler;
         private readonly IStatisticsService _statisticsService;
-        private readonly IInstanceEventHandlerClient _instanceEventHandler;
+        private readonly IEventCollector _eventCollector;
 
         /// <summary>
         /// Initializes new instance of ActionsService
@@ -40,14 +40,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IUserLogService logService,
             IAlgoSettingsService algoSettingsService,
             Action<Exception, string> onErrorHandler,
-            IInstanceEventHandlerClient instanceEventHandler)
+            IEventCollector eventCollector)
         {
             _tradingService = tradingService;
             _statisticsService = statisticsService;
             _logService = logService;
             _algoSettingsService = algoSettingsService;
             _onErrorHandler = onErrorHandler;
-            _instanceEventHandler = instanceEventHandler;
+            _eventCollector = eventCollector;
         }
 
         private TradeResponse ExecuteTradeRequest(Func<ITradeRequest, TradeResponse > tradeRequest, TradeRequest request)
@@ -169,7 +169,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Id = Guid.NewGuid().ToString()
                 };
 
-                 _instanceEventHandler.HandleTradesAsync(new List<TradeChartingUpdate>() { tradeChartingUpdate }).GetAwaiter().GetResult();
+                 _eventCollector.SubmitTradeEvent(tradeChartingUpdate).GetAwaiter().GetResult();
 
                 return TradeResponse.CreateOk(result.Result);
             }

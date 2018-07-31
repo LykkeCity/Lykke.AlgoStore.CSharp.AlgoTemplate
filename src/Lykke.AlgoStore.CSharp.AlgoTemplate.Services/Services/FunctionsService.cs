@@ -18,7 +18,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         // Dependencies:
         private readonly IAlgoSettingsService _algoSettingsService;
-        private readonly IInstanceEventHandlerClient _instanceEventHandler;
+        private readonly IEventCollector _eventCollector;
 
         // Fields:
         private readonly AlgoMetaDataInformation _algoMetaData;
@@ -33,10 +33,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// implementation for accessing the function instances</param>
         public FunctionsService(
             IAlgoSettingsService algoSettingsService,
-            IInstanceEventHandlerClient instanceEventHandler)
+            IEventCollector eventCollector)
         {
             _algoSettingsService = algoSettingsService;
-            _instanceEventHandler = instanceEventHandler;
+            _eventCollector = eventCollector;
             _algoMetaData = _algoSettingsService.GetAlgoInstance().AlgoMetaDataInformation;
 
             foreach(var indicator in _algoMetaData.Functions)
@@ -92,6 +92,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
 
             var instanceId = _algoSettingsService.GetInstanceId();
+            var updateList = new List<FunctionChartingUpdate>();
 
             foreach (var candlesResponse in candles)
             {
@@ -116,8 +117,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Value = functionNewValue?? 0
                 };
 
-                _instanceEventHandler.HandleFunctionsAsync(new List<FunctionChartingUpdate> { functionChartingUpdate }).GetAwaiter().GetResult();
+                updateList.Add(functionChartingUpdate);
             }
+
+            _eventCollector.SubmitFunctionEvents(updateList).GetAwaiter().GetResult();
         }
 
         public IFunctionProvider GetFunctionResults()
