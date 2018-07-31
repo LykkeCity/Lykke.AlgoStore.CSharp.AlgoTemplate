@@ -159,7 +159,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 
             builder.RegisterType<EventCollector>()
                 .As<IEventCollector>()
-                .WithParameter(TypedParameter.From(_settings.CurrentValue.CSharpAlgoTemplateService.EventHandlerSettings.MaxBatchLifetime))
+                .WithParameter(TypedParameter.From(TimeSpan.FromMilliseconds(_settings.CurrentValue.CSharpAlgoTemplateService.EventHandlerSettings.MaxBatchLifetime)))
                 .WithParameter(TypedParameter.From(_settings.CurrentValue.CSharpAlgoTemplateService.EventHandlerSettings.BatchSizeThreshold))
                 .SingleInstance();
 
