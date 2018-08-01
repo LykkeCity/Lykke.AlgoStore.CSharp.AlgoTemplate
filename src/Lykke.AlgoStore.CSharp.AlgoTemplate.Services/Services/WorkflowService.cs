@@ -46,7 +46,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IStatisticsService statisticsService,
             IUserLogService logService,
             IMonitoringService monitoringService,
-            IInstanceEventHandlerClient instanceEventHandlerService,
+            IEventCollector eventCollector,
             IAlgo algo)
         {
             _algoSettingsService = algoSettingsService;
@@ -58,8 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _tradingService = tradingService;
             _candlesService = candlesService;
             _monitoringService = monitoringService;
-            _instanceEventHandlerService = instanceEventHandlerService;
-            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler, _instanceEventHandlerService);
+            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler, eventCollector);
             _algo = algo;
         }
 

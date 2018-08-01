@@ -778,8 +778,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                         Functions = new List<AlgoMetaDataFunction>()
                     }
                 }),
-                Mock.Of<IInstanceEventHandlerClient>(
-                    c => c.HandleFunctionsAsync(It.IsAny<List<FunctionChartingUpdate>>()) == Task.CompletedTask)
+                Mock.Of<IEventCollector>(
+                    c => c.SubmitFunctionEvent(It.IsAny<FunctionChartingUpdate>()) == Task.CompletedTask)
                 );
 
             foreach (var indicator in functions)
