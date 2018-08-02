@@ -120,7 +120,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 updateList.Add(functionChartingUpdate);
             }
 
-            _eventCollector.SubmitFunctionEvents(updateList).GetAwaiter().GetResult();
+            if (updateList.Any())
+                _eventCollector.SubmitFunctionEvents(updateList).GetAwaiter().GetResult();
         }
 
         public IFunctionProvider GetFunctionResults()
