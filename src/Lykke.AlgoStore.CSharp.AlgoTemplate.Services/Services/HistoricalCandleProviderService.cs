@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
+using AutoMapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -21,6 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private class SubscriptionData
         {
+            public string AssetPair { get; set; }
             public CandleTimeInterval TimeInterval { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
@@ -31,6 +34,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IHistoryDataService _historyDataService;
         private readonly IUserLogService _userLogService;
         private readonly IAlgoSettingsService _algoSettingsService;
+        private readonly IEventCollector _eventCollector;
 
         private readonly List<SubscriptionData> _subscriptions = new List<SubscriptionData>();
 
@@ -43,11 +47,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private bool _isStopped;
 
         public HistoricalCandleProviderService(IHistoryDataService historyDataService, IUserLogService userLogService,
-            IAlgoSettingsService algoSettingsService)
+            IAlgoSettingsService algoSettingsService,
+            IEventCollector eventCollector)
         {
             _historyDataService = historyDataService;
             _userLogService = userLogService;
             _algoSettingsService = algoSettingsService;
+            _eventCollector = eventCollector;
         }
 
         public void Subscribe(CandleServiceRequest serviceRequest, Action<Candle> callback)
@@ -64,6 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var subscriptionData = new SubscriptionData
             {
                 Callback = callback,
+                AssetPair = serviceRequest.AssetPair,
                 TimeInterval = serviceRequest.CandleInterval,
                 StartDate = serviceRequest.StartFrom.ToUniversalTime(),
                 EndDate = serviceRequest.EndOn.ToUniversalTime()
@@ -148,6 +155,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var intervalsToUpdate = GetIntervalsForUpdate(currentDate);
 
+                var submittedPairs = new HashSet<(CandleTimeInterval, string)>();
+                var candlesToSubmit = new List<CandleChartingUpdate>();
+
                 foreach(var subscription in _subscriptions)
                 {
                     if (!intervalsToUpdate.Contains(subscription.TimeInterval)) continue;
@@ -159,8 +169,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     if (!subscription.CandleSource.MoveNextWithRetry(int.MaxValue).GetAwaiter().GetResult())
                         continue;
 
+                    var tuple = (subscription.TimeInterval, subscription.AssetPair);
+
+                    if (!submittedPairs.Contains(tuple))
+                    {
+                        var candle = Mapper.Map<CandleChartingUpdate>(subscription.CandleSource.Current);
+                        candle.InstanceId = _algoSettingsService.GetInstanceId();
+                        candlesToSubmit.Add(candle);
+                        submittedPairs.Add(tuple);
+                    }
+                        
                     subscription.Callback(subscription.CandleSource.Current);
                 }
+
+                if(candlesToSubmit.Count > 0)
+                    _eventCollector.SubmitCandleEvents(candlesToSubmit).GetAwaiter().GetResult();
             }
             while (!cancellationToken.IsCancellationRequested);
 
