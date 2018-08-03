@@ -68,6 +68,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             CreateMap<AlgoInstanceTradeEntity, AlgoInstanceTrade>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.RowKey));
 
+            CreateMap<FunctionChartingUpdateEntity, FunctionChartingUpdateData>()
+                .ForSourceMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.ETag, opt => opt.Ignore());
+
             CreateMap<StatisticsSummary, StatisticsSummaryEntity>()
                  .ForMember(dest => dest.RowKey, opt => opt.Ignore())
                  .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
