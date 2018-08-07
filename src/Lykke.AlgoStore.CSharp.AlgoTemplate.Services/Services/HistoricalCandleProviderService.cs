@@ -174,6 +174,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     if (!submittedPairs.Contains(tuple))
                     {
                         var candle = Mapper.Map<CandleChartingUpdate>(subscription.CandleSource.Current);
+                        candle.AssetPair = subscription.AssetPair;
+                        candle.CandleTimeInterval = subscription.TimeInterval;
                         candle.InstanceId = _algoSettingsService.GetInstanceId();
                         candlesToSubmit.Add(candle);
                         submittedPairs.Add(tuple);

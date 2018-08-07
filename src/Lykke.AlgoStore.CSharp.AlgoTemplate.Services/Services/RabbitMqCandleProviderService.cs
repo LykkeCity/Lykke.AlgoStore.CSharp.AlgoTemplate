@@ -34,6 +34,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             public Thread CandleGenerator { get; set; }
             public Candle PrevCandle { get; set; }
             public Candle CurrentCandle { get; set; }
+            public string AssetPair { get; set; }
             public CandleTimeInterval TimeInterval { get; set; }
 
             public object Sync { get; } = new object();
@@ -73,7 +74,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var contractTimeInterval = (CandleTimeInterval)timeInterval;
 
             if (!_subscriptions[assetPair].ContainsKey(contractTimeInterval))
-                _subscriptions[assetPair].Add(contractTimeInterval, CreateSubscriptionData(contractTimeInterval));
+                _subscriptions[assetPair].Add(contractTimeInterval, CreateSubscriptionData(assetPair, contractTimeInterval));
 
             _subscriptions[assetPair][contractTimeInterval].Callbacks.Add(new CallbackInfo
             {
@@ -203,13 +204,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return Task.CompletedTask;
         }
 
-        private SubscriptionData CreateSubscriptionData(CandleTimeInterval timeInterval)
+        private SubscriptionData CreateSubscriptionData(string assetPair, CandleTimeInterval timeInterval)
         {
             var data = new SubscriptionData();
 
             var generator = new Thread(GeneratorThread);
             generator.Priority = ThreadPriority.AboveNormal;
 
+            data.AssetPair = assetPair;
             data.TimeInterval = timeInterval;
             data.CandleGenerator = generator;
 
@@ -321,6 +323,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var candleChartingUpdate = AutoMapper.Mapper.Map<CandleChartingUpdate>(currentCandle);
                 candleChartingUpdate.InstanceId = _algoSettingsService.GetInstanceId();
+                candleChartingUpdate.CandleTimeInterval = algoStoreInterval;
+                candleChartingUpdate.AssetPair = subscriptionData.AssetPair;
 
                 _eventCollector.SubmitCandleEvent(candleChartingUpdate).GetAwaiter().GetResult();
                

@@ -9,7 +9,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Mapper
         public AutoMapperAlgoProfile()
         {
             CreateMap<Candle, CandleChartingUpdate>()
-                .ForMember(dest => dest.InstanceId, opt => opt.Ignore());
+                .ForMember(dest => dest.InstanceId, opt => opt.Ignore())
+                .ForMember(dest => dest.AssetPair, opt => opt.Ignore())
+                .ForMember(dest => dest.CandleTimeInterval, opt => opt.Ignore());
         }
     }
 }
