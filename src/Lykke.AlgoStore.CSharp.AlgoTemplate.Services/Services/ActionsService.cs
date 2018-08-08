@@ -161,10 +161,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Amount = tradeRequest.Volume,
                     AssetId = tradedAssetId,
                     AssetPairId = assetPairId,
-                    DateOfTrade = tradeRequest.Date,
+                    DateOfTrade = dateTime,
                     InstanceId = _algoSettingsService.GetInstanceId(),
                     IsBuy = isBuy,
-                    Price = tradeRequest.Price,
+                    Price = result.Result,
                     WalletId = _algoSettingsService.GetWalletId(),
                     Id = Guid.NewGuid().ToString()
                 };
