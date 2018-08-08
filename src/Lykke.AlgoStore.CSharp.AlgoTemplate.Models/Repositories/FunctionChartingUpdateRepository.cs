@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
@@ -21,7 +22,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             _table = table;
         }
 
-        public async Task<IEnumerable<FunctionChartingUpdateData>> GetFunctionChartingUpdateForPeriodAsync(string instanceId, DateTime from, DateTime to)
+        public async Task<IEnumerable<FunctionChartingUpdateData>> GetFunctionChartingUpdateForPeriodAsync(string instanceId, DateTime from, DateTime to, CancellationToken ct)
         {
             string pkFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, GeneratePartitionKey(instanceId));
             string fromFilter = TableQuery.GenerateFilterConditionForDate("CalculatedOn", QueryComparisons.GreaterThanOrEqual, from);
@@ -31,7 +32,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             var result = new List<FunctionChartingUpdateData>();
 
-            await _table.GetDataByChunksAsync(query, (items) => result.AddRange(AutoMapper.Mapper.Map<List<FunctionChartingUpdateData>>(items)));
+            await _table.GetDataByChunksAsync(query, (items) => result.AddRange(AutoMapper.Mapper.Map<List<FunctionChartingUpdateData>>(items))).ContinueWith(t => { }, ct);
 
             return result;
         }
