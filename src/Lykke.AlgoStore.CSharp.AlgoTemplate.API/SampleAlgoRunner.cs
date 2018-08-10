@@ -23,6 +23,7 @@ using Lykke.AlgoStore.Algo;
 using System.Dynamic;
 using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Mapper;
+using System.Threading;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -32,8 +33,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
     public class AlgoRunner
     {
         public static readonly Type DEFAULT_ALGO_CLASS_TO_RUN;
+
+        private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
+
         private static ILog _log;
         private static IAlgoWorkflowService _algoWorkflow;
+
+        private static Task _workflowServiceTask;
 
         static AlgoRunner()
         {
@@ -66,7 +72,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 _algoWorkflow = ioc.Resolve<IAlgoWorkflowService>();
 
                 // Start the workflow. Await the task to block current thread on the algo execution
-                await _algoWorkflow.StartAsync();
+                _workflowServiceTask = _algoWorkflow.StartAsync(_cts.Token);
+                await _workflowServiceTask;
             }
             catch (Exception e)
             {
@@ -91,6 +98,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
         private static void Default_Unloading(AssemblyLoadContext obj)
         {
+            _cts.Cancel();
+            _workflowServiceTask?.GetAwaiter().GetResult();
             _algoWorkflow.StopAsync();
         }
 

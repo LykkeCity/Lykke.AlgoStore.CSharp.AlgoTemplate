@@ -70,7 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             }
 
             if (_isLastBuffer)
-                return ++_currentIndex < _buffer.Count;
+                return (++_currentIndex) < _buffer.Count;
 
             IncrementBuffer().ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -100,7 +100,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 else
                     _currentTimestamp = _nextTimestamp;
 
-                _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 5000);
+                _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 4000);
 
                 var timeLimit = DateTime.UtcNow > _candlesHistoryRequest.To ? _candlesHistoryRequest.To : DateTime.UtcNow;
 

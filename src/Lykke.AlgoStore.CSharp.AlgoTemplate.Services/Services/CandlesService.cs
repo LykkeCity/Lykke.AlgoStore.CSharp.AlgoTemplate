@@ -7,6 +7,8 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -39,7 +41,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _settingsService = settingsService;
         }
 
-        public void StartProducing()
+        public async Task StartProducing(CancellationToken cancellationToken)
         {
             if (_initialDataConsumer == null)
                 throw new NotSupportedException("Cannot start producing with no subscriptions");
@@ -47,8 +49,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (_isProducing)
                 throw new InvalidOperationException("The candle service has already started producing");
 
-            _candleProvider.Initialize().Wait();
-            _candleProvider.Start();
+            await _candleProvider.Initialize();
+            var candleProviderTask = _candleProvider.Start(cancellationToken);
             _isProducing = true;
 
             var isBacktest = _settingsService.GetSetting("InstanceType") == AlgoInstanceType.Test.ToString();
@@ -89,13 +91,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 });
             }
 
-            _initialDataConsumer(resultList);
-        }
+            await Task.Yield();
 
-        public void StopProducing()
-        {
-            _candleProvider.Stop();
-            _isProducing = false;
+            _initialDataConsumer(resultList);
+
+            await candleProviderTask;
         }
 
         public void Subscribe(IList<CandleServiceRequest> candleServiceRequests, Action<IList<MultipleCandlesResponse>> initialDataConsumer, Action<IList<SingleCandleResponse>> candleUpdateConsumer)

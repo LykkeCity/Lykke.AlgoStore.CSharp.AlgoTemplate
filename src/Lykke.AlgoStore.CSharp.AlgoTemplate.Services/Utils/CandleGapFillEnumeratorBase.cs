@@ -53,6 +53,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 return SetCandlesAndMoveIndex();
             }
 
+            if (_isEnumeratorDone) return false;
+
             // If this is the first candle, or there is no gap between the current and the last, continue
             if (_prevCandle == null || HasNoGapBetweenCandles())
             {
