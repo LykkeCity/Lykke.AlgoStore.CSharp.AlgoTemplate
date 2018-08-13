@@ -12,17 +12,36 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services
     public class ShutdownManager : IShutdownManager
     {
         private readonly ILog _log;
+        private readonly IUserLogService _userLogService;
+        private readonly IEventCollector _eventCollector;
 
-        public ShutdownManager(ILog log)
+        public ShutdownManager(
+            ILog log,
+            IUserLogService userLogService,
+            IEventCollector eventCollector)
         {
             _log = log;
+            _userLogService = userLogService;
+            _eventCollector = eventCollector;
         }
 
         public async Task StopAsync()
         {
-            // TODO: Implement your shutdown logic here. Good idea is to log every step
+            await _log.WriteInfoAsync(nameof(ShutdownManager), nameof(StopAsync),
+                "ShutdownManager start");
 
-            await Task.CompletedTask;
+            await _log.WriteInfoAsync(nameof(ShutdownManager), nameof(StopAsync),
+                "Flushing and disposing the event collector...");
+
+            _eventCollector.Dispose();
+
+            await _log.WriteInfoAsync(nameof(ShutdownManager), nameof(StopAsync),
+                "Flushing and disposing the user log service...");
+
+            _userLogService.Dispose();
+
+            await _log.WriteInfoAsync(nameof(ShutdownManager), nameof(StopAsync),
+                "ShutdownManager complete");
         }
     }
 }

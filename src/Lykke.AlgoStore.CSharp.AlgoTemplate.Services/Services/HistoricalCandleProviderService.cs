@@ -3,7 +3,6 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
@@ -15,12 +14,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     public class HistoricalCandleProviderService : ICandleProviderService
     {
-        private class CandleSourceData
-        {
-            public IEnumerator<Candle> CandleSource { get; set; }
-            public DateTime From { get; set; }
-        }
-
         private class SubscriptionData
         {
             public string AssetPair { get; set; }
@@ -38,13 +31,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private readonly List<SubscriptionData> _subscriptions = new List<SubscriptionData>();
 
-        private CancellationTokenSource _cts;
-        private Thread _workerThread;
-
         private DateTime _startDate = DateTime.MaxValue;
         private DateTime _endDate = DateTime.MinValue;
 
-        private bool _isStopped;
+        private bool _isStarted;
 
         public HistoricalCandleProviderService(IHistoryDataService historyDataService, IUserLogService userLogService,
             IAlgoSettingsService algoSettingsService,
@@ -64,7 +54,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
 
-            if (_workerThread != null)
+            if (_isStarted)
                 throw new InvalidOperationException("Cannot subscribe after service has been started");
 
             var subscriptionData = new SubscriptionData
@@ -95,52 +85,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _subscriptions.Add(subscriptionData);
         }
 
-        public void Start()
+        public async Task Start(CancellationToken cancellationToken)
         {
-            if (_isStopped)
-                throw new NotSupportedException("Cannot restart the provider after it has been stopped");
-
-            if (_workerThread != null)
+            if (_isStarted)
                 throw new InvalidOperationException("Provider is already started");
 
             if (_subscriptions.Count == 0)
                 throw new InvalidOperationException("Cannot start provider with no subscriptions");
 
-            _cts = new CancellationTokenSource();
-            _workerThread = new Thread(FillLoop);
-            _workerThread.Start(_cts.Token);
-        }
+            _isStarted = true;
 
-        public void Stop()
-        {
-            if (_workerThread == null)
-                throw new InvalidOperationException("Provider is already stopped");
-
-            _cts.Cancel();
-            _workerThread.Join();
-            _workerThread = null;
-            _isStopped = true;
-        }
-
-        public void Dispose()
-        {
-            if (_workerThread != null)
-                Stop();
-        }
-
-        public void SetPrevCandleFromHistory(string assetPair, CandleTimeInterval timeInterval, Candle candle)
-        {
-        }
-
-        public Task Initialize()
-        {
-            return Task.CompletedTask;
-        }
-
-        private void FillLoop(object cancellationTokenObj)
-        {
-            var cancellationToken = (CancellationToken)cancellationTokenObj;
             DateTime currentDate = _startDate.AddSeconds(-1);
+
+            // Yield task before loop starts
+            await Task.Yield();
 
             do
             {
@@ -158,7 +116,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 var submittedPairs = new HashSet<(CandleTimeInterval, string)>();
                 var candlesToSubmit = new List<CandleChartingUpdate>();
 
-                foreach(var subscription in _subscriptions)
+                foreach (var subscription in _subscriptions)
                 {
                     if (!intervalsToUpdate.Contains(subscription.TimeInterval)) continue;
 
@@ -166,7 +124,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                     // Wait forever for the history service to come back online - we're running in backtest
                     // so we wouldn't want to interrupt the algo in the middle of its operation
-                    if (!subscription.CandleSource.MoveNextWithRetry(int.MaxValue).GetAwaiter().GetResult())
+                    if (!await subscription.CandleSource.MoveNextWithRetry(int.MaxValue, cancellationToken))
                         continue;
 
                     var tuple = (subscription.TimeInterval, subscription.AssetPair);
@@ -180,20 +138,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                         candlesToSubmit.Add(candle);
                         submittedPairs.Add(tuple);
                     }
-                        
+
                     subscription.Callback(subscription.CandleSource.Current);
                 }
 
-                if(candlesToSubmit.Count > 0)
-                    _eventCollector.SubmitCandleEvents(candlesToSubmit).GetAwaiter().GetResult();
+                if (candlesToSubmit.Count > 0)
+                    await _eventCollector.SubmitCandleEvents(candlesToSubmit);
             }
             while (!cancellationToken.IsCancellationRequested);
+        }
 
-            //Use thread sleep in order pod not to be restarted, 
-            //later when stopping of an algo is implemented, we should remove this thread.
-            Thread.Sleep(Timeout.Infinite);
+        public void SetPrevCandleFromHistory(string assetPair, CandleTimeInterval timeInterval, Candle candle)
+        {
+        }
 
-            // TODO: Shutdown algo here
+        public Task Initialize()
+        {
+            return Task.CompletedTask;
         }
 
         private HashSet<CandleTimeInterval> GetIntervalsForUpdate(DateTime currentDate)

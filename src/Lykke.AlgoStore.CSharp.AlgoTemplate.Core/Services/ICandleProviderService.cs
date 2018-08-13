@@ -4,6 +4,7 @@ using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
@@ -11,13 +12,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
     /// <summary>
     /// Provides a candle feed for given subscriptions
     /// </summary>
-    public interface ICandleProviderService : IStopable, IStartable
+    public interface ICandleProviderService
     {
         /// <summary>
         /// Initializes the <see cref="ICandleProviderService"/>
         /// </summary>
         /// <returns><see cref="Task"/> which will be completed when initialization is complete</returns>
         Task Initialize();
+
+        Task Start(CancellationToken cancellationToken);
 
         /// <summary>
         /// Subscribes to candles for a given asset pair and time interval

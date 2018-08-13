@@ -1,6 +1,8 @@
 ﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
@@ -21,8 +23,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
             Action<IList<MultipleCandlesResponse>> initalDataConsumer,
             Action<IList<SingleCandleResponse>> candleUpdateConsumer);
 
-        void StartProducing();
-
-        void StopProducing();
+        Task StartProducing(CancellationToken cancellationToken);
     }
 }

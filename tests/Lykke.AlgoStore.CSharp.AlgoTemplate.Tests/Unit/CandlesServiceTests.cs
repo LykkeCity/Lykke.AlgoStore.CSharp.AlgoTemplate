@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
@@ -17,7 +18,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         {
             var candlesService = new CandlesService(null, null, null);
 
-            Assert.Throws<NotSupportedException>(() => candlesService.StartProducing());
+            Assert.Throws<NotSupportedException>(
+                () => candlesService.StartProducing(CancellationToken.None).GetAwaiter().GetResult());
         }
 
         [Test]
@@ -31,9 +33,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var candlesService = new CandlesService(providerMock.Object, null, Given_Correct_AlgoSettingsService());
             candlesService.Subscribe(requests, initialDataConsumer, null);
 
-            candlesService.StartProducing();
+            _ = candlesService.StartProducing(CancellationToken.None);
 
-            Assert.Throws<InvalidOperationException>(() => candlesService.StartProducing());
+            Assert.Throws<InvalidOperationException>(
+                () => candlesService.StartProducing(CancellationToken.None).GetAwaiter().GetResult());
         }
 
         [Test]

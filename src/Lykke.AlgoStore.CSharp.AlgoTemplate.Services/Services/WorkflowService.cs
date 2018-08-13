@@ -4,7 +4,6 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
-using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +28,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IStatisticsService _statisticsService;
         private readonly IUserLogService _logService;
         private readonly IMonitoringService _monitoringService;
-        private readonly IInstanceEventHandlerClient _instanceEventHandlerService;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
         private readonly object _sync = new object();
@@ -62,7 +60,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _algo = algo;
         }
 
-        public Task StartAsync()
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             var algoInstance = _algoSettingsService.GetAlgoInstance();
             var isBacktest = _algoSettingsService.GetSetting("InstanceType") == AlgoInstanceType.Test.ToString();
@@ -74,7 +72,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 algoInstance.AlgoInstanceStatus = Models.Enumerators.AlgoInstanceStatus.Started;
                 algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
-                _algoSettingsService.UpdateAlgoInstance(algoInstance).Wait();
+                await _algoSettingsService.UpdateAlgoInstance(algoInstance);
             }
 
             var authToken = _algoSettingsService.GetAuthToken();
@@ -88,10 +86,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             var candleServiceCandleRequests = _functionsService.GetCandleRequests(authToken).ToList();
 
-            // TODO: Replace this with actual algo metadata once it's implemented
             candleServiceCandleRequests.Add(new CandleServiceRequest
             {
-                AssetPair = _algo.AssetPair, //"BTCEUR",
+                AssetPair = _algo.AssetPair,
                 CandleInterval = _algo.CandleInterval,
                 AuthToken = authToken,
                 RequestId = authToken,
@@ -110,7 +107,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // subscribe for RabbitMQ quotes and candles
             // throws if fail
             // pass _algoSettingsService in constructor
-            _candlesService.StartProducing();
+            var candlesTask = _candlesService.StartProducing(cancellationToken);
             var quoteGeneration = _quoteProviderService.Initialize();
 
             if (!isBacktest)
@@ -126,10 +123,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 algoInstance.AlgoInstanceStatus = AlgoInstanceStatus.Started;
                 algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
-                _algoSettingsService.UpdateAlgoInstance(algoInstance);
+                await _algoSettingsService.UpdateAlgoInstance(algoInstance);
             }
 
-            return Task.WhenAll(quoteGeneration);
+            await Task.WhenAll(quoteGeneration, candlesTask);
         }
 
         public Task StopAsync()

@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using AutoMapper;
 using Common.Log;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
@@ -23,6 +22,7 @@ using Lykke.AlgoStore.Algo;
 using System.Dynamic;
 using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Mapper;
+using System.Threading;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -32,8 +32,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
     public class AlgoRunner
     {
         public static readonly Type DEFAULT_ALGO_CLASS_TO_RUN;
+
+        private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
+
         private static ILog _log;
         private static IAlgoWorkflowService _algoWorkflow;
+        private static IShutdownManager _shutdownManager;
+
+        private static Task _workflowServiceTask;
 
         static AlgoRunner()
         {
@@ -64,9 +70,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
                 // Create a workflow
                 _algoWorkflow = ioc.Resolve<IAlgoWorkflowService>();
+                _shutdownManager = ioc.Resolve<IShutdownManager>();
 
                 // Start the workflow. Await the task to block current thread on the algo execution
-                await _algoWorkflow.StartAsync();
+                _workflowServiceTask = _algoWorkflow.StartAsync(_cts.Token);
+                await _workflowServiceTask;
             }
             catch (Exception e)
             {
@@ -74,7 +82,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 Console.WriteLine($@"Error '{e.Message}' was thrown while executing the algo.");
                 Console.WriteLine(e);
 
-                _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
+                await _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
 
                 // Non-zero exit code
                 Environment.ExitCode = 1;
@@ -91,7 +99,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
         private static void Default_Unloading(AssemblyLoadContext obj)
         {
-            _algoWorkflow.StopAsync();
+            _cts.Cancel();
+            _workflowServiceTask?.GetAwaiter().GetResult();
+            _shutdownManager?.StopAsync().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -136,7 +146,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
             if (string.IsNullOrEmpty(dbLogConnectionString))
             {
-                consoleLogger.WriteWarningAsync(nameof(Startup), nameof(CreateLogWithSlack), "Table logger is not initiated").Wait();
+                consoleLogger.WriteWarningAsync(nameof(AlgoRunner), nameof(CreateLogWithSlack), 
+                    "Table logger is not initiated").Wait();
                 return aggregateLogger;
             }
 
