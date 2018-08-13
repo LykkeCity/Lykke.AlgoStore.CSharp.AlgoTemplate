@@ -38,6 +38,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
         private static ILog _log;
         private static IAlgoWorkflowService _algoWorkflow;
+        private static IShutdownManager _shutdownManager;
 
         private static Task _workflowServiceTask;
 
@@ -70,6 +71,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
                 // Create a workflow
                 _algoWorkflow = ioc.Resolve<IAlgoWorkflowService>();
+                _shutdownManager = ioc.Resolve<IShutdownManager>();
 
                 // Start the workflow. Await the task to block current thread on the algo execution
                 _workflowServiceTask = _algoWorkflow.StartAsync(_cts.Token);
@@ -81,7 +83,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 Console.WriteLine($@"Error '{e.Message}' was thrown while executing the algo.");
                 Console.WriteLine(e);
 
-                _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
+                await _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
 
                 // Non-zero exit code
                 Environment.ExitCode = 1;
@@ -100,7 +102,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
         {
             _cts.Cancel();
             _workflowServiceTask?.GetAwaiter().GetResult();
-            _algoWorkflow.StopAsync();
+            _shutdownManager?.StopAsync().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -145,7 +147,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
             if (string.IsNullOrEmpty(dbLogConnectionString))
             {
-                consoleLogger.WriteWarningAsync(nameof(Startup), nameof(CreateLogWithSlack), "Table logger is not initiated").Wait();
+                consoleLogger.WriteWarningAsync(nameof(AlgoRunner), nameof(CreateLogWithSlack), 
+                    "Table logger is not initiated").Wait();
                 return aggregateLogger;
             }
 
