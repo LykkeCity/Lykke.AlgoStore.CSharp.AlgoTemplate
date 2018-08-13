@@ -14,12 +14,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     public class HistoricalCandleProviderService : ICandleProviderService
     {
-        private class CandleSourceData
-        {
-            public IEnumerator<Candle> CandleSource { get; set; }
-            public DateTime From { get; set; }
-        }
-
         private class SubscriptionData
         {
             public string AssetPair { get; set; }

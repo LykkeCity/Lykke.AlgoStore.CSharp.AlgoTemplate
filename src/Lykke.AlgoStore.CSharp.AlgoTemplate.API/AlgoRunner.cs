@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using AutoMapper;
 using Common.Log;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
