@@ -1,10 +1,11 @@
 ﻿using Lykke.AlgoStore.Algo.Charting;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
 {
-    public interface IEventCollector
+    public interface IEventCollector : IDisposable
     {
         /// <summary>
         /// Submits a trade event to the event handler

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
-    public class EventCollector : IEventCollector
+    public sealed class EventCollector : IEventCollector
     {
         private readonly IAlgoSettingsService _settingsService;
         private readonly IInstanceEventHandlerClient _eventHandlerClient;
@@ -22,6 +22,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly int _batchSizeThreshold;
 
         private readonly bool _isBacktest;
+
+        private bool _isDisposed;
 
         public EventCollector(
             IAlgoSettingsService settingsService,
@@ -77,11 +79,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             await PostEvents(_tradeSubmitter, _eventHandlerClient.HandleTradesAsync, trades);
         }
 
+        public void Dispose()
+        {
+            if (_isDisposed) return;
+
+            _isDisposed = true;
+
+            _candleSubmitter?.Dispose();
+            _functionSubmitter?.Dispose();
+            _tradeSubmitter?.Dispose();
+        }
+
         private async Task PostEvent<T>(
             BatchSubmitter<T> submitter,
             Func<List<T>, Task> eventHandlerMethod,
             T eventUpdate)
         {
+            CheckDisposed();
+
             if (_isBacktest)
                 submitter.Enqueue(eventUpdate);
             else
@@ -93,6 +108,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             Func<List<T>, Task> eventHandlerMethod,
             IEnumerable<T> eventUpdates)
         {
+            CheckDisposed();
+
             if (eventUpdates == null)
                 throw new ArgumentNullException(nameof(eventUpdates));
 
@@ -100,6 +117,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 submitter.Enqueue(eventUpdates);
             else
                 await eventHandlerMethod(eventUpdates.ToList());
+        }
+
+        private void CheckDisposed()
+        {
+            if (_isDisposed) throw new ObjectDisposedException(nameof(EventCollector));
         }
 
         private BatchSubmitter<T> MakeSubmitter<T>(Func<List<T>, Task> eventHandlerMethod)

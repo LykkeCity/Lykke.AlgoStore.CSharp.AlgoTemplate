@@ -13,7 +13,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     /// <summary>
     /// <see cref="IUserLogService"/> implementation
     /// </summary>
-    public class UserLogService : IUserLogService
+    public sealed class UserLogService : IUserLogService
     {
         [NotNull] private readonly ILoggingClient _userLogClient;
         [NotNull] private readonly BatchSubmitter<UserLogRequest> _batchSubmitter;
@@ -53,6 +53,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Date = DateTime.UtcNow,
                 Message = message
             });
+        }
+
+        public void Dispose()
+        {
+            _batchSubmitter.Dispose();
         }
 
         private async Task PersistUserLogs(UserLogRequest[] userLogRequests)

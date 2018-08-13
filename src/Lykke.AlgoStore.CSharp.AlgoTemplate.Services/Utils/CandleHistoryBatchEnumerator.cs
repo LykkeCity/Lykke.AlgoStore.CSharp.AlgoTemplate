@@ -96,11 +96,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             do
             {
                 if (_currentTimestamp == default(DateTime))
-                    _currentTimestamp = _candlesHistoryRequest.From;
+                    _currentTimestamp = DateTime.SpecifyKind(_candlesHistoryRequest.From, DateTimeKind.Utc);
                 else
                     _currentTimestamp = _nextTimestamp;
 
-                _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 4000);
+                _nextTimestamp = DateTime.SpecifyKind(
+                    _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 4000), DateTimeKind.Utc);
 
                 var timeLimit = DateTime.UtcNow > _candlesHistoryRequest.To ? _candlesHistoryRequest.To : DateTime.UtcNow;
 

@@ -82,7 +82,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         private void CheckDisposed()
         {
             if (_isDisposing)
-                throw new ObjectDisposedException("BatchSubmitter");
+                throw new ObjectDisposedException(nameof(BatchSubmitter<T>));
         }
     }
 }
