@@ -4,6 +4,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,9 +81,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var token = _monitoringService.StartAlgoEvent(
                 "The instance is being stopped because OnStartUp took too long to execute.");
 
-            _algo.OnStartUp();
-
-            token.Cancel();
+            try
+            {
+                _algo.OnStartUp();
+            }
+            catch (Exception e)
+            {
+                throw new UserAlgoException(e);
+            }
+            finally
+            {
+                token.Cancel();
+            }
 
             var candleServiceCandleRequests = _functionsService.GetCandleRequests(authToken).ToList();
 
@@ -177,9 +187,18 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     var token = _monitoringService.StartAlgoEvent(
                         "The instance is being stopped because OnCandleReceived took too long to execute.");
 
-                    _algo.OnCandleReceived(ctx);
-
-                    token.Cancel();
+                    try
+                    {
+                        _algo.OnCandleReceived(ctx);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new UserAlgoException(e);
+                    }
+                    finally
+                    {
+                        token.Cancel();
+                    }
                 }
             }
         }
@@ -193,21 +212,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             var ctx = CreateQuoteContext(quote);
 
-            try
+            lock (_sync)
             {
-                lock (_sync)
+                var token = _monitoringService.StartAlgoEvent(
+                    "The instance is being stopped because OnQuoteReceived took too long to execute.");
+
+                try
                 {
-                    var token = _monitoringService.StartAlgoEvent(
-                        "The instance is being stopped because OnQuoteReceived took too long to execute.");
-
                     _algo.OnQuoteReceived(ctx);
-
+                }
+                catch (Exception e)
+                {
+                    throw new UserAlgoException(e);
+                }
+                finally
+                {
                     token.Cancel();
                 }
-            }
-            catch (TradingServiceException e)
-            {
-                OnErrorHandler(e);
             }
 
             return Task.CompletedTask;
