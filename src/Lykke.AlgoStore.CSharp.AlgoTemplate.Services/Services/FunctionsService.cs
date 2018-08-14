@@ -23,7 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         // Fields:
         private readonly AlgoMetaDataInformation _algoMetaData;
         private readonly Dictionary<string, IIndicator> _allFunctions = new Dictionary<string, IIndicator>();
-        private readonly Dictionary<string, AlgoMetaDataFunction> _indicatorData 
+        private readonly Dictionary<string, AlgoMetaDataFunction> _indicatorData
             = new Dictionary<string, AlgoMetaDataFunction>();
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _eventCollector = eventCollector;
             _algoMetaData = _algoSettingsService.GetAlgoInstance().AlgoMetaDataInformation;
 
-            foreach(var indicator in _algoMetaData.Functions)
+            foreach (var indicator in _algoMetaData.Functions)
                 _indicatorData.Add(indicator.Id, indicator);
         }
 
@@ -111,10 +111,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var functionChartingUpdate = new FunctionChartingUpdate
                 {
-                    CalculatedOn = DateTime.UtcNow,
+                    CalculatedOn = candlesResponse.Candle.DateTime,
                     FunctionName = functionId,
                     InstanceId = instanceId,
-                    Value = functionNewValue?? 0
+                    Value = functionNewValue ?? 0
                 };
 
                 updateList.Add(functionChartingUpdate);
@@ -154,7 +154,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             var indicatorData = _indicatorData[indicator];
 
-            if(indicatorData == null)
+            if (indicatorData == null)
                 throw new KeyNotFoundException($"The indicator \"{indicator}\" doesn't exist");
 
             var paramData = indicatorData.Parameters.FirstOrDefault(p => p.Key == param);
