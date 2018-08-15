@@ -12,5 +12,6 @@ namespace Lykke.AlgoStore.Algo.Charting
         public DateTime DateReceived { get; }
         public bool IsOnline { get; }
         public string InstanceId { get; set; }
+        public string AssetPair { get; set; }
     }
 }
