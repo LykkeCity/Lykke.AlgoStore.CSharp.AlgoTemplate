@@ -12,6 +12,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Mapper
                 .ForMember(dest => dest.InstanceId, opt => opt.Ignore())
                 .ForMember(dest => dest.AssetPair, opt => opt.Ignore())
                 .ForMember(dest => dest.CandleTimeInterval, opt => opt.Ignore());
+            CreateMap<IAlgoQuote, QuoteChartingUpdate>()
+                .ForMember(dest => dest.InstanceId, opt => opt.Ignore())
+                .ForMember(dest => dest.AssetPair, opt => opt.Ignore());
+
         }
     }
 }
