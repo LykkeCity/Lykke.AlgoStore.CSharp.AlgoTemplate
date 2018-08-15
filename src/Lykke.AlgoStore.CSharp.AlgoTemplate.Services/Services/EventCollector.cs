@@ -77,6 +77,36 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             await PostEvents(_tradeSubmitter, _eventHandlerClient.HandleTradesAsync, trades);
         }
 
+        public async Task SubmitQuoteEvent(QuoteChartingUpdate quote)
+        {
+            await PostEvents(_eventHandlerClient.HandleQuotesAsync, quote);
+        }
+
+        public async Task SubmitQuoteEvents(IEnumerable<QuoteChartingUpdate> quotes)
+        {
+            await PostEvents(_eventHandlerClient.HandleQuotesAsync, quotes);
+        }
+
+        private async Task PostEvents<T>(
+            Func<List<T>, Task> eventHandlerMethod,
+            T eventUpdate)
+        {
+            if (eventUpdate == null)
+                throw new ArgumentNullException(nameof(eventUpdate));
+
+            await eventHandlerMethod(new List<T> { eventUpdate });
+        }
+
+        private async Task PostEvents<T>(
+            Func<List<T>, Task> eventHandlerMethod,
+            IEnumerable<T> eventUpdates)
+        {
+            if (eventUpdates == null)
+                throw new ArgumentNullException(nameof(eventUpdates));
+            
+            await eventHandlerMethod(eventUpdates.ToList());
+        }
+
         private async Task PostEvent<T>(
             BatchSubmitter<T> submitter,
             Func<List<T>, Task> eventHandlerMethod,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Log;
 using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
@@ -20,6 +21,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ILog _log;
         private RabbitMqSubscriber<QuoteMessage> _subscriber;
         private readonly IAlgoSettingsService _algoSettingsService;
+        private readonly IEventCollector _eventCollector;
 
         private readonly object _subsciptionLock = new object();
         private List<Func<IAlgoQuote, Task>> _subscriptions = new List<Func<IAlgoQuote, Task>>();
@@ -32,11 +34,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// <param name="settings">The settings.</param>
         /// <param name="log">The log.</param>
         public RabbitMqQuoteProviderService(IReloadingManager<QuoteRabbitMqSubscriptionSettings> settings,
-                                            ILog log, IAlgoSettingsService algoSettingsService)
+                                            ILog log, IAlgoSettingsService algoSettingsService, IEventCollector eventCollector)
         {
             _settings = settings;
             _log = log;
             _algoSettingsService = algoSettingsService;
+            _eventCollector = eventCollector;
         }
         /// <summary>
         /// Finalizes an instance of the <see cref="RabbitMqQuoteProviderService"/> class.
@@ -137,6 +140,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     DateReceived = DateTime.UtcNow
                 };
 
+                SendQuoteChartingUpdate(quote, quoteMessage.AssetPair);
+
                 foreach (Func<IAlgoQuote, Task> subscription in _subscriptions)
                 {
                     try
@@ -154,6 +159,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Task.WaitAll(tasks.ToArray());
                 return Task.CompletedTask;
             }
+        }
+
+        private void SendQuoteChartingUpdate(IAlgoQuote quote, string assetPaitr)
+        {
+            var candleChartingUpdate = AutoMapper.Mapper.Map<QuoteChartingUpdate>(quote);
+
+            candleChartingUpdate.InstanceId = _algoSettingsService.GetInstanceId();
+            candleChartingUpdate.AssetPair = assetPaitr;
+
+            _eventCollector.SubmitQuoteEvent(candleChartingUpdate).GetAwaiter().GetResult();
         }
 
         #region IStopable implementation

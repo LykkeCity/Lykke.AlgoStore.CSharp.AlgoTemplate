@@ -53,5 +53,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         /// Thrown when <paramref name="functions"/> is null
         /// </exception>
         Task SubmitFunctionEvents(IEnumerable<FunctionChartingUpdate> functions);
+
+        /// <summary>
+        /// Submits a quote update event to the event handler
+        /// </summary>
+        /// <param name="quote">The quote event to submit</param>
+        /// <returns>Task which completes once the event has been submitted</returns>
+        Task SubmitQuoteEvent(QuoteChartingUpdate quote);
+        /// <summary>
+        /// Submits a set of quote update events to the event handler
+        /// </summary>
+        /// <param name="quotes">The set of quote update events to submit</param>
+        /// <returns>Task which completes once the events have been submitted</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when <paramref name="quotes"/> is null
+        /// </exception>
+        Task SubmitQuoteEvents(IEnumerable<QuoteChartingUpdate> quotes);
     }
 }
