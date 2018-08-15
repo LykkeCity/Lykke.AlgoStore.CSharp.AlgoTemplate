@@ -23,6 +23,8 @@ using System.Dynamic;
 using Newtonsoft.Json;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Mapper;
 using System.Threading;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
+using Newtonsoft.Json.Linq;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -36,6 +38,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
         private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         private static ILog _log;
+        private static IUserLogService _userLogService;
         private static IAlgoWorkflowService _algoWorkflow;
         private static IShutdownManager _shutdownManager;
 
@@ -70,6 +73,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
                 // Create a workflow
                 _algoWorkflow = ioc.Resolve<IAlgoWorkflowService>();
+                _userLogService = ioc.Resolve<IUserLogService>();
                 _shutdownManager = ioc.Resolve<IShutdownManager>();
 
                 // Start the workflow. Await the task to block current thread on the algo execution
@@ -83,6 +87,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 Console.WriteLine(e);
 
                 await _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
+
+                var algoParams = JObject.Parse(Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS"));
+
+                if (e is UserAlgoException)
+                {
+                    _userLogService?.Enqueue(algoParams["InstanceId"].Value<string>(), 
+                        $"A fatal error occured during a running algo event: {e.InnerException}");
+                }
+                else
+                {
+                    _userLogService?.Enqueue(algoParams["InstanceId"].Value<string>(), 
+                        "A fatal error was encountered during the operation of the instance. Please contact an administrator.");
+                }
+
+                _userLogService?.Dispose();
 
                 // Non-zero exit code
                 Environment.ExitCode = 1;
