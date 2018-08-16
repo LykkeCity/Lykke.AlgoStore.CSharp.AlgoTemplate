@@ -108,6 +108,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             CreateMap<AlgoData, IAlgo>();
 
             CreateMap<IAlgo, AlgoData>();
+
+            CreateMap<QuoteChartingUpdateEntity, QuoteChartingUpdateData>()
+                .ForSourceMember(src => src.RowKey, opt => opt.Ignore())
+                .ForSourceMember(src => src.Timestamp, opt => opt.Ignore())
+                .ForSourceMember(src => src.PartitionKey, opt => opt.Ignore())
+                .ForSourceMember(src => src.ETag, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.QuoteTimestamp));
+
+            CreateMap<QuoteChartingUpdateData, QuoteChartingUpdateEntity>()
+                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForMember(dest => dest.QuoteTimestamp, opt => opt.MapFrom(src => src.Timestamp))
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore());
         }
     }
 }
