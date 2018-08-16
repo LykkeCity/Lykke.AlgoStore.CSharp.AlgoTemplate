@@ -44,6 +44,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
         private static Task _workflowServiceTask;
 
+        private static bool _faulted;
+
         static AlgoRunner()
         {
             // Initialize eagerly the class for the algo assembly so
@@ -86,6 +88,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 Console.WriteLine($@"Error '{e.Message}' was thrown while executing the algo.");
                 Console.WriteLine(e);
 
+                _faulted = true;
+
                 await _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
 
                 var algoParams = JObject.Parse(Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS"));
@@ -119,7 +123,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
         private static void Default_Unloading(AssemblyLoadContext obj)
         {
             _cts.Cancel();
-            _workflowServiceTask?.GetAwaiter().GetResult();
+            if(!_faulted)
+                _workflowServiceTask?.GetAwaiter().GetResult();
             _shutdownManager?.StopAsync().GetAwaiter().GetResult();
         }
 
