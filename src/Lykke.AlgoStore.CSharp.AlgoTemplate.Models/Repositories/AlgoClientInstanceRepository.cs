@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
-using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
@@ -106,7 +105,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         public async Task<IEnumerable<AlgoClientInstanceData>> GetAllByWalletIdAndInstanceStatusIsNotStoppedAsync(string walletId)
         {
             var entities = (await _table.GetDataAsync(KeyGenerator.GenerateWalletIdPartitionKey(walletId)))
-                                    .Where(a => a.AlgoInstanceStatus != AlgoInstanceStatus.Stopped);
+                                    .Where(a => a.AlgoInstanceStatus != AlgoInstanceStatus.Stopped 
+                                             && a.AlgoInstanceStatus != AlgoInstanceStatus.Errored);
             var result = entities.Select(entity => entity.ToModel());
             return result;
         }
