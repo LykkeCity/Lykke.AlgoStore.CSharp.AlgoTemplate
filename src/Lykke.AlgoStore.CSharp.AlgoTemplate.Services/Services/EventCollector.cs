@@ -17,6 +17,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly BatchSubmitter<CandleChartingUpdate> _candleSubmitter;
         private readonly BatchSubmitter<FunctionChartingUpdate> _functionSubmitter;
         private readonly BatchSubmitter<TradeChartingUpdate> _tradeSubmitter;
+        private readonly BatchSubmitter<QuoteChartingUpdate> _quoteSubmitter;
 
         private readonly TimeSpan _maxBatchLifetime;
         private readonly int _batchSizeThreshold;
@@ -46,6 +47,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _functionSubmitter = 
                     MakeSubmitter<FunctionChartingUpdate>(_eventHandlerClient.HandleFunctionsAsync);
                 _tradeSubmitter = MakeSubmitter<TradeChartingUpdate>(_eventHandlerClient.HandleTradesAsync);
+                _quoteSubmitter = MakeSubmitter<QuoteChartingUpdate>(_eventHandlerClient.HandleQuotesAsync);
             }
         }
 
@@ -81,38 +83,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public async Task SubmitQuoteEvent(QuoteChartingUpdate quote)
         {
-            await PostEvents(_eventHandlerClient.HandleQuotesAsync, quote);
+            await PostEvent(_quoteSubmitter, _eventHandlerClient.HandleQuotesAsync, quote);
         }
 
         public async Task SubmitQuoteEvents(IEnumerable<QuoteChartingUpdate> quotes)
         {
-            await PostEvents(_eventHandlerClient.HandleQuotesAsync, quotes);
+            await PostEvents(_quoteSubmitter, _eventHandlerClient.HandleQuotesAsync, quotes);
         }
-
-        private async Task PostEvents<T>(
-            Func<List<T>, Task> eventHandlerMethod,
-            T eventUpdate)
-        {
-            CheckDisposed();
-
-            if (eventUpdate == null)
-                throw new ArgumentNullException(nameof(eventUpdate));
-
-            await eventHandlerMethod(new List<T> { eventUpdate });
-        }
-
-        private async Task PostEvents<T>(
-            Func<List<T>, Task> eventHandlerMethod,
-            IEnumerable<T> eventUpdates)
-        {
-            CheckDisposed();
-
-            if (eventUpdates == null)
-                throw new ArgumentNullException(nameof(eventUpdates));
-            
-            await eventHandlerMethod(eventUpdates.ToList());
-        }
-
 
         public void Dispose()
         {
@@ -123,6 +100,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _candleSubmitter?.Dispose();
             _functionSubmitter?.Dispose();
             _tradeSubmitter?.Dispose();
+            _quoteSubmitter?.Dispose();
         }
 
         private async Task PostEvent<T>(
@@ -130,12 +108,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             Func<List<T>, Task> eventHandlerMethod,
             T eventUpdate)
         {
-            CheckDisposed();
-
-            if (_isBacktest)
-                submitter.Enqueue(eventUpdate);
-            else
-                await eventHandlerMethod(new List<T> { eventUpdate });
+            await PostEvents(submitter, eventHandlerMethod, new List<T>{eventUpdate});
         }
 
         private async Task PostEvents<T>(
