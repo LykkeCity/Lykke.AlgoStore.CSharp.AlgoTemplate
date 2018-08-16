@@ -87,6 +87,27 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                   .ForSourceMember(src => src.Timestamp, opt => opt.Ignore())
                   .ForMember(dest => dest.NetProfit, opt => opt.Ignore());
 
+            CreateMap<AlgoEntity, IAlgo>()
+                .ForMember(dest => dest.AlgoVisibility, opt => opt.Ignore());
+
+            CreateMap<IAlgo, AlgoEntity>()
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore())
+                .ForMember(dest => dest.AlgoVisibilityValue, opt => opt.Ignore());
+
+            CreateMap<AlgoEntity, AlgoDataInformation>()
+                .ForMember(dest => dest.AlgoId, opt => opt.MapFrom(src => src.RowKey))
+                .ForMember(dest => dest.Rating, opt => opt.Ignore())
+                .ForMember(dest => dest.RatedUsersCount, opt => opt.Ignore())
+                .ForMember(dest => dest.UsersCount, opt => opt.Ignore())
+                .ForMember(dest => dest.Author, opt => opt.Ignore())
+                .ForMember(dest => dest.AlgoMetaDataInformation, opt => opt.Ignore());
+
+            CreateMap<AlgoData, IAlgo>();
+
+            CreateMap<IAlgo, AlgoData>();
         }
     }
 }
