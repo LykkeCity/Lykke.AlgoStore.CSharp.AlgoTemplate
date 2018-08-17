@@ -29,13 +29,21 @@ namespace Lykke.AlgoStore.Algo
 
         protected MACD MACD(
             string indicatorName,
+            [Description("The amount of most recent values this indicator will operate on.")]
             int? fastEmaPeriod = null,
+            [Description("The amount of most recent values this indicator will operate on.")]
             int? slowEmaPeriod = null,
+            [Description("The amount of most recent values this indicator will operate on.")]
             int? signalLinePeriod = null,
+            [Description("The starting date of the indicator.")]
             DateTime? startingDate = null,
+            [Description("The ending date of the indicator.")]
             DateTime? endingDate = null,
+            [Description("The asset pair that the indicator will be using.")]
             string assetPair = null,
+            [Description("The interval that the candles will be received on.")]
             CandleTimeInterval? candleTimeInterval = null,
+            [Description("The candle value on which the function is operating. The same function can be operating on Min/Max or Open/Close of a Candle.")]
             CandleOperationMode? candleOperationMode = null)
         {
             var indicator = new MACD(
@@ -55,11 +63,17 @@ namespace Lykke.AlgoStore.Algo
 
         protected EMA EMA(
             string indicatorName,
+            [Description("The amount of most recent values this indicator will operate on.")]
             int? period = null,
+            [Description("The starting date of the indicator.")]
             DateTime? startingDate = null,
+            [Description("The ending date of the indicator.")]
             DateTime? endingDate = null,
+            [Description("The asset pair that the indicator will be using.")]
             string assetPair = null,
+            [Description("The interval that the candles will be received on.")]
             CandleTimeInterval? candleTimeInterval = null,
+            [Description("The candle value on which the function is operating. The same function can be operating on Min/Max or Open/Close of a Candle.")]
             CandleOperationMode? candleOperationMode = null)
         {
             var indicator = new EMA(
@@ -77,11 +91,17 @@ namespace Lykke.AlgoStore.Algo
 
         protected SMA SMA(
             string indicatorName,
+            [Description("The amount of most recent values this indicator will operate on.")]
             int? period = null,
+            [Description("The starting date of the indicator.")]
             DateTime? startingDate = null,
+            [Description("The ending date of the indicator.")]
             DateTime? endingDate = null,
+            [Description("The asset pair that the indicator will be using.")]
             string assetPair = null,
+            [Description("The interval that the candles will be received on.")]
             CandleTimeInterval? candleTimeInterval = null,
+            [Description("The candle value on which the function is operating. The same function can be operating on Min/Max or Open/Close of a Candle.")]
             CandleOperationMode? candleOperationMode = null)
         {
             var indicator = new SMA(
@@ -99,10 +119,15 @@ namespace Lykke.AlgoStore.Algo
 
         protected ADX ADX(
             string indicatorName,
+            [Description("The amount of most recent values this indicator will operate on.")]
             int? period = null,
+            [Description("The starting date of the indicator.")]
             DateTime? startingDate = null,
+            [Description("The ending date of the indicator.")]
             DateTime? endingDate = null,
+            [Description("The asset pair that the indicator will be using.")]
             string assetPair = null,
+            [Description("The interval that the candles will be received on.")]
             CandleTimeInterval? candleTimeInterval = null)
         {
             var indicator = new ADX(
@@ -119,10 +144,15 @@ namespace Lykke.AlgoStore.Algo
 
         protected ATR ATR(
             string indicatorName,
+            [Description("The amount of most recent values this indicator will operate on.")]
             int? period = null,
+            [Description("The starting date of the indicator.")]
             DateTime? startingDate = null,
+            [Description("The ending date of the indicator.")]
             DateTime? endingDate = null,
+            [Description("The asset pair that the indicator will be using.")]
             string assetPair = null,
+            [Description("The interval that the candles will be received on.")]
             CandleTimeInterval? candleTimeInterval = null)
         {
             var indicator = new ATR(
@@ -139,10 +169,15 @@ namespace Lykke.AlgoStore.Algo
 
         protected DMI DMI(
             string indicatorName,
+            [Description("The amount of most recent values this indicator will operate on.")]
             int? period = null,
+            [Description("The starting date of the indicator.")]
             DateTime? startingDate = null,
+            [Description("The ending date of the indicator.")]
             DateTime? endingDate = null,
+            [Description("The asset pair that the indicator will be using.")]
             string assetPair = null,
+            [Description("The interval that the candles will be received on.")]
             CandleTimeInterval? candleTimeInterval = null)
         {
             var indicator = new DMI(
@@ -169,11 +204,17 @@ namespace Lykke.AlgoStore.Algo
         {
         }
 
+        [Description("The asset pair that the algorithm will be using.")]
         public string AssetPair { get; }
+        [Description("The interval that the candles will be received.")]
         public CandleTimeInterval CandleInterval { get; }
+        [Description("The starting date of the algorithm.")]
         public DateTime StartFrom { get; }
+        [Description("The ending date of the algorithm.")]
         public DateTime EndOn { get; }
+        [Description("The volume that your algorithm will trade.")]
         public double Volume { get; }
+        [Description("The asset that your algorithm will use for trading.")]
         public string TradedAsset { get; }
     }
 }

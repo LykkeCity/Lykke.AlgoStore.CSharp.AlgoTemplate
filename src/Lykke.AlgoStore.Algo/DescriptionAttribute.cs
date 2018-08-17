@@ -2,7 +2,7 @@
 
 namespace Lykke.AlgoStore.Algo
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class DescriptionAttribute : Attribute
     {
         public string Description { get; }
