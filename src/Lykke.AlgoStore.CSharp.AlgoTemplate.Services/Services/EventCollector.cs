@@ -4,13 +4,15 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     public sealed class EventCollector : IEventCollector
     {
+        private static readonly int DefaultRetryCount = 5;
+        private static readonly TimeSpan DefaultRetryDelay = TimeSpan.FromSeconds(5);
+
         private readonly IAlgoSettingsService _settingsService;
         private readonly IInstanceEventHandlerClient _eventHandlerClient;
 
@@ -124,7 +126,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (_isBacktest)
                 submitter.Enqueue(eventUpdates);
             else
-                await eventHandlerMethod(eventUpdates.ToList());
+                await SubmitEventsWithRetry(eventUpdates, eventHandlerMethod, DefaultRetryCount, DefaultRetryDelay);
         }
 
         private void CheckDisposed()
@@ -140,7 +142,32 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         private Func<T[], Task> MakeBatchHandler<T>(Func<List<T>, Task> targetMethod)
         {
-            return async (data) => await targetMethod(new List<T>(data));
+            return async (data) => await SubmitEventsWithRetry(data, targetMethod, DefaultRetryCount, DefaultRetryDelay);
+        }
+
+        private async Task SubmitEventsWithRetry<T>(
+            IEnumerable<T> data, Func<List<T>, Task> targetMethod,
+            int maxRetryCount, TimeSpan delayBetweenTries)
+        {
+            var retryCount = 0;
+            var succeeded = false;
+
+            while (!succeeded)
+            {
+                try
+                {
+                    await targetMethod(new List<T>(data));
+                    succeeded = true;
+                }
+                catch (TaskCanceledException)
+                {
+                    if (retryCount > maxRetryCount)
+                        throw;
+
+                    await Task.Delay(delayBetweenTries);
+                    retryCount++;
+                }
+            }
         }
     }
 }
