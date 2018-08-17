@@ -25,6 +25,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Mapper;
 using System.Threading;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -96,8 +97,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
                 if (e is UserAlgoException)
                 {
+                    var removedFilePathsException = Regex.Replace(
+                        e.InnerException.ToString(),
+                        @"in [/\\A-Za-z0-9:.]+[\\/]([A-Za-z0-9]+\.cs)",
+                        "in $1");
+
                     _userLogService?.Enqueue(algoParams["InstanceId"].Value<string>(), 
-                        $"A fatal error occured during a running algo event: {e.InnerException}");
+                        $"A fatal error occured during a running algo event: {removedFilePathsException}");
                 }
                 else
                 {
