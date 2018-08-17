@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
@@ -8,10 +6,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
     {
         public string InstanceId { get; set; }
         public string AssetPair { get; set; }
-        public bool IsBuy { get; }
-        public double Price { get; }
-        public DateTime Timestamp { get; }
-        public DateTime DateReceived { get; }
-        public bool IsOnline { get; }
+        public bool IsBuy { get; set; }
+        public double Price { get; set; }
+        public DateTime Timestamp { get; set; }
+        public DateTime DateReceived { get; set; }
+        public bool IsOnline { get; set; }
     }
 }
