@@ -29,11 +29,11 @@ namespace Lykke.AlgoStore.Algo
 
         protected MACD MACD(
             string indicatorName,
-            [Description("The amount of most recent values that the Fast EMA will operate on.")]
+            [Description("The amount of most recent values that the Fast EMA indicator will operate on.")]
             int? fastEmaPeriod = null,
-            [Description("The amount of most recent values that the Slow EMA will operate on.")]
+            [Description("The amount of most recent values that the Slow EMA indicator will operate on.")]
             int? slowEmaPeriod = null,
-            [Description("The amount of most recent values that the Single Line will operate on.")]
+            [Description("The amount of most recent values that the Signal Line indicator will operate on.")]
             int? signalLinePeriod = null,
             [Description("The starting date of the indicator.")]
             DateTime? startingDate = null,
