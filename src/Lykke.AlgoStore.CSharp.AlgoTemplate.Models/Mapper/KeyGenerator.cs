@@ -15,6 +15,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
         private const string EndDatePartitionKeyStatic = "StoppingEntity";
         private const string TcBuildPartitionKeyStatic = "TcBuildEntity";
 
+        public static string GenerateKey(string clientId, string algoId)
+        {
+            return string.Format(PartitionKeyPattern, clientId, PartitionKeySeparator, algoId);
+        }
+
         public static string GenerateClientIdPartitionKey(string clientId)
         {
             return string.Format(PartitionKeyPattern, ClientPartitionKeyStatic, PartitionKeySeparator, clientId);
