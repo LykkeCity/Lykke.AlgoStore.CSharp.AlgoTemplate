@@ -12,7 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
     {
         public static readonly string TableName = "PublicAlgosTable";
 
-        public readonly string _deactivatedFakeClientId = "Deactivated";
+        public static readonly string DeactivatedFakeClientId = "Deactivated";
 
         private readonly INoSQLTableStorage<PublicAlgoEntity> _table;
 
@@ -51,7 +51,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         {
             await _table.DeleteIfExistAsync(PublicAlgoMapper.PartitionKey, KeyGenerator.GenerateKey(data.ClientId, data.AlgoId));
 
-            data.ClientId = _deactivatedFakeClientId;
+            data.ClientId = DeactivatedFakeClientId;
             var fakeAlgoEntity = data.ToEntity();
 
             await _table.InsertOrMergeAsync(fakeAlgoEntity);
