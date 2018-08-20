@@ -204,16 +204,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
         private async Task SaveAlgoInstanceStoppingEntity(AlgoClientInstanceData data)
         {
-            AlgoInstanceStoppingEntity endDatePartitionKeyEntity;
+            AlgoInstanceStoppingEntity endDatePartitionKeyEntity = data.ToStoppingEntityWithEndDatePartitionKey();
 
             if (data.AlgoInstanceType != AlgoInstanceType.Test && data.AlgoInstanceStatus == AlgoInstanceStatus.Stopped)
             {
-                endDatePartitionKeyEntity = data.ToStoppingEntityWithEndDatePartitionKey();
                 await _stoppingEntityTable.DeleteIfExistAsync(endDatePartitionKeyEntity.PartitionKey, endDatePartitionKeyEntity.RowKey);
             }
             else if (data.AlgoInstanceType != AlgoInstanceType.Test && data.AlgoInstanceStatus != AlgoInstanceStatus.Stopped)
             {
-                endDatePartitionKeyEntity = data.ToStoppingEntityWithEndDatePartitionKey();
                 await _stoppingEntityTable.InsertOrMergeAsync(endDatePartitionKeyEntity);
             }
         }
