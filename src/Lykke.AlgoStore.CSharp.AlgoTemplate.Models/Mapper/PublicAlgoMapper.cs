@@ -14,7 +14,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             if (entitiy == null)
                 return result;
 
-            var pair = KeyGenerator.ParseKey(entitiy.RowKey);
+            var pair = KeyGeneratorPublicAlgos.ParseKey(entitiy.RowKey);
             if (pair == null)
                 return result;
 
@@ -32,7 +32,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                 return result;
 
             result.PartitionKey = PartitionKey;
-            result.RowKey = KeyGenerator.GenerateKey(data.ClientId, data.AlgoId);
+            result.RowKey = KeyGeneratorPublicAlgos.GenerateKey(data.ClientId, data.AlgoId);
             result.ETag = "*";
 
             return result;
