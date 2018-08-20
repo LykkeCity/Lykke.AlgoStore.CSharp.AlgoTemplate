@@ -51,7 +51,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         {
             var algoEntity = data.ToEntity();
 
-            await _table.DeleteIfExistAsync(algoEntity.PartitionKey, algoEntity.RowKey);
+            await _table.DeleteIfExistAsync(PublicAlgoMapper.PartitionKey, KeyGenerator.GenerateKey(data.ClientId, data.AlgoId););
 
             data.ClientId = _deactivatedFakeClientId;
             var fakeAlgoEntity = data.ToEntity();
@@ -65,5 +65,4 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _table.DeleteAsync(entities);
         }
     }
-
 }
