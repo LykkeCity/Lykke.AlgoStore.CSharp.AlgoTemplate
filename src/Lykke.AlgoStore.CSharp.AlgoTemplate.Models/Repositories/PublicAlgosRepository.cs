@@ -12,7 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
     {
         public static readonly string TableName = "PublicAlgosTable";
 
-        private readonly string _deactivatedFakeClientId = "Deactivated";
+        public readonly string _deactivatedFakeClientId = "Deactivated";
 
         private readonly INoSQLTableStorage<PublicAlgoEntity> _table;
 
