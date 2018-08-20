@@ -49,8 +49,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
         public async Task SavePublicAlgoNewPKAsync(PublicAlgoData data)
         {
-            var algoEntity = data.ToEntity();
-
             await _table.DeleteIfExistAsync(PublicAlgoMapper.PartitionKey, KeyGenerator.GenerateKey(data.ClientId, data.AlgoId));
 
             data.ClientId = _deactivatedFakeClientId;
