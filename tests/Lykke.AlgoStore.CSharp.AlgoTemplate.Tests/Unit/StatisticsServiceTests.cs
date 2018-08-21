@@ -121,7 +121,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
         private static IStatisticsService Given_StatisticsService(IStatisticsRepository repo)
         {
-            var statisticsService = new StatisticsService(repo, SettingsMock.InitSettingsService());
+            var statisticsService = new StatisticsService(repo, SettingsMock.InitSettingsService(), 
+                Mock.Of<IEventCollector>());
 
             return statisticsService;
         }

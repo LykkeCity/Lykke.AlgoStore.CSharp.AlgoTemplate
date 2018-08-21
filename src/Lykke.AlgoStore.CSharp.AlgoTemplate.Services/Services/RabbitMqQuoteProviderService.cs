@@ -140,8 +140,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     DateReceived = DateTime.UtcNow
                 };
 
-                SendQuoteChartingUpdate(quote, quoteMessage.AssetPair);
-
                 foreach (Func<IAlgoQuote, Task> subscription in _subscriptions)
                 {
                     try
@@ -159,16 +157,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 Task.WaitAll(tasks.ToArray());
                 return Task.CompletedTask;
             }
-        }
-
-        private void SendQuoteChartingUpdate(IAlgoQuote quote, string assetPaitr)
-        {
-            var candleChartingUpdate = AutoMapper.Mapper.Map<QuoteChartingUpdate>(quote);
-
-            candleChartingUpdate.InstanceId = _algoSettingsService.GetInstanceId();
-            candleChartingUpdate.AssetPair = assetPaitr;
-
-            _eventCollector.SubmitQuoteEvent(candleChartingUpdate).GetAwaiter().GetResult();
         }
 
         #region IStopable implementation
