@@ -42,7 +42,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         public async Task SaveAlgoRatingAsync(AlgoRatingData data)
         {
             var entityWithAlgoIdPK = data.ToEntity();
-            var entityWithClientIdPK = data.ToClientIdPartionKeyEntity();
+            var entityWithClientIdPK = data.ToEntityWithClientIdPartitionKey();
 
             await _table.InsertOrReplaceAsync(entityWithAlgoIdPK);
             await _table.InsertOrReplaceAsync(entityWithClientIdPK);
@@ -55,7 +55,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             data.ClientId = _deactivatedFakeClientId;
             var entityWithAlgoIdPK = data.ToEntity();
-            var entityWithClientIdPK = data.ToClientIdPartionKeyEntity();
+            var entityWithClientIdPK = data.ToEntityWithClientIdPartitionKey();
 
             await _table.InsertOrReplaceAsync(entityWithAlgoIdPK);
             await _table.InsertOrReplaceAsync(entityWithClientIdPK);

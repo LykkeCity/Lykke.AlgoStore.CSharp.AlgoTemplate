@@ -79,7 +79,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
 
         }
 
-        public static AlgoRatingEntity ToClientIdPartionKeyEntity(this AlgoRatingData data)
+        public static AlgoRatingEntity ToEntityWithClientIdPartitionKey(this AlgoRatingData data)
         {
             var result = new AlgoRatingEntity();
 
