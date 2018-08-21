@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using JetBrains.Annotations;
+using Lykke.AlgoStore.Common;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using Lykke.AlgoStore.Service.Logging.Client;
 using Lykke.Service.Logging.Client.AutorestClient.Models;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
@@ -13,14 +14,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
     {
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly IAlgoSettingsService _algoSettings;
+        private readonly IEventCollector _eventCollector;
         private string _instanceId;
+        private string _algoAssetPair;
 
         public StatisticsService(
             IStatisticsRepository statisticsRepository,
-            IAlgoSettingsService algoSettings)
+            IAlgoSettingsService algoSettings,
+            IEventCollector eventCollector)
         {
             _statisticsRepository = statisticsRepository;
             _algoSettings = algoSettings;
+            _algoAssetPair = _algoSettings.GetAlgoInstanceAssetPairId();
+            _eventCollector = eventCollector;
         }
 
         public IAlgoQuote GetQuote()
@@ -30,7 +36,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnQuote(IAlgoQuote quote)
         {
-            //REMARK: No need to save any statistics here (for now)
+            var candleChartingUpdate = AutoMapper.Mapper.Map<QuoteChartingUpdate>(quote);
+
+            candleChartingUpdate.InstanceId = _algoSettings.GetInstanceId();
+            candleChartingUpdate.AssetPair = _algoAssetPair;
+
+            _eventCollector.SubmitQuoteEvent(candleChartingUpdate).GetAwaiter().GetResult();
         }
 
         public void OnAction(bool isBuy, double volume, double price)

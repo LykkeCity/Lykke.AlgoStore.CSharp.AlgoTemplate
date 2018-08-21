@@ -1,6 +1,6 @@
 ﻿using Lykke.AlgoStore.Algo.Charting;
+using Lykke.AlgoStore.Common;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using System;
 using System.Collections.Generic;

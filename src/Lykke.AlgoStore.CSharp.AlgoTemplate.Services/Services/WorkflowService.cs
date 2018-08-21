@@ -208,6 +208,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (quote.DateReceived > _algo.EndOn)
                 return Task.CompletedTask;
 
+            if (!_isWarmUpDone)
+                return Task.CompletedTask;
+
             _statisticsService.OnQuote(quote);
 
             var ctx = CreateQuoteContext(quote);
