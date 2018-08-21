@@ -42,6 +42,28 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             return result;
         }
 
+        public static List<AlgoRatingData> ToModelWithPrimaryKeyClientId(this ICollection<AlgoRatingEntity> entities)
+        {
+            var result = new List<AlgoRatingData>();
+
+            if (entities == null || entities.Count == 0)
+                return result;
+
+            foreach (var item in entities)
+            {
+                var ratingData = new AlgoRatingData
+                {
+                    ClientId = item.PartitionKey,
+                    AlgoId = item.RowKey,
+                    Rating = item.Rating
+                };
+
+                result.Add(ratingData);
+            }
+
+            return result;
+        }
+
         public static AlgoRatingEntity ToEntity(this AlgoRatingData data)
         {
             var result = new AlgoRatingEntity();
@@ -55,6 +77,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
 
             return result;
 
+        }
+
+        public static AlgoRatingEntity ToClientIdPartionKeyEntity(this AlgoRatingData data)
+        {
+            var result = new AlgoRatingEntity();
+
+            if (data == null)
+                return result;
+
+            result.PartitionKey = data.ClientId;
+            result.RowKey = data.AlgoId;
+            result.Rating = data.Rating;
+
+            return result;
         }
     }
 
