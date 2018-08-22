@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Lykke.AlgoStore.Algo.Indicators;
+using NUnit.Framework;
 using System;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Functions.MACD;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
@@ -14,23 +14,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
         private static readonly double[] FixedPriceValues = { 1, 2, 3 };
 
-        private MacdParameters DefaultMacdParameters => new MacdParameters
-        {
-            FastEmaPeriod = DEFAULT_PERIOD_FAST,
-            SlowEmaPeriod = DEFAULT_PERIOD_SLOW,
-            SignalLinePeriod = DEFAULT_PERIOD_SIGNAL
-        };
-
-        [Test]
-        public void CreateMacd_WithNullParams_ThrowsException()
-        {
-            Assert.Throws<ArgumentNullException>(() => new MacdFunction(null));
-        }
+        private MACD DefaultMacd => new MACD(
+            DEFAULT_PERIOD_FAST,
+            DEFAULT_PERIOD_SLOW,
+            DEFAULT_PERIOD_SLOW,
+            default(DateTime),
+            default(DateTime),
+            Models.Enumerators.CandleTimeInterval.Unspecified,
+            "",
+            AlgoStore.Algo.CandleOperationMode.CLOSE);
 
         [Test]
         public void CalculateMacd_ForNullInput_ThrowsException()
         {
-            var function = new MacdFunction(DefaultMacdParameters);
+            var function = DefaultMacd;
+
             double[] values = null;
 
             Assert.Throws<ArgumentNullException>(() => function.WarmUp(values));
@@ -39,7 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateMacd_ForGivenValues_ReturnsCorrectResult()
         {
-            var function = new MacdFunction(DefaultMacdParameters);
+            var function = DefaultMacd;
 
             var result = function.WarmUp(FixedPriceValues);
 
@@ -49,7 +47,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         [Test]
         public void CalculateMacd_ForPartialWarmupThenAddRest_ReturnsCorrectResult()
         {
-            var function = new MacdFunction(DefaultMacdParameters);
+            var function = DefaultMacd;
 
             function.WarmUp(FixedPriceValues.Take(1).ToArray());
             function.AddNewValue(FixedPriceValues[1]);

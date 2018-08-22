@@ -1,9 +1,9 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
@@ -52,6 +52,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 _isStarted = true;
                 return SetCandlesAndMoveIndex();
             }
+
+            if (_isEnumeratorDone) return false;
 
             // If this is the first candle, or there is no gap between the current and the last, continue
             if (_prevCandle == null || HasNoGapBetweenCandles())

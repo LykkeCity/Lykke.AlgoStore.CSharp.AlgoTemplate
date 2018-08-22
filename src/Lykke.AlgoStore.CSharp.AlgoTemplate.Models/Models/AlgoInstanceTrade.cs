@@ -2,7 +2,7 @@
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
-    public class AlgoInstanceTrade
+    public class AlgoInstanceTrade : IAlgoInstanceTrade
     {
         public string InstanceId { get; set; }
 

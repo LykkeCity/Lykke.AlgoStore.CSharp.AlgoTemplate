@@ -3,22 +3,17 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
+using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
+using AutoMapper;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     public class HistoricalCandleProviderService : ICandleProviderService
     {
-        private class CandleSourceData
-        {
-            public IEnumerator<Candle> CandleSource { get; set; }
-            public DateTime From { get; set; }
-        }
-
         private class SubscriptionData
         {
             public string AssetPair { get; set; }
@@ -26,30 +21,29 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
             public Action<Candle> Callback { get; set; }
+            public IEnumerator<Candle> CandleSource { get; set; }
         }
 
         private readonly IHistoryDataService _historyDataService;
         private readonly IUserLogService _userLogService;
         private readonly IAlgoSettingsService _algoSettingsService;
+        private readonly IEventCollector _eventCollector;
 
         private readonly List<SubscriptionData> _subscriptions = new List<SubscriptionData>();
-        private readonly Dictionary<CandleTimeInterval, Dictionary<string, CandleSourceData>> _providers =
-            new Dictionary<CandleTimeInterval, Dictionary<string, CandleSourceData>>();
-        private readonly object _sync = new object();
-
-        private CancellationTokenSource _cts;
-        private Thread _workerThread;
 
         private DateTime _startDate = DateTime.MaxValue;
+        private DateTime _endDate = DateTime.MinValue;
 
-        private bool _isStopped;
+        private bool _isStarted;
 
         public HistoricalCandleProviderService(IHistoryDataService historyDataService, IUserLogService userLogService,
-            IAlgoSettingsService algoSettingsService)
+            IAlgoSettingsService algoSettingsService,
+            IEventCollector eventCollector)
         {
             _historyDataService = historyDataService;
             _userLogService = userLogService;
             _algoSettingsService = algoSettingsService;
+            _eventCollector = eventCollector;
         }
 
         public void Subscribe(CandleServiceRequest serviceRequest, Action<Candle> callback)
@@ -60,82 +54,98 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
 
-            if (_workerThread != null)
+            if (_isStarted)
                 throw new InvalidOperationException("Cannot subscribe after service has been started");
 
-            var assetPair = serviceRequest.AssetPair;
-            var timeInterval = serviceRequest.CandleInterval;
-
-            if (!_providers.ContainsKey(timeInterval))
-                _providers.Add(timeInterval, new Dictionary<string, CandleSourceData>());
-
-            _subscriptions.Add(new SubscriptionData
+            var subscriptionData = new SubscriptionData
             {
-                AssetPair = assetPair,
                 Callback = callback,
-                TimeInterval = timeInterval,
+                AssetPair = serviceRequest.AssetPair,
+                TimeInterval = serviceRequest.CandleInterval,
                 StartDate = serviceRequest.StartFrom.ToUniversalTime(),
                 EndDate = serviceRequest.EndOn.ToUniversalTime()
-            });
-
-            if (!_providers[timeInterval].ContainsKey(assetPair))
-                _providers[timeInterval].Add(assetPair, null); // We set this later
-
-            var fromDate = _subscriptions.Where(s => s.AssetPair == assetPair && s.TimeInterval == timeInterval)
-                                         .Min(s => s.StartDate).ToUniversalTime();
-
-            var toDate = _subscriptions.Where(s => s.AssetPair == assetPair && s.TimeInterval == timeInterval)
-                                       .Max(s => s.EndDate).ToUniversalTime();
-
-            if (fromDate < _startDate)
-                _startDate = fromDate;
-
-            _providers[timeInterval][assetPair] = new CandleSourceData
-            {
-                From = fromDate,
-                CandleSource = _historyDataService.GetHistory(new Core.Domain.CandlesHistoryRequest
-                {
-                    AssetPair = serviceRequest.AssetPair,
-                    Interval = serviceRequest.CandleInterval,
-                    AuthToken = serviceRequest.AuthToken,
-                    IndicatorName = serviceRequest.RequestId,
-                    From = fromDate,
-                    To = toDate
-                }).GetEnumerator()
             };
+
+            subscriptionData.CandleSource = _historyDataService.GetHistory(new Core.Domain.CandlesHistoryRequest
+            {
+                AssetPair = serviceRequest.AssetPair,
+                Interval = serviceRequest.CandleInterval,
+                AuthToken = serviceRequest.AuthToken,
+                IndicatorName = serviceRequest.RequestId,
+                From = subscriptionData.StartDate,
+                To = subscriptionData.EndDate
+            }).GetEnumerator();
+
+            if (_startDate > subscriptionData.StartDate)
+                _startDate = subscriptionData.StartDate;
+
+            if (_endDate < subscriptionData.EndDate)
+                _endDate = subscriptionData.EndDate;
+
+            _subscriptions.Add(subscriptionData);
         }
 
-        public void Start()
+        public async Task Start(CancellationToken cancellationToken)
         {
-            if (_isStopped)
-                throw new NotSupportedException("Cannot restart the provider after it has been stopped");
-
-            if (_workerThread != null)
+            if (_isStarted)
                 throw new InvalidOperationException("Provider is already started");
 
             if (_subscriptions.Count == 0)
                 throw new InvalidOperationException("Cannot start provider with no subscriptions");
 
-            _cts = new CancellationTokenSource();
-            _workerThread = new Thread(FillLoop);
-            _workerThread.Start(_cts.Token);
-        }
+            _isStarted = true;
 
-        public void Stop()
-        {
-            if (_workerThread == null)
-                throw new InvalidOperationException("Provider is already stopped");
+            DateTime currentDate = _startDate.AddSeconds(-1);
 
-            _cts.Cancel();
-            _workerThread.Join();
-            _workerThread = null;
-            _isStopped = true;
-        }
+            // Yield task before loop starts
+            await Task.Yield();
 
-        public void Dispose()
-        {
-            if (_workerThread != null)
-                Stop();
+            do
+            {
+                currentDate = currentDate.AddSeconds(1);
+
+                if (currentDate > DateTime.UtcNow || currentDate > _endDate)
+                {
+                    _userLogService.Enqueue(_algoSettingsService.GetInstanceId(),
+                        "Current date period is reached, execution of back-test historical data is stopped.");
+                    break;
+                }
+
+                var intervalsToUpdate = GetIntervalsForUpdate(currentDate);
+
+                var submittedPairs = new HashSet<(CandleTimeInterval, string)>();
+                var candlesToSubmit = new List<CandleChartingUpdate>();
+
+                foreach (var subscription in _subscriptions)
+                {
+                    if (!intervalsToUpdate.Contains(subscription.TimeInterval)) continue;
+
+                    if (subscription.StartDate > currentDate || subscription.EndDate < currentDate) continue;
+
+                    // Wait forever for the history service to come back online - we're running in backtest
+                    // so we wouldn't want to interrupt the algo in the middle of its operation
+                    if (!await subscription.CandleSource.MoveNextWithRetry(int.MaxValue, cancellationToken))
+                        continue;
+
+                    var tuple = (subscription.TimeInterval, subscription.AssetPair);
+
+                    if (!submittedPairs.Contains(tuple))
+                    {
+                        var candle = Mapper.Map<CandleChartingUpdate>(subscription.CandleSource.Current);
+                        candle.AssetPair = subscription.AssetPair;
+                        candle.CandleTimeInterval = subscription.TimeInterval;
+                        candle.InstanceId = _algoSettingsService.GetInstanceId();
+                        candlesToSubmit.Add(candle);
+                        submittedPairs.Add(tuple);
+                    }
+
+                    subscription.Callback(subscription.CandleSource.Current);
+                }
+
+                if (candlesToSubmit.Count > 0)
+                    await _eventCollector.SubmitCandleEvents(candlesToSubmit);
+            }
+            while (!cancellationToken.IsCancellationRequested);
         }
 
         public void SetPrevCandleFromHistory(string assetPair, CandleTimeInterval timeInterval, Candle candle)
@@ -145,76 +155,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public Task Initialize()
         {
             return Task.CompletedTask;
-        }
-
-        private void FillLoop(object cancellationTokenObj)
-        {
-            var cancellationToken = (CancellationToken)cancellationTokenObj;
-            DateTime currentDate = _startDate.AddSeconds(-1);
-
-            do
-            {
-                currentDate = currentDate.AddSeconds(1);
-
-                if (currentDate > DateTime.UtcNow)
-                {
-                    _userLogService.Enqueue(_algoSettingsService.GetInstanceId(),
-                        "Current date period is reached, execution of back-test historical data is stopped.");
-                    break;
-                }
-
-                var intervalsToUpdate = GetIntervalsForUpdate(currentDate);
-                var filteredIntervals = new HashSet<CandleTimeInterval>();
-
-                foreach(var interval in intervalsToUpdate)
-                {
-                    if (!_providers.ContainsKey(interval))
-                        continue;
-
-                    var addInterval = false;
-
-                    foreach(var candleSourceData in _providers[interval].Values)
-                    {
-                        if (candleSourceData.CandleSource.Current != null &&
-                            candleSourceData.CandleSource.Current.DateTime >= currentDate)
-                            continue;
-
-                        // Wait forever for the history service to come back online - we're running in backtest
-                        // so we wouldn't want to interrupt the algo in the middle of its operation
-                        if (candleSourceData.CandleSource.MoveNextWithRetry(int.MaxValue).GetAwaiter().GetResult())
-                            addInterval = true;
-                    }
-
-                    if (addInterval)
-                        filteredIntervals.Add(interval);
-                }
-
-                if (filteredIntervals.Count == 0) continue;
-
-                foreach (var subscription in _subscriptions)
-                {
-                    if (!filteredIntervals.Contains(subscription.TimeInterval) ||
-                        subscription.StartDate > currentDate ||
-                        subscription.EndDate < currentDate)
-                        continue;
-
-                    var candle = _providers[subscription.TimeInterval][subscription.AssetPair].CandleSource.Current;
-
-                    // If the candle is not for today - move on
-                    // This can happen when the history service is first fetching the candles and
-                    // the first one ends up some time after the current date
-                    if (candle != null && candle.DateTime != currentDate) continue;
-
-                    subscription.Callback(candle);
-                }
-            }
-            while (!cancellationToken.IsCancellationRequested);
-
-            //Use thread sleep in order pod not to be restarted, 
-            //later when stopping of an algo is implemented, we should remove this thread.
-            Thread.Sleep(Timeout.Infinite);
-
-            // TODO: Shutdown algo here
         }
 
         private HashSet<CandleTimeInterval> GetIntervalsForUpdate(DateTime currentDate)

@@ -13,10 +13,6 @@ namespace Lykke.AlgoStore.Algo.Indicators
         private EMA _fastEma;
         private EMA _signalLine;
 
-        private int _slowEmaPeriod;
-        private int _fastEmaPeriod;
-        private int _signalLinePeriod;
-
         private double? _currentValue;
 
         /// <summary>
@@ -49,29 +45,17 @@ namespace Lykke.AlgoStore.Algo.Indicators
         /// <summary>
         /// The slow moving EMA period
         /// </summary>
-        public int SlowEmaPeriod
-        {
-            get => GetEmaPeriod(_slowEma);
-            set => SetEmaPeriod(value, ref _slowEma);
-        }
+        public int SlowEmaPeriod => _slowEma.Period;
 
         /// <summary>
         /// The fast moving EMA period
         /// </summary>
-        public int FastEmaPeriod
-        {
-            get => GetEmaPeriod(_fastEma);
-            set => SetEmaPeriod(value, ref _fastEma);
-        }
+        public int FastEmaPeriod => _fastEma.Period;
 
         /// <summary>
         /// The signal line EMA period
         /// </summary>
-        public int SignalLinePeriod
-        {
-            get => GetEmaPeriod(_signalLine);
-            set => SetEmaPeriod(value, ref _signalLine);
-        }
+        public int SignalLinePeriod => _signalLine.Period;
 
         public MACD(
             int fastEmaPeriod,
@@ -84,9 +68,9 @@ namespace Lykke.AlgoStore.Algo.Indicators
             CandleOperationMode candleOperationMode)
             : base(startingDate, endingDate, candleTimeInterval, assetPair, candleOperationMode)
         {
-            _fastEmaPeriod = fastEmaPeriod;
-            _slowEmaPeriod = slowEmaPeriod;
-            _signalLinePeriod = signalLinePeriod;
+            SetEmaPeriod(fastEmaPeriod, ref _fastEma);
+            SetEmaPeriod(slowEmaPeriod, ref _slowEma);
+            SetEmaPeriod(signalLinePeriod, ref _signalLine);
         }
 
         /// <summary>
@@ -137,11 +121,6 @@ namespace Lykke.AlgoStore.Algo.Indicators
                 result = AddNewValue(value);
 
             return result;
-        }
-
-        private int GetEmaPeriod(EMA ema)
-        {
-            return ema.Period;
         }
 
         private void SetEmaPeriod(int period, ref EMA ema)

@@ -5,6 +5,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
@@ -101,6 +102,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             await _tableStorage.ExecuteAsync(query,
                 (items) => result.AddRange(AutoMapper.Mapper.Map<List<AlgoInstanceTrade>>(items)), () => false);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<AlgoInstanceTrade>> GetInstaceTradesByTradedAssetAndPeriodAsync(string instanceId, string assetId, DateTime from, DateTime to, CancellationToken ct)
+        {
+            string pkFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, GeneratePartitionKeyByInstanceIdAndAssetId(instanceId, assetId));
+            string fromFilter = TableQuery.GenerateFilterConditionForDate("DateOfTrade", QueryComparisons.GreaterThanOrEqual, from);
+            string toFilter = TableQuery.GenerateFilterConditionForDate("DateOfTrade", QueryComparisons.LessThanOrEqual, to);
+
+            var query = new TableQuery<AlgoInstanceTradeEntity>().Where(TableQuery.CombineFilters(TableQuery.CombineFilters(pkFilter, TableOperators.And, fromFilter), TableOperators.And, toFilter));
+
+            var result = new List<AlgoInstanceTrade>();
+
+            await _tableStorage.GetDataByChunksAsync(query, (items) => result.AddRange(AutoMapper.Mapper.Map<List<AlgoInstanceTrade>>(items))).ContinueWith(t => { }, ct);
 
             return result;
         }

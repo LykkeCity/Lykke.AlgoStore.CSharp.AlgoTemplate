@@ -1,4 +1,6 @@
 ﻿using Common.Log;
+using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
@@ -12,7 +14,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 using CandleTimeInterval = Lykke.Job.CandlesProducer.Contract.CandleTimeInterval;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
@@ -29,9 +30,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private class SubscriptionData
         {
             public List<CallbackInfo> Callbacks { get; } = new List<CallbackInfo>();
-            public Thread CandleGenerator { get; set; }
             public Candle PrevCandle { get; set; }
             public Candle CurrentCandle { get; set; }
+            public string AssetPair { get; set; }
             public CandleTimeInterval TimeInterval { get; set; }
 
             public object Sync { get; } = new object();
@@ -40,6 +41,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IReloadingManager<BaseRabbitMqSubscriptionSettings> _settings;
         private readonly ILog _log;
         private readonly IAlgoSettingsService _algoSettingsService;
+        private readonly IEventCollector _eventCollector;
 
         private RabbitMqSubscriber<CandlesUpdatedEvent> _subscriber;
         private bool _disposed;
@@ -47,11 +49,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         // Fast subscription lookup by asset pair and candle time interval
         private readonly Dictionary<string, Dictionary<CandleTimeInterval, SubscriptionData>> _subscriptions = new Dictionary<string, Dictionary<CandleTimeInterval, SubscriptionData>>();
 
-        public RabbitMqCandleProviderService(IReloadingManager<BaseRabbitMqSubscriptionSettings> settings, ILog log, IAlgoSettingsService algoSettingsService)
+        public RabbitMqCandleProviderService(IReloadingManager<BaseRabbitMqSubscriptionSettings> settings, ILog log, IAlgoSettingsService algoSettingsService,
+            IEventCollector eventCollector)
         {
             _settings = settings;
             _log = log;
-            _algoSettingsService = algoSettingsService;
+            _algoSettingsService = algoSettingsService;            
+            _eventCollector = eventCollector;
         }
 
         public void Subscribe(CandleServiceRequest serviceRequest, Action<Candle> callback)
@@ -68,7 +72,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var contractTimeInterval = (CandleTimeInterval)timeInterval;
 
             if (!_subscriptions[assetPair].ContainsKey(contractTimeInterval))
-                _subscriptions[assetPair].Add(contractTimeInterval, CreateSubscriptionData(contractTimeInterval));
+                _subscriptions[assetPair].Add(contractTimeInterval, CreateSubscriptionData(assetPair, contractTimeInterval));
 
             _subscriptions[assetPair][contractTimeInterval].Callbacks.Add(new CallbackInfo
             {
@@ -127,12 +131,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 .Subscribe(OnCandleReceived);
         }
 
-        public void Start()
+        public async Task Start(CancellationToken cancellationToken)
         {
             if (_disposed)
                 throw new InvalidOperationException("Restarting the Rabbit MQ provider is not allowed. Create a new one instead");
 
             _subscriber.Start();
+
+            await Task.WhenAll(_subscriptions
+                .SelectMany(kvp => kvp.Value)
+                .Select(kvp => GeneratorThread(kvp.Value, cancellationToken)));
         }
 
         public void Stop()
@@ -150,15 +158,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         protected virtual void Dispose(bool disposing)
         {
-            foreach (var pair in _subscriptions.Values)
-            {
-                foreach (var data in pair.Values)
-                {
-                    // Interrupt threads to wake them from potential sleep states and exit
-                    data.CandleGenerator.Interrupt();
-                    data.CandleGenerator.Join();
-                }
-            }
             _subscriptions.Clear();
             _subscriber?.Dispose();
             _subscriber = null;
@@ -191,31 +190,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     if (subscriptionData.PrevCandle != null && candle.CandleTimestamp <= subscriptionData.PrevCandle.DateTime)
                         continue;
 
-                    subscriptionData.CurrentCandle = algoCandle;
-                }
+                    subscriptionData.CurrentCandle = algoCandle;                  
+                }               
             }
 
             return Task.CompletedTask;
         }
 
-        private SubscriptionData CreateSubscriptionData(CandleTimeInterval timeInterval)
+        private SubscriptionData CreateSubscriptionData(string assetPair, CandleTimeInterval timeInterval)
         {
             var data = new SubscriptionData();
 
-            var generator = new Thread(GeneratorThread);
-            generator.Priority = ThreadPriority.AboveNormal;
-
+            data.AssetPair = assetPair;
             data.TimeInterval = timeInterval;
-            data.CandleGenerator = generator;
-
-            generator.Start(data);
 
             return data;
         }
 
-        private void GeneratorThread(object data)
+        private async Task GeneratorThread(SubscriptionData subscriptionData, CancellationToken cancellationToken)
         {
-            var subscriptionData = (SubscriptionData)data;
             var algoStoreInterval = (Models.Enumerators.CandleTimeInterval)subscriptionData.TimeInterval;
 
             var now = DateTime.UtcNow;
@@ -268,14 +261,19 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // Use a 50ms delay to allow all quotes to come
             nextCandleTime = nextCandleTime.AddMilliseconds(50);
 
-            while (true)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 var timeSpan = nextCandleTime - DateTime.UtcNow;
+
                 try
                 {
-                    Thread.Sleep(timeSpan);
+                    if (timeSpan < TimeSpan.Zero)
+                        await _log.WriteWarningAsync(nameof(RabbitMqCandleProviderService), nameof(GeneratorThread),
+                            "Candle sleep span is negative. The handlers might be running too slow.");
+                    else
+                        await Task.Delay(timeSpan, cancellationToken);
                 }
-                catch (ThreadInterruptedException)
+                catch (TaskCanceledException)
                 {
                     return;
                 }
@@ -309,6 +307,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     subscriptionData.CurrentCandle = null;
                 }
 
+                var candleChartingUpdate = AutoMapper.Mapper.Map<CandleChartingUpdate>(currentCandle);
+                candleChartingUpdate.InstanceId = _algoSettingsService.GetInstanceId();
+                candleChartingUpdate.CandleTimeInterval = algoStoreInterval;
+                candleChartingUpdate.AssetPair = subscriptionData.AssetPair;
+
+                await _eventCollector.SubmitCandleEvent(candleChartingUpdate);
+               
                 // To prevent any possible deadlocks, run callbacks outside of lock with a copy of the callback list
                 foreach (var callbackInfo in callbacks)
                 {

@@ -2,11 +2,11 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
 using System;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
 using Lykke.AlgoStore.Service.History.Client;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Rest;
+using Lykke.AlgoStore.Algo;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
@@ -70,7 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             }
 
             if (_isLastBuffer)
-                return ++_currentIndex < _buffer.Count;
+                return (++_currentIndex) < _buffer.Count;
 
             IncrementBuffer().ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -96,11 +96,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             do
             {
                 if (_currentTimestamp == default(DateTime))
-                    _currentTimestamp = _candlesHistoryRequest.From;
+                    _currentTimestamp = DateTime.SpecifyKind(_candlesHistoryRequest.From, DateTimeKind.Utc);
                 else
                     _currentTimestamp = _nextTimestamp;
 
-                _nextTimestamp = _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 9999);
+                _nextTimestamp = DateTime.SpecifyKind(
+                    _candlesHistoryRequest.Interval.IncrementTimestamp(_currentTimestamp, 4000), DateTimeKind.Utc);
 
                 var timeLimit = DateTime.UtcNow > _candlesHistoryRequest.To ? _candlesHistoryRequest.To : DateTime.UtcNow;
 
@@ -126,9 +127,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
             {
                 try
                 {
-                    history = await _historyClient.GetCandles(_currentTimestamp, _nextTimestamp,
-                                                              _candlesHistoryRequest.IndicatorName,
-                                                              _candlesHistoryRequest.AuthToken);
+                    history = await _historyClient.GetCandles(
+                        _currentTimestamp, _nextTimestamp,
+                        _candlesHistoryRequest.AssetPair,
+                        (Service.History.Client.Models.CandleTimeInterval)_candlesHistoryRequest.Interval,
+                        _candlesHistoryRequest.IndicatorName,
+                        _candlesHistoryRequest.AuthToken);
 
                     _buffer = history.ToList();
                     _currentIndex = 0;

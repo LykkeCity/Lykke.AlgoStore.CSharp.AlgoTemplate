@@ -14,10 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Dynamic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.Service.Logging.Client;
 using Lykke.AlgoStore.Service.History.Client;
 using Lykke.AlgoStore.Job.Stopping.Client;
+using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -131,9 +132,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             builder.RegisterType<CandlesService>()
                 .As<ICandlesService>();
 
-            builder.RegisterType<FunctionInitializationService>()
-                .As<IFunctionInitializationService>();
-
             builder.RegisterHistoryClient(_settings.CurrentValue.HistoryServiceClient);
 
             builder.RegisterType<HistoryDataService>()
@@ -159,6 +157,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IAlgoInstanceStoppingClient>()
                 .WithParameter(TypedParameter.From(_settings.CurrentValue.AlgoStoreStoppingClient.ServiceUrl));
 
+            builder.RegisterType<EventCollector>()
+                .As<IEventCollector>()
+                .WithParameter(TypedParameter.From(TimeSpan.FromMilliseconds(_settings.CurrentValue.CSharpAlgoTemplateService.EventHandlerSettings.MaxBatchLifetime)))
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.CSharpAlgoTemplateService.EventHandlerSettings.BatchSizeThreshold))
+                .SingleInstance();
+
             builder.RegisterType<MonitoringService>()
                 .As<IMonitoringService>()
                 .WithParameter(
@@ -166,6 +170,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                     TimeSpan.FromSeconds(
                         _settings.CurrentValue.CSharpAlgoTemplateService.MonitoringSettings.InstanceEventTimeoutInSec)));
 
+            var authHandler = new AlgoAuthorizationHeaderHttpClientHandler(dynamicSettings.AuthToken);
+
+            var instanceEventHandler = HttpClientGenerator.HttpClientGenerator
+                 .BuildForUrl(_settings.CurrentValue.InstanceEventHandlerServiceClient.ServiceUrl)
+                 .WithAdditionalDelegatingHandler(authHandler);
+                 
+            builder.RegisterInstance(instanceEventHandler.Create().Generate<IInstanceEventHandlerClient>())
+                .As<IInstanceEventHandlerClient>();
+                
             builder.Populate(_services);
         }
     }

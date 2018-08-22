@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Infrastructure;
@@ -28,8 +29,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var algoSettings = AlgoSettingsService();
             var settings = SettingsMock.GetQuoteSettings();
             Assert.IsNotNull(settings);
+            var providerMock = new Mock<IEventCollector>();
 
-            IQuoteProviderService quoteProviderService = new RabbitMqQuoteProviderService(settings, new LogMock(), algoSettings);
+            IQuoteProviderService quoteProviderService = new RabbitMqQuoteProviderService(settings, new LogMock(), algoSettings, providerMock.Object);
             quoteProviderService.Initialize().Wait();
 
             quoteProviderService.Subscribe(_assetPair, CorrectSubscriber);

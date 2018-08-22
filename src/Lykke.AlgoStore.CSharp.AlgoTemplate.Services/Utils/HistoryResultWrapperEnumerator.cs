@@ -1,8 +1,9 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
+﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+using System.Threading;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
@@ -59,7 +60,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
         {
             // If we cannot fetch candles 10 times in a row, we will throw here
             // since in this case the algo is still initialising and wouldn't be a problem if it stopped
-            if(_originalEnumerator.MoveNextWithRetry(10).GetAwaiter().GetResult())
+            if(_originalEnumerator.MoveNextWithRetry(10, CancellationToken.None).GetAwaiter().GetResult())
             {
                 _currentCandle = _originalEnumerator.Current;
                 return true;

@@ -68,6 +68,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
             CreateMap<AlgoInstanceTradeEntity, AlgoInstanceTrade>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.RowKey));
 
+            CreateMap<FunctionChartingUpdateEntity, FunctionChartingUpdateData>()
+                .ForSourceMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForSourceMember(dest => dest.ETag, opt => opt.Ignore());
+
             CreateMap<StatisticsSummary, StatisticsSummaryEntity>()
                  .ForMember(dest => dest.RowKey, opt => opt.Ignore())
                  .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
@@ -81,6 +87,41 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
                   .ForSourceMember(src => src.Timestamp, opt => opt.Ignore())
                   .ForMember(dest => dest.NetProfit, opt => opt.Ignore());
 
+            CreateMap<AlgoEntity, IAlgo>()
+                .ForMember(dest => dest.AlgoVisibility, opt => opt.Ignore());
+
+            CreateMap<IAlgo, AlgoEntity>()
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore())
+                .ForMember(dest => dest.AlgoVisibilityValue, opt => opt.Ignore());
+
+            CreateMap<AlgoEntity, AlgoDataInformation>()
+                .ForMember(dest => dest.AlgoId, opt => opt.MapFrom(src => src.RowKey))
+                .ForMember(dest => dest.Rating, opt => opt.Ignore())
+                .ForMember(dest => dest.RatedUsersCount, opt => opt.Ignore())
+                .ForMember(dest => dest.UsesCount, opt => opt.Ignore())
+                .ForMember(dest => dest.Author, opt => opt.Ignore())
+                .ForMember(dest => dest.AlgoMetaDataInformation, opt => opt.Ignore());
+
+            CreateMap<AlgoData, IAlgo>();
+
+            CreateMap<IAlgo, AlgoData>();
+
+            CreateMap<QuoteChartingUpdateEntity, QuoteChartingUpdateData>()
+                .ForSourceMember(src => src.RowKey, opt => opt.Ignore())
+                .ForSourceMember(src => src.Timestamp, opt => opt.Ignore())
+                .ForSourceMember(src => src.PartitionKey, opt => opt.Ignore())
+                .ForSourceMember(src => src.ETag, opt => opt.Ignore())
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.QuoteTimestamp));
+
+            CreateMap<QuoteChartingUpdateData, QuoteChartingUpdateEntity>()
+                .ForMember(dest => dest.RowKey, opt => opt.Ignore())
+                .ForMember(dest => dest.QuoteTimestamp, opt => opt.MapFrom(src => src.Timestamp))
+                .ForMember(dest => dest.Timestamp, opt => opt.Ignore())
+                .ForMember(dest => dest.PartitionKey, opt => opt.Ignore())
+                .ForMember(dest => dest.ETag, opt => opt.Ignore());
         }
     }
 }

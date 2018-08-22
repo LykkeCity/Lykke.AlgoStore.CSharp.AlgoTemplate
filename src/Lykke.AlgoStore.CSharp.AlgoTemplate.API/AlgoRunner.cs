@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using AutoMapper;
 using Common.Log;
 using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
@@ -15,13 +14,18 @@ using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using AzureStorage.Tables;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
 using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 using Lykke.Logs;
 using Lykke.SlackNotification.AzureQueue;
 using Microsoft.Extensions.DependencyInjection;
+using Lykke.AlgoStore.Algo;
 using System.Dynamic;
 using Newtonsoft.Json;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Mapper;
+using System.Threading;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
+using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 {
@@ -31,8 +35,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
     public class AlgoRunner
     {
         public static readonly Type DEFAULT_ALGO_CLASS_TO_RUN;
+
+        private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
+
         private static ILog _log;
+        private static IUserLogService _userLogService;
         private static IAlgoWorkflowService _algoWorkflow;
+        private static IShutdownManager _shutdownManager;
+
+        private static Task _workflowServiceTask;
+
+        private static bool _faulted;
 
         static AlgoRunner()
         {
@@ -49,11 +62,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
             try
             {
                 // Initialize AutoMapper
-                Mapper.Initialize(cfg =>
+                AutoMapper.Mapper.Initialize(cfg =>
                 {
-                     cfg.AddProfiles(typeof(AutoMapperModelProfile));
+                     cfg.AddProfiles(new[] { typeof(AutoMapperModelProfile), typeof(AutoMapperAlgoProfile) });
                 });
-                Mapper.AssertConfigurationIsValid();
+
+                AutoMapper.Mapper.AssertConfigurationIsValid();
 
                 var services = new ServiceCollection();
 
@@ -62,9 +76,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
                 // Create a workflow
                 _algoWorkflow = ioc.Resolve<IAlgoWorkflowService>();
+                _userLogService = ioc.Resolve<IUserLogService>();
+                _shutdownManager = ioc.Resolve<IShutdownManager>();
 
                 // Start the workflow. Await the task to block current thread on the algo execution
-                await _algoWorkflow.StartAsync();
+                _workflowServiceTask = _algoWorkflow.StartAsync(_cts.Token);
+                await _workflowServiceTask;
             }
             catch (Exception e)
             {
@@ -72,7 +89,29 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 Console.WriteLine($@"Error '{e.Message}' was thrown while executing the algo.");
                 Console.WriteLine(e);
 
-                _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
+                _faulted = true;
+
+                await _log?.WriteFatalErrorAsync(nameof(AlgoRunner), nameof(Main), "", e);
+
+                var algoParams = JObject.Parse(Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS"));
+
+                if (e is UserAlgoException)
+                {
+                    var removedFilePathsException = Regex.Replace(
+                        e.InnerException.ToString(),
+                        @"in [/\\A-Za-z0-9:.]+[\\/]([A-Za-z0-9]+\.cs)",
+                        "in $1");
+
+                    _userLogService?.Enqueue(algoParams["InstanceId"].Value<string>(), 
+                        $"A fatal error occured during a running algo event: {removedFilePathsException}");
+                }
+                else
+                {
+                    _userLogService?.Enqueue(algoParams["InstanceId"].Value<string>(), 
+                        "A fatal error was encountered during the operation of the instance. Please contact an administrator.");
+                }
+
+                _userLogService?.Dispose();
 
                 // Non-zero exit code
                 Environment.ExitCode = 1;
@@ -89,7 +128,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
         private static void Default_Unloading(AssemblyLoadContext obj)
         {
-            _algoWorkflow.StopAsync();
+            _cts.Cancel();
+            if(!_faulted)
+                _workflowServiceTask?.GetAwaiter().GetResult();
+            _shutdownManager?.StopAsync().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -134,7 +176,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
 
             if (string.IsNullOrEmpty(dbLogConnectionString))
             {
-                consoleLogger.WriteWarningAsync(nameof(Startup), nameof(CreateLogWithSlack), "Table logger is not initiated").Wait();
+                consoleLogger.WriteWarningAsync(nameof(AlgoRunner), nameof(CreateLogWithSlack), 
+                    "Table logger is not initiated").Wait();
                 return aggregateLogger;
             }
 

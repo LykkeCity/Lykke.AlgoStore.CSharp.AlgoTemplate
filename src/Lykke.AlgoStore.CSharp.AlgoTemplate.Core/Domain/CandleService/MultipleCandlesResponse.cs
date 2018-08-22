@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Candles;
+﻿using Lykke.AlgoStore.Algo;
+using System.Collections.Generic;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService
 {

@@ -1,9 +1,10 @@
-﻿using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
+﻿using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
+using IAlgo = Lykke.AlgoStore.Algo.IAlgo;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -32,6 +34,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly ActionsService actions;
         private readonly object _sync = new object();
 
+        private bool _isWarmUpDone;
+
         public WorkflowService(
             IAlgoSettingsService algoSettingsService,
             IQuoteProviderService quoteProviderService,
@@ -42,6 +46,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IStatisticsService statisticsService,
             IUserLogService logService,
             IMonitoringService monitoringService,
+            IEventCollector eventCollector,
             IAlgo algo)
         {
             _algoSettingsService = algoSettingsService;
@@ -53,15 +58,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _tradingService = tradingService;
             _candlesService = candlesService;
             _monitoringService = monitoringService;
-            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler);
+            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler, eventCollector);
             _algo = algo;
         }
 
-        public Task StartAsync()
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            // read settings/metadata/env. var
-            _algoSettingsService.Initialize();
-
             var algoInstance = _algoSettingsService.GetAlgoInstance();
             var isBacktest = _algoSettingsService.GetSetting("InstanceType") == AlgoInstanceType.Test.ToString();
 
@@ -72,19 +74,32 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 algoInstance.AlgoInstanceStatus = Models.Enumerators.AlgoInstanceStatus.Started;
                 algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
-                _algoSettingsService.UpdateAlgoInstance(algoInstance).Wait();
+                await _algoSettingsService.UpdateAlgoInstance(algoInstance);
             }
 
             var authToken = _algoSettingsService.GetAuthToken();
 
-            // Function service initialization.
-            _functionsService.Initialize();
+            var token = _monitoringService.StartAlgoEvent(
+                "The instance is being stopped because OnStartUp took too long to execute.");
+
+            try
+            {
+                _algo.OnStartUp();
+            }
+            catch (Exception e)
+            {
+                throw new UserAlgoException(e);
+            }
+            finally
+            {
+                token.Cancel();
+            }
+
             var candleServiceCandleRequests = _functionsService.GetCandleRequests(authToken).ToList();
 
-            // TODO: Replace this with actual algo metadata once it's implemented
             candleServiceCandleRequests.Add(new CandleServiceRequest
             {
-                AssetPair = _algo.AssetPair, //"BTCEUR",
+                AssetPair = _algo.AssetPair,
                 CandleInterval = _algo.CandleInterval,
                 AuthToken = authToken,
                 RequestId = authToken,
@@ -103,7 +118,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // subscribe for RabbitMQ quotes and candles
             // throws if fail
             // pass _algoSettingsService in constructor
-            _candlesService.StartProducing();
+            var candlesTask = _candlesService.StartProducing(cancellationToken);
             var quoteGeneration = _quoteProviderService.Initialize();
 
             if (!isBacktest)
@@ -119,10 +134,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 algoInstance.AlgoInstanceStatus = AlgoInstanceStatus.Started;
                 algoInstance.AlgoInstanceRunDate = DateTime.UtcNow;
-                _algoSettingsService.UpdateAlgoInstance(algoInstance);
+                await _algoSettingsService.UpdateAlgoInstance(algoInstance);
             }
 
-            return Task.WhenAll(quoteGeneration);
+            await Task.WhenAll(quoteGeneration, candlesTask);
         }
 
         public Task StopAsync()
@@ -148,11 +163,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 _functionsService.WarmUp(warmupData);
 
-                var token = _monitoringService.StartAlgoEvent();
-
-                _algo.OnStartUp(_functionsService.GetFunctionResults());
-
-                token.Cancel();
+                _isWarmUpDone = true;
             }
         }
 
@@ -169,16 +180,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 _functionsService.Recalculate(candleUpdates);
 
-                if (algoCandle != null)
+                if (_isWarmUpDone && algoCandle != null)
                 {
                     // Allow time for all functions to recalculate before sending the event
                     Thread.Sleep(100);
 
-                    var token = _monitoringService.StartAlgoEvent();
+                    var token = _monitoringService.StartAlgoEvent(
+                        "The instance is being stopped because OnCandleReceived took too long to execute.");
 
-                    _algo.OnCandleReceived(ctx);
-
-                    token.Cancel();
+                    try
+                    {
+                        _algo.OnCandleReceived(ctx);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new UserAlgoException(e);
+                    }
+                    finally
+                    {
+                        token.Cancel();
+                    }
                 }
             }
         }
@@ -188,24 +209,30 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (quote.DateReceived > _algo.EndOn)
                 return Task.CompletedTask;
 
+            if (!_isWarmUpDone)
+                return Task.CompletedTask;
+
             _statisticsService.OnQuote(quote);
 
             var ctx = CreateQuoteContext(quote);
 
-            try
+            lock (_sync)
             {
-                lock (_sync)
+                var token = _monitoringService.StartAlgoEvent(
+                    "The instance is being stopped because OnQuoteReceived took too long to execute.");
+
+                try
                 {
-                    var token = _monitoringService.StartAlgoEvent();
-
                     _algo.OnQuoteReceived(ctx);
-
+                }
+                catch (Exception e)
+                {
+                    throw new UserAlgoException(e);
+                }
+                finally
+                {
                     token.Cancel();
                 }
-            }
-            catch (TradingServiceException e)
-            {
-                OnErrorHandler(e);
             }
 
             return Task.CompletedTask;
@@ -254,16 +281,28 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             Type parameterType = _algo.GetType();
 
+            var baseAlgo = parameterType.BaseType;
+            baseAlgo.GetField("_paramProvider", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(_algo, _functionsService);
+
             foreach (var parameter in algoInstance.AlgoMetaDataInformation.Parameters)
             {
-                PropertyInfo prop = parameterType.GetProperty(parameter.Key);
+                var currentType = parameterType;
+                FieldInfo field = null;
 
-                if (prop != null && prop.CanWrite)
+                while (field == null && currentType != null)
                 {
-                    if (prop.PropertyType.IsEnum)
-                        prop.SetValue(_algo, Enum.ToObject(prop.PropertyType, Convert.ToInt32(parameter.Value)), null);
+                    field = currentType
+                        .GetField($"<{parameter.Key}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+                    currentType = currentType.BaseType;
+                }
+
+                if (field != null)
+                {
+                    if (field.FieldType.IsEnum)
+                        field.SetValue(_algo, Enum.ToObject(field.FieldType, Convert.ToInt32(parameter.Value)));
                     else
-                        prop.SetValue(_algo, Convert.ChangeType(parameter.Value, prop.PropertyType), null);
+                        field.SetValue(_algo, Convert.ChangeType(parameter.Value, field.FieldType));
                 }
             }
         }

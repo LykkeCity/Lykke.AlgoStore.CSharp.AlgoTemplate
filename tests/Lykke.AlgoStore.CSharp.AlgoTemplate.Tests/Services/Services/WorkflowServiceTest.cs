@@ -1,5 +1,5 @@
-﻿using Lykke.AlgoStore.CSharp.Algo.Implemention;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+﻿using Lykke.AlgoStore.Algo.Indicators;
+using Lykke.AlgoStore.CSharp.Algo.Implemention;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services;
@@ -23,7 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var algoInstance = GetAlgoInstanceMockReturnCorrectData();
             var algo = new DummyAlgo();
 
-            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, null, algo);
+            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, null, null, algo);
 
             service.SetUpAlgoParameters(algoInstance);
             Assert.AreEqual(_tradedAsset, algo.TradedAsset);
@@ -37,14 +37,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var algo = new DummyAlgo();
 
-            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, null, algo);
+            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, null, null, algo);
 
             service.SetUpAlgoParameters(null);
             Assert.IsNull(algo.TradedAsset);
             Assert.IsNull(algo.AssetPair);
         }
 
-        private static void Then_Data_ShouldBe_Equal(IList<IFunction> first, IList<IFunction> second)
+        private static void Then_Data_ShouldBe_Equal(IList<IIndicator> first, IList<IIndicator> second)
         {
             string serializedFirst = JsonConvert.SerializeObject(first);
             string serializedSecond = JsonConvert.SerializeObject(second);

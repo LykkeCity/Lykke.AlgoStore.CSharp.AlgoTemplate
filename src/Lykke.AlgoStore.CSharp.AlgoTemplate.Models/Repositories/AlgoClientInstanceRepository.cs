@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
-using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
@@ -18,6 +17,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         private readonly INoSQLTableStorage<AlgoClientInstanceEntity> _table;
         private readonly INoSQLTableStorage<AlgoInstanceStoppingEntity> _stoppingEntityTable;
         private readonly INoSQLTableStorage<AlgoInstanceTcBuildEntity> _tcBuildEntityTable;
+
+        private readonly string _deactivatedFakeClientId = "Deactivated";
 
         public static readonly string TableName = "AlgoClientInstanceTable";
 
@@ -106,7 +107,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
         public async Task<IEnumerable<AlgoClientInstanceData>> GetAllByWalletIdAndInstanceStatusIsNotStoppedAsync(string walletId)
         {
             var entities = (await _table.GetDataAsync(KeyGenerator.GenerateWalletIdPartitionKey(walletId)))
-                                    .Where(a => a.AlgoInstanceStatus != AlgoInstanceStatus.Stopped);
+                                    .Where(a => a.AlgoInstanceStatus != AlgoInstanceStatus.Stopped
+                                             && a.AlgoInstanceStatus != AlgoInstanceStatus.Errored);
             var result = entities.Select(entity => entity.ToModel());
             return result;
         }
@@ -154,14 +156,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
             var algoIdAndInstanceTypePartitionKeyEntity = data.ToEntityWithAlgoIdAndInstanceTypePartitionKey();
-            var authTokenPartitionKeyEntity = data.ToEntityWithAuthTokenPartitionKey();        
-            AlgoInstanceStoppingEntity endDatePartitionKeyEntity;
+            var authTokenPartitionKeyEntity = data.ToEntityWithAuthTokenPartitionKey();
 
-            if (!string.IsNullOrEmpty(data.WalletId))
-            {
-                var walletIdPartitionKeyEntity = data.ToEntityWithWalletIdPartitionKey();
-                await _table.InsertOrMergeAsync(walletIdPartitionKeyEntity);
-            }
+            await SaveAlgoInstanceWalletEntity(data);
 
             await _table.InsertOrMergeAsync(algoIdPartitionKeyEntity);
             await _table.InsertOrMergeAsync(clientIdPartitionKeyEntity);
@@ -169,17 +166,67 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _table.InsertOrMergeAsync(algoIdAndInstanceTypePartitionKeyEntity);
             await _table.InsertOrMergeAsync(authTokenPartitionKeyEntity);
 
+            await SaveAlgoInstanceStoppingEntity(data);
+
+            await SaveAlgoInstanceTCEntity(data);
+        }
+
+        public async Task SaveAlgoInstanceWithNewPKAsync(AlgoClientInstanceData data)
+        {
+            var clientIdPartitionKeyEntity = data.ToEntityWithClientIdPartitionKey();
+            var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
+
+            await _table.DeleteIfExistAsync(clientIdPartitionKeyEntity.PartitionKey, clientIdPartitionKeyEntity.RowKey);
+            await _table.DeleteIfExistAsync(algoIdAndClientIdPartitionKeyEntity.PartitionKey, algoIdAndClientIdPartitionKeyEntity.RowKey);
+
+            data.ClientId = _deactivatedFakeClientId;
+
+            await SaveAlgoInstanceWalletEntity(data);
+
+            var algoIdPartitionKeyEntity = data.ToEntityWithAlgoIdPartitionKey();
+            var algoIdAndInstanceTypePartitionKeyEntity = data.ToEntityWithAlgoIdAndInstanceTypePartitionKey();
+            var authTokenPartitionKeyEntity = data.ToEntityWithAuthTokenPartitionKey();
+
+            await _table.InsertOrMergeAsync(algoIdPartitionKeyEntity);
+            await _table.InsertOrMergeAsync(algoIdAndInstanceTypePartitionKeyEntity);
+            await _table.InsertOrMergeAsync(authTokenPartitionKeyEntity);
+
+            await SaveAlgoInstanceStoppingEntity(data);
+
+            await SaveAlgoInstanceTCEntity(data);
+
+            var clientIdPartitionKeyFakeEntity = data.ToEntityWithClientIdPartitionKey();
+            var algoIdAndClientIdPartitionKeyFakeEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
+
+            await _table.InsertOrMergeAsync(clientIdPartitionKeyFakeEntity);
+            await _table.InsertOrMergeAsync(algoIdAndClientIdPartitionKeyFakeEntity);
+        }
+
+        private async Task SaveAlgoInstanceStoppingEntity(AlgoClientInstanceData data)
+        {
+            AlgoInstanceStoppingEntity endDatePartitionKeyEntity = data.ToStoppingEntityWithEndDatePartitionKey();
+
             if (data.AlgoInstanceType != AlgoInstanceType.Test && data.AlgoInstanceStatus == AlgoInstanceStatus.Stopped)
             {
-                endDatePartitionKeyEntity = data.ToStoppingEntityWithEndDatePartitionKey();
                 await _stoppingEntityTable.DeleteIfExistAsync(endDatePartitionKeyEntity.PartitionKey, endDatePartitionKeyEntity.RowKey);
             }
             else if (data.AlgoInstanceType != AlgoInstanceType.Test && data.AlgoInstanceStatus != AlgoInstanceStatus.Stopped)
             {
-                endDatePartitionKeyEntity = data.ToStoppingEntityWithEndDatePartitionKey();
                 await _stoppingEntityTable.InsertOrMergeAsync(endDatePartitionKeyEntity);
-            }         
+            }
+        }
 
+        private async Task SaveAlgoInstanceWalletEntity(AlgoClientInstanceData data)
+        {
+            if (!string.IsNullOrEmpty(data.WalletId))
+            {
+                var walletIdPartitionKeyEntity = data.ToEntityWithWalletIdPartitionKey();
+                await _table.InsertOrMergeAsync(walletIdPartitionKeyEntity);
+            }
+        }
+
+        private async Task SaveAlgoInstanceTCEntity(AlgoClientInstanceData data)
+        {
             if (!string.IsNullOrEmpty(data.TcBuildId))
             {
                 var teamCityBuilIdPartitionKeyEntity = data.ToEntityWithTcBuildIdPartitionKey();
@@ -194,7 +241,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             var algoIdAndClientIdPartitionKeyEntity = data.ToEntityWithAlgoIdAndClientIdPartitionKey();
             var algoIdAndInstanceTypePartitionKeyEntity = data.ToEntityWithAlgoIdAndInstanceTypePartitionKey();
             var authTokenPartitionKeyEntity = data.ToEntityWithAuthTokenPartitionKey();
-            var endDatePartitionKeyEntity = data.ToStoppingEntityWithEndDatePartitionKey();          
+            var endDatePartitionKeyEntity = data.ToStoppingEntityWithEndDatePartitionKey();
 
             if (!string.IsNullOrEmpty(data.WalletId))
             {
@@ -214,7 +261,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
                 var teamCityBuilIdPartitionKeyEntity = data.ToEntityWithTcBuildIdPartitionKey();
                 await _tcBuildEntityTable.DeleteIfExistAsync(teamCityBuilIdPartitionKeyEntity.PartitionKey,
                     teamCityBuilIdPartitionKeyEntity.RowKey);
-            }            
+            }
         }
 
         public async Task<string> GetAlgoInstanceMetadataSetting(string algoId, string instanceId, string key)

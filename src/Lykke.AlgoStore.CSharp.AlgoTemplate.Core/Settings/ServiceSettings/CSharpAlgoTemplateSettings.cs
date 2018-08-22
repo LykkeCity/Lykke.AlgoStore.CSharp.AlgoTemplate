@@ -6,6 +6,7 @@
         public QuoteRabbitMqSubscriptionSettings QuoteRabbitMqSettings { get; set; }
         public BaseRabbitMqSubscriptionSettings CandleRabbitMqSettings { get; set; }
         public MonitoringSettings MonitoringSettings { get; set; }
+        public LoggingSettings EventHandlerSettings { get; set; }
         public LoggingSettings LoggingSettings { get; set; }
         public string AlgoNamespaceValue { get; set; }
     }

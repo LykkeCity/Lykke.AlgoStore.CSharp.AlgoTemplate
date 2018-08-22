@@ -1,57 +1,67 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Domain;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Abstractions.Core.Functions;
+using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.Algo.Charting;
+using Lykke.AlgoStore.Algo.Indicators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain.CandleService;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels;
+using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     /// <summary>
     /// <see cref="IFunctionsService"/>
     /// </summary>
-    public class FunctionsService : IFunctionsService, IFunctionProvider
+    public class FunctionsService : IFunctionsService, IFunctionProvider, IIndicatorManager
     {
         // Dependencies:
-        private IFunctionInitializationService _functionInitializationService;
+        private readonly IAlgoSettingsService _algoSettingsService;
+        private readonly IEventCollector _eventCollector;
 
         // Fields:
-        private Dictionary<string, IFunction> _allFunctions;
+        private readonly AlgoMetaDataInformation _algoMetaData;
+        private readonly Dictionary<string, IIndicator> _allFunctions = new Dictionary<string, IIndicator>();
+        private readonly Dictionary<string, AlgoMetaDataFunction> _indicatorData
+            = new Dictionary<string, AlgoMetaDataFunction>();
 
         /// <summary>
         /// Initializes new instance of <see cref="FunctionsService"/>
         /// </summary>
         /// <param name="functionInitializationService"><see cref="IFunctionInitializationService"/> 
         /// implementation for accessing the function instances</param>
-        public FunctionsService(IFunctionInitializationService functionInitializationService)
+        public FunctionsService(
+            IAlgoSettingsService algoSettingsService,
+            IEventCollector eventCollector)
         {
-            _functionInitializationService = functionInitializationService;
+            _algoSettingsService = algoSettingsService;
+            _eventCollector = eventCollector;
+            _algoMetaData = _algoSettingsService.GetAlgoInstance().AlgoMetaDataInformation;
+
+            foreach (var indicator in _algoMetaData.Functions)
+                _indicatorData.Add(indicator.Id, indicator);
         }
 
+        // This is now obsolete - indicators are created through BaseAlgo
         public void Initialize()
         {
-            // Initialize/Re-initialize the function instances and results
-            _allFunctions = new Dictionary<string, IFunction>();
-
-            foreach (var function in _functionInitializationService.GetAllFunctions())
-            {
-                // Create a mapping between function instance id and function instance;
-                _allFunctions[function.FunctionParameters.FunctionInstanceIdentifier] = function;
-            }
         }
 
         public IEnumerable<CandleServiceRequest> GetCandleRequests(string authToken)
         {
-            foreach (var function in _allFunctions.Values)
+            foreach (var kvp in _allFunctions)
             {
+                var function = kvp.Value;
+
                 yield return new CandleServiceRequest()
                 {
                     AuthToken = authToken,
-                    RequestId = function.FunctionParameters.FunctionInstanceIdentifier,
-                    AssetPair = function.FunctionParameters.AssetPair,
-                    CandleInterval = function.FunctionParameters.CandleTimeInterval,
-                    StartFrom = function.FunctionParameters.StartingDate,
-                    EndOn = function.FunctionParameters.EndingDate
+                    RequestId = kvp.Key,
+                    AssetPair = function.AssetPair,
+                    CandleInterval = function.CandleTimeInterval,
+                    StartFrom = function.StartingDate,
+                    EndOn = function.EndingDate
                 };
             }
         }
@@ -81,6 +91,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 return;
             }
 
+            var instanceId = _algoSettingsService.GetInstanceId();
+            var updateList = new List<FunctionChartingUpdate>();
+
             foreach (var candlesResponse in candles)
             {
                 if (!_allFunctions.ContainsKey(candlesResponse.RequestId))
@@ -90,12 +103,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
                 var function = _allFunctions[functionId];
 
-                if (function.FunctionParameters.StartingDate > candlesResponse.Candle.DateTime ||
-                    function.FunctionParameters.EndingDate < candlesResponse.Candle.DateTime)
+                if (function.StartingDate > candlesResponse.Candle.DateTime ||
+                    function.EndingDate < candlesResponse.Candle.DateTime)
                     continue;
 
-                function.AddNewValue(candlesResponse.Candle);
+                var functionNewValue = function.AddNewValue(candlesResponse.Candle);
+
+                var functionChartingUpdate = new FunctionChartingUpdate
+                {
+                    CalculatedOn = candlesResponse.Candle.DateTime,
+                    FunctionName = functionId,
+                    InstanceId = instanceId,
+                    Value = functionNewValue ?? 0
+                };
+
+                updateList.Add(functionChartingUpdate);
             }
+
+            if (updateList.Any())
+                _eventCollector.SubmitFunctionEvents(updateList).GetAwaiter().GetResult();
         }
 
         public IFunctionProvider GetFunctionResults()
@@ -103,7 +129,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return this;
         }
 
-        public T GetFunction<T>(string functionName) where T : IFunction
+        public T GetFunction<T>(string functionName) where T : IIndicator
         {
             if (!_allFunctions.ContainsKey(functionName))
                 return default(T);
@@ -111,7 +137,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             return (T)_allFunctions[functionName];
         }
 
-        public IFunction GetFunction(string functionName)
+        public IIndicator GetFunction(string functionName)
         {
             if (!_allFunctions.ContainsKey(functionName))
                 return null;
@@ -122,6 +148,35 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public double? GetValue(string functionName)
         {
             return GetFunction(functionName)?.Value;
+        }
+
+        public T GetParam<T>(string indicator, string param)
+        {
+            var indicatorData = _indicatorData[indicator];
+
+            if (indicatorData == null)
+                throw new KeyNotFoundException($"The indicator \"{indicator}\" doesn't exist");
+
+            var paramData = indicatorData.Parameters.FirstOrDefault(p => p.Key == param);
+
+            if (paramData == null)
+                throw new KeyNotFoundException($"The indicator \"{indicator}\" param \"{param}\" doesn't exist");
+
+            var paramType = typeof(T);
+
+            if (paramType.IsEnum)
+                return (T)Enum.ToObject(paramType, Convert.ToInt32(paramData.Value));
+            else
+                return (T)Convert.ChangeType(paramData.Value, paramType);
+        }
+
+        public void RegisterIndicator(string name, IIndicator indicator)
+        {
+            if (_allFunctions.ContainsKey(name))
+                throw new InvalidOperationException(
+                    $"An indicator with the name \"{name}\" is already registered");
+
+            _allFunctions.Add(name, indicator);
         }
     }
 }

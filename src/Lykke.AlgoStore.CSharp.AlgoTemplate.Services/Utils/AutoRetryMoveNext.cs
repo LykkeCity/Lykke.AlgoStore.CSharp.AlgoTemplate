@@ -1,12 +1,14 @@
 ﻿using Microsoft.Rest;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
 {
     public static class AutoRetryMoveNext
     {
-        public static async Task<bool> MoveNextWithRetry<T>(this IEnumerator<T> enumerator, int retryCount)
+        public static async Task<bool> MoveNextWithRetry<T>(this IEnumerator<T> enumerator, int retryCount,
+            CancellationToken cancellationToken)
         {
             var currentRetryCount = retryCount;
 
@@ -18,6 +20,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Utils
                 }
                 catch (HttpOperationException)
                 {
+                    if (cancellationToken.IsCancellationRequested) return false;
+
                     currentRetryCount++;
 
                     if (currentRetryCount > retryCount)
