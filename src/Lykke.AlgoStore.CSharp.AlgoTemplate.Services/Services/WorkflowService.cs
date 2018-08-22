@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services.TradingService;
+using IAlgo = Lykke.AlgoStore.Algo.IAlgo;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {

@@ -165,7 +165,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     InstanceId = _algoSettingsService.GetInstanceId(),
                     IsBuy = isBuy,
                     Price = result.Result,
-                    WalletId = _algoSettingsService.GetWalletId(),
                     Id = Guid.NewGuid().ToString()
                 };
 
