@@ -25,6 +25,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _tradedAssetId;
         private string _walletId;
         private AlgoInstanceType _instanceType;
+        private AlgoClientInstanceData _clientInstanceData;
 
         public string GetAuthToken() => _authToken;
         public string GetAlgoId() => _algoId;
@@ -51,6 +52,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _tradedAssetId = GetAlgoInstanceTradedAssetId();
             _walletId = GetAlgoInstanceWalletId();
             _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType), GetSetting("InstanceType"));
+            _clientInstanceData = _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result;
         }
 
         public void Initialize()
@@ -69,46 +71,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public async Task UpdateAlgoInstance(AlgoClientInstanceData data)
         {
             await _algoClientInstanceMetadataRepository.SaveAlgoInstanceDataAsync(data);
+            _clientInstanceData = data;
         }
 
-        public AlgoClientInstanceData GetAlgoInstance()
-        {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result;
-        }
+        public AlgoClientInstanceData GetAlgoInstance() => _clientInstanceData;
 
         public string GetMetadataSetting(string key)
         {
             return _algoClientInstanceMetadataRepository.GetAlgoInstanceMetadataSetting(_algoId, _instanceId, key).Result;
         }
 
-        private string GetAlgoInstanceWalletId()
-        {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.WalletId;
-        }
+        private string GetAlgoInstanceWalletId() => _clientInstanceData.WalletId;
+        private string GetAlgoInstanceTradedAssetId() => _clientInstanceData.TradedAssetId;
 
-        private string GetAlgoInstanceTradedAssetId()
-        {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.TradedAssetId;
-        }
-
-        public string GetAlgoInstanceAssetPairId()
-        {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.AssetPairId;
-        }
-
-        public bool IsAlgoInstanceMarketOrderStraight()
-        {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.IsStraight;
-        }
-
-        public string GetAlgoInstanceClientId()
-        {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.ClientId;
-        }
-
-        public string GetAlgoInstanceOppositeAssetId()
-        {
-            return _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result.OppositeAssetId;
-        }
+        public string GetAlgoInstanceAssetPairId() => _clientInstanceData.AssetPairId;
+        public bool IsAlgoInstanceMarketOrderStraight() => _clientInstanceData.IsStraight;
+        public string GetAlgoInstanceClientId() => _clientInstanceData.ClientId;
+        public string GetAlgoInstanceOppositeAssetId() => _clientInstanceData.OppositeAssetId;
     }
 }
