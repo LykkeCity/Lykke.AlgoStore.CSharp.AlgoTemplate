@@ -49,10 +49,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _instanceId = GetSetting("InstanceId");
             _algoId = GetSetting("AlgoId");
             _authToken = GetSetting("AuthToken");
+
+            _clientInstanceData = _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result;
+
             _tradedAssetId = GetAlgoInstanceTradedAssetId();
             _walletId = GetAlgoInstanceWalletId();
             _instanceType = (AlgoInstanceType)Enum.Parse(typeof(AlgoInstanceType), GetSetting("InstanceType"));
-            _clientInstanceData = _algoClientInstanceMetadataRepository.GetAlgoInstanceDataByAlgoIdAsync(_algoId, _instanceId).Result;
         }
 
         public void Initialize()

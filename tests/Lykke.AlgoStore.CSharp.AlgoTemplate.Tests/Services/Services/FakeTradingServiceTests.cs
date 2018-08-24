@@ -32,12 +32,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var algoSettingsService = GetAlgoSettingsServiceMock();
             var algoInstanceTradeRepository = GetAlgoInstanceTradeRepositoryBuyMock(_straightTrue, true);
             var statisticsRepository = GetStatisticsRepositoryMock();
+            var tradeRequest = GetTradeRequest();
+            var currentDataProviderMock = GetCurrentDataProviderMock(tradeRequest);
 
             FakeTradingService service = new FakeTradingService(algoSettingsService,
-                algoInstanceTradeRepository, statisticsRepository);
+                algoInstanceTradeRepository, statisticsRepository, currentDataProviderMock);
 
-            service.Initialize(_instanceId, _assetPair, _straightTrue);
-            var result = service.Buy(GetTradeRequest());
+            service.Initialize(_instanceId, _assetPair, _straightTrue).Wait();
+            var result = service.Buy(tradeRequest);
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
         }
 
@@ -47,12 +49,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var algoSettingsService = GetAlgoSettingsServiceMock();
             var algoInstanceTradeRepository = GetAlgoInstanceTradeRepositoryBuyMock(_straightFalse, true);
             var statisticsRepository = GetStatisticsRepositoryMock();
+            var tradeRequest = GetTradeRequest();
+            var currentDataProviderMock = GetCurrentDataProviderMock(tradeRequest);
 
             FakeTradingService service = new FakeTradingService(algoSettingsService,
-                algoInstanceTradeRepository, statisticsRepository);
+                algoInstanceTradeRepository, statisticsRepository, currentDataProviderMock);
 
-            service.Initialize(_instanceId, _assetPair, _straightFalse);
-            var result = service.Buy(GetTradeRequest());
+            service.Initialize(_instanceId, _assetPair, _straightFalse).Wait();
+            var result = service.Buy(tradeRequest);
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
 
         }
@@ -63,12 +67,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var algoSettingsService = GetAlgoSettingsServiceMock();
             var algoInstanceTradeRepository = GetAlgoInstanceTradeRepositoryBuyMock(_straightFalse, true);
             var statisticsRepository = GetStatisticsRepository_NotEnoughFunds_Mock();
+            var tradeRequest = GetTradeRequest();
+            var currentDataProviderMock = GetCurrentDataProviderMock(tradeRequest);
 
             FakeTradingService service = new FakeTradingService(algoSettingsService,
-                algoInstanceTradeRepository, statisticsRepository);
+                algoInstanceTradeRepository, statisticsRepository, currentDataProviderMock);
 
-            service.Initialize(_instanceId, _assetPair, _straightFalse);
-            var result = service.Buy(GetTradeRequest()).Result;
+            service.Initialize(_instanceId, _assetPair, _straightFalse).Wait();
+            var result = service.Buy(tradeRequest).Result;
 
             Assert.IsNotNull(result.Error);
             Assert.AreEqual(ErrorMessages.NotEnoughFunds, result.Error.Message);
@@ -81,12 +87,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var algoSettingsService = GetAlgoSettingsServiceMock();
             var algoInstanceTradeRepository = GetAlgoInstanceTradeRepositoryBuyMock(_straightFalse, true);
             var statisticsRepository = GetStatisticsRepository_NotEnoughFunds_Mock();
+            var tradeRequest = GetTradeRequest();
+            var currentDataProviderMock = GetCurrentDataProviderMock(tradeRequest);
 
             FakeTradingService service = new FakeTradingService(algoSettingsService,
-                algoInstanceTradeRepository, statisticsRepository);
+                algoInstanceTradeRepository, statisticsRepository, currentDataProviderMock);
 
-            service.Initialize(_instanceId, _assetPair, _straightFalse);
-            var result = service.Sell(GetTradeRequest()).Result;
+            service.Initialize(_instanceId, _assetPair, _straightFalse).Wait();
+            var result = service.Sell(tradeRequest).Result;
 
             Assert.IsNotNull(result.Error);
             Assert.AreEqual(ErrorMessages.NotEnoughFunds, result.Error.Message);
@@ -99,12 +107,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var algoSettingsService = GetAlgoSettingsServiceMock();
             var algoInstanceTradeRepository = GetAlgoInstanceTradeRepositoryBuyMock(_straightTrue, false);
             var statisticsRepository = GetStatisticsRepositoryMock();
+            var tradeRequest = GetTradeRequest();
+            var currentDataProviderMock = GetCurrentDataProviderMock(tradeRequest);
 
             FakeTradingService service = new FakeTradingService(algoSettingsService,
-                algoInstanceTradeRepository, statisticsRepository);
+                algoInstanceTradeRepository, statisticsRepository, currentDataProviderMock);
 
-            service.Initialize(_instanceId, _assetPair, _straightTrue);
-            var result = service.Sell(GetTradeRequest());
+            service.Initialize(_instanceId, _assetPair, _straightTrue).Wait();
+            var result = service.Sell(tradeRequest);
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
         }
 
@@ -114,12 +124,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var algoSettingsService = GetAlgoSettingsServiceMock();
             var algoInstanceTradeRepository = GetAlgoInstanceTradeRepositoryBuyMock(_straightTrue, false);
             var statisticsRepository = GetStatisticsRepositoryMock();
+            var tradeRequest = GetTradeRequest();
+            var currentDataProviderMock = GetCurrentDataProviderMock(tradeRequest);
 
             FakeTradingService service = new FakeTradingService(algoSettingsService,
-                algoInstanceTradeRepository, statisticsRepository);
+                algoInstanceTradeRepository, statisticsRepository, currentDataProviderMock);
 
-            service.Initialize(_instanceId, _assetPair, _straightFalse);
-            var result = service.Sell(GetTradeRequest());
+            service.Initialize(_instanceId, _assetPair, _straightFalse).Wait();
+            var result = service.Sell(tradeRequest);
             Assert.AreEqual(result.Result.Result, GetIAlgoCandle().Close);
         }
 
@@ -234,6 +246,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
                 }));
 
             return statisticsRepository.Object;
+        }
+
+        private ICurrentDataProvider GetCurrentDataProviderMock(ITradeRequest tradeRequest)
+        {
+            var mock = new Mock<ICurrentDataProvider>();
+
+            mock.SetupGet(c => c.CurrentPrice).Returns(tradeRequest.Price);
+            mock.SetupGet(c => c.CurrentTimestamp).Returns(tradeRequest.Date);
+
+            return mock.Object;
         }
 
         private AlgoInstanceTrade GetAlgoInstanceTradeBuy()

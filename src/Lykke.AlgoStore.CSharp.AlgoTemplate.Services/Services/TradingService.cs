@@ -36,7 +36,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _fakeTradingService = fakeTradingService;
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
             _instanceId = _algoSettingsService.GetInstanceId();
             _assetPairId = _algoSettingsService.GetAlgoInstanceAssetPairId();
@@ -49,7 +49,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
             else
             {
-                _fakeTradingService.Initialize(_instanceId, _assetPairId, _straight);
+                await _fakeTradingService.Initialize(_instanceId, _assetPairId, _straight);
             }
         }
 
@@ -58,7 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
                 var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrderAsync(_walletId, _assetPairId,
-                    OrderAction.Sell, tradeRequest.Volume, _straight, _instanceId, null);
+                    MatchingEngineAdapter.Abstractions.Domain.OrderAction.Sell, tradeRequest.Volume, _straight, _instanceId, null);
 
                 return meaResponse;
             }
@@ -73,7 +73,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
             {
                 var meaResponse = await _matchingEngineAdapterClient.PlaceMarketOrderAsync(_walletId, _assetPairId,
-                    OrderAction.Buy, tradeRequest.Volume, _straight, _instanceId, null);
+                    MatchingEngineAdapter.Abstractions.Domain.OrderAction.Buy, tradeRequest.Volume, _straight, _instanceId, null);
 
                 return meaResponse;
             }
