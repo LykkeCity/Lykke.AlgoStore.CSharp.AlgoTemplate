@@ -12,7 +12,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public string WalletId { get; set; }
 
         [Required]
-        public string AssetPairId { get; set; }       
+        public string AssetPairId { get; set; }
 
         [Required]
         public string TradedAssetId { get; set; }
@@ -41,8 +41,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 
         [Required]
         public AlgoMetaDataInformation AlgoMetaDataInformation { get; set; }
-
-        public string AlgoClientId { get; set; }
 
         public double FakeTradingTradingAssetBalance { get; set; }
 

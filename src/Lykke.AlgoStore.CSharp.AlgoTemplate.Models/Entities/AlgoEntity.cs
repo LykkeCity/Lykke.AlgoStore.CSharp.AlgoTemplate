@@ -48,5 +48,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 
             return enitity;
         }
+
+        public static AlgoEntity CreateEntityWithAlgoIdPartionKey(IAlgo algo)
+        {
+            AlgoEntity enitity = AutoMapper.Mapper.Map<AlgoEntity>(algo);
+
+            enitity.PartitionKey = algo.AlgoId;
+            enitity.RowKey = algo.ClientId;
+
+            return enitity;
+        }
     }
 }
