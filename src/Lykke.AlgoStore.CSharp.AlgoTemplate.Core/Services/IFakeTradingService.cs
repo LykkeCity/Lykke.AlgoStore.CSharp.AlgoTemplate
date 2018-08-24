@@ -8,7 +8,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
     {
         Task<ResponseModel<double>> Buy(ITradeRequest tradeRequest);
         Task<ResponseModel<double>> Sell(ITradeRequest tradeRequest);
-        void Initialize(string instanceId, string assetPairId, bool straight);
+        Task Initialize(string instanceId, string assetPairId, bool straight);
 
     }
 }

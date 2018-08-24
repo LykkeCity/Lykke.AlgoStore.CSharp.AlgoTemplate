@@ -10,5 +10,13 @@
         /// algo <see cref="IFunctionProvider"/>
         /// </summary>
         IFunctionProvider Functions { get; }
+
+        IOrderProvider Orders { get; }
+
+        /// <summary>
+        /// Access point for the user action, which can be performed 
+        /// by an algo <see cref="IActions"/>
+        /// </summary>
+        IActions Actions { get; }
     }
 }

@@ -16,27 +16,32 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _oppositeAssetId;
         private string _instanceId;
         private bool _straight;
+        private StatisticsSummary _summary;
 
         private readonly IAlgoSettingsService _algoSettingsService;
         private readonly IAlgoInstanceTradeRepository _algoInstanceTradeRepository;
         private readonly IStatisticsRepository _statisticsRepository;
+        private readonly ICurrentDataProvider _currentDataProvider;
 
         public FakeTradingService(IAlgoSettingsService algoSettingsService,
             IAlgoInstanceTradeRepository algoInstanceTradeRepository,
-            IStatisticsRepository statisticsRepository)
+            IStatisticsRepository statisticsRepository,
+            ICurrentDataProvider currentDataProvider)
         {
             _algoSettingsService = algoSettingsService;
             _algoInstanceTradeRepository = algoInstanceTradeRepository;
             _statisticsRepository = statisticsRepository;
+            _currentDataProvider = currentDataProvider;
         }
 
-        public void Initialize(string instanceId, string assetPairId, bool straight)
+        public async Task Initialize(string instanceId, string assetPairId, bool straight)
         {
             _instanceId = instanceId;
             _assetPairId = assetPairId;
             _straight = straight;
             _tradedAssetId = _algoSettingsService.GetTradedAssetId();
             _oppositeAssetId = _algoSettingsService.GetAlgoInstanceOppositeAssetId();
+            _summary = await _statisticsRepository.GetSummaryAsync(instanceId);
         }
 
         /// <summary>
@@ -91,9 +96,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             double tradedOppositeValue = CalculateOppositeOfTradedAssetTradeValue(tradeRequest.Volume, tradeRequest.Price);
 
-            var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
-
-            if (summary.LastAssetTwoBalance < tradedOppositeValue)
+            if (_summary.LastAssetTwoBalance < tradedOppositeValue)
                 return new ResponseModel<double>()
                 {
                     Error = new ResponseModel.ErrorModel()
@@ -109,15 +112,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
                 CreateAlgoInstanceTrade(_oppositeAssetId, -tradedOppositeValue, tradeRequest, true));
 
-            summary.LastTradedAssetBalance += tradeRequest.Volume;
-            summary.LastAssetTwoBalance -= tradedOppositeValue;
+            _summary.LastTradedAssetBalance += tradeRequest.Volume;
+            _summary.LastAssetTwoBalance -= tradedOppositeValue;
 
             if (_straight)
-                summary.LastWalletBalance = Math.Round(summary.LastAssetTwoBalance + summary.LastTradedAssetBalance * tradeRequest.Price, 8);
+                _summary.LastWalletBalance = Math.Round(_summary.LastAssetTwoBalance + _summary.LastTradedAssetBalance * tradeRequest.Price, 8);
             else
-                summary.LastWalletBalance = Math.Round(summary.LastTradedAssetBalance + summary.LastAssetTwoBalance * tradeRequest.Price, 8);
+                _summary.LastWalletBalance = Math.Round(_summary.LastTradedAssetBalance + _summary.LastAssetTwoBalance * tradeRequest.Price, 8);
 
-            await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
+            await _statisticsRepository.CreateOrUpdateSummaryAsync(_summary);
 
             return new ResponseModel<double>()
             {
@@ -133,8 +136,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 AssetPairId = _assetPairId,
                 AssetId = tradeAsset,
                 Amount = amount,
-                Price = tradeRequest.Price,
-                DateOfTrade = tradeRequest.Date,
+                Price = _currentDataProvider.CurrentPrice,
+                DateOfTrade =_currentDataProvider.CurrentTimestamp,
                 IsBuy = isBuy
             };
         }
