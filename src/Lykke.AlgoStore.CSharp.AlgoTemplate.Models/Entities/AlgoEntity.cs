@@ -7,17 +7,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 {
     public class AlgoEntity : TableEntity, IAlgo
     {
-        public string AlgoId
-        {
-            get => RowKey;
-            set { }
-        }
+        public string AlgoId { get; set; }
 
-        public string ClientId
-        {
-            get => PartitionKey;
-            set { }
-        }
+        public string ClientId { get; set; }
 
         public string Name { get; set; }
         public DateTime DateModified { get; set; }
@@ -45,6 +37,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 
             enitity.PartitionKey = algo.ClientId;
             enitity.RowKey = algo.AlgoId;
+            enitity.ClientId = algo.ClientId;
+            enitity.AlgoId = algo.AlgoId;
 
             return enitity;
         }
@@ -55,6 +49,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 
             enitity.PartitionKey = algo.AlgoId;
             enitity.RowKey = algo.ClientId;
+            enitity.ClientId = algo.ClientId;
+            enitity.AlgoId = algo.AlgoId;
 
             return enitity;
         }
