@@ -22,7 +22,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         private string _algoId;
         private string _clientId;
         private string _walletId;
-        private string _algoClientId;
         private AlgoClientInstanceData _entity;
         private static bool _entitySaved;
         private static DateTime _instanceEndOnDate;
@@ -40,7 +39,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             _algoId = SettingsMock.GetAlgoId();
             _clientId = "123456clientId";
             _walletId = "123456walletId";
-            _algoClientId = "9d66eed3-7b54-431e-970e-979d0d735426";
             _instanceEndOnDate = new DateTime(2018, 06, 19, 15, 30, 00, DateTimeKind.Utc);
             _tcBuildId = Guid.NewGuid().ToString();
 
@@ -57,7 +55,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 WalletId = _walletId,
                 AlgoInstanceType = AlgoInstanceType.Live,
                 IsStraight = true,
-                AlgoClientId = _algoClientId,
                 AlgoInstanceStatus = AlgoInstanceStatus.Started,
                 InstanceName = "Unit Test",
                 AlgoInstanceCreateDate = DateTime.UtcNow,
