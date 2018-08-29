@@ -31,10 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lykke.AlgoStore.Algo\Lykke.AlgoStore.Algo.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Strings\ErrorMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
