@@ -93,7 +93,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
             var algoIdPartitionKeyEntity = AlgoEntity.CreateEntityWithAlgoIdPartionKey(algo);
 
-            await _table.DeleteIfExistAsync(algoIdPartitionKeyEntity.RowKey, oldPK);
+            await _table.DeleteIfExistAsync(algoIdPartitionKeyEntity.PartitionKey, oldPK);
 
             await _table.InsertOrMergeAsync(algoIdPartitionKeyEntity);
         }
