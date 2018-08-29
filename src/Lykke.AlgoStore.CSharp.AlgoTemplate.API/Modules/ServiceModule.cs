@@ -19,6 +19,7 @@ using Lykke.AlgoStore.Service.History.Client;
 using Lykke.AlgoStore.Job.Stopping.Client;
 using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -83,14 +84,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IAlgo>();
 
             builder.RegisterType<WorkflowService>()
-                .As<IAlgoWorkflowService>();
+                .As<IAlgoWorkflowService>()
+                .SingleInstance();
+
+            builder.RegisterType<CurrentDataProvider>()
+                .As<ICurrentDataProvider>()
+                .SingleInstance();
 
             builder.RegisterType<AlgoSettingsService>()
                 .As<IAlgoSettingsService>()
                 .SingleInstance();
 
             builder.RegisterType<FunctionsService>()
-                .As<IFunctionsService>();
+                .As<IFunctionsService>()
+                .SingleInstance();
 
             builder.RegisterType<HistoryDataService>()
                 .As<IHistoryDataService>();
@@ -101,7 +108,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .SingleInstance();
 
             builder.RegisterType<ActionsService>()
-                .As<ICandleActions, IQuoteActions>();
+                .As<IActions>();
 
             dynamic dynamicSettings =
                 JsonConvert.DeserializeObject<ExpandoObject>(Environment.GetEnvironmentVariable("ALGO_INSTANCE_PARAMS"));
@@ -124,13 +131,16 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .WithParameter(TypedParameter.From(_settings.Nested(x => x.CSharpAlgoTemplateService.QuoteRabbitMqSettings)));
 
             builder.RegisterType<TradingService>()
-                .As<ITradingService>();
+                .As<ITradingService>()
+                .SingleInstance();
 
             builder.RegisterType<FakeTradingService>()
-                .As<IFakeTradingService>();
+                .As<IFakeTradingService>()
+                .SingleInstance();
 
             builder.RegisterType<CandlesService>()
-                .As<ICandlesService>();
+                .As<ICandlesService>()
+                .SingleInstance();
 
             builder.RegisterHistoryClient(_settings.CurrentValue.HistoryServiceClient);
 
@@ -178,7 +188,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                  
             builder.RegisterInstance(instanceEventHandler.Create().Generate<IInstanceEventHandlerClient>())
                 .As<IInstanceEventHandlerClient>();
-                
+
+            builder.RegisterType<MarketOrderManager>()
+                .As<IMarketOrderManager>()
+                .SingleInstance();
+
+            builder.RegisterType<OrderProvider>()
+                .As<IOrderProvider>()
+                .SingleInstance();
+
             builder.Populate(_services);
         }
     }

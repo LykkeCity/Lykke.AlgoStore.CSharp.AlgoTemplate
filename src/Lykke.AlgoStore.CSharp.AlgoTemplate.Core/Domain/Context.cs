@@ -12,5 +12,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Domain
         /// algo <see cref="IFunctionProvider"/>
         /// </summary>
         public IFunctionProvider Functions { get; set; }
+
+        public IOrderProvider Orders { get; set; }
+
+        public IActions Actions { get; set; }
     }
 }

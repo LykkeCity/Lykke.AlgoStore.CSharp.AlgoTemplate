@@ -24,12 +24,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IAlgoSettingsService _algoSettingsService;
         private readonly IQuoteProviderService _quoteProviderService;
         private readonly IFunctionsService _functionsService;
-        private readonly IHistoryDataService _historyDataService;
         private readonly ITradingService _tradingService;
         private readonly ICandlesService _candlesService;
         private readonly IStatisticsService _statisticsService;
         private readonly IUserLogService _logService;
         private readonly IMonitoringService _monitoringService;
+        private readonly IOrderProvider _orderProvider;
+        private readonly ICurrentDataProvider _currentDataProvider;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
         private readonly object _sync = new object();
@@ -39,7 +40,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         public WorkflowService(
             IAlgoSettingsService algoSettingsService,
             IQuoteProviderService quoteProviderService,
-            IHistoryDataService historyDataService,
             IFunctionsService functionsService,
             ITradingService tradingService,
             ICandlesService candlesService,
@@ -47,18 +47,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IUserLogService logService,
             IMonitoringService monitoringService,
             IEventCollector eventCollector,
+            IOrderProvider orderProvider,
+            ICurrentDataProvider currentDataProvider,
             IAlgo algo)
         {
             _algoSettingsService = algoSettingsService;
             _quoteProviderService = quoteProviderService;
-            _historyDataService = historyDataService;
             _functionsService = functionsService;
             _statisticsService = statisticsService;
             _logService = logService;
             _tradingService = tradingService;
             _candlesService = candlesService;
             _monitoringService = monitoringService;
-            actions = new ActionsService(_tradingService, _statisticsService, logService, algoSettingsService, OnErrorHandler, eventCollector);
+            _orderProvider = orderProvider;
+            _currentDataProvider = currentDataProvider;
+            actions = new ActionsService(logService, algoSettingsService);
             _algo = algo;
         }
 
@@ -113,7 +116,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             // Gets not finished limited orders?!?
             // can we get it for algo ?!?
 
-            _tradingService.Initialize();
+            await _tradingService.Initialize();
 
             // subscribe for RabbitMQ quotes and candles
             // throws if fail
@@ -185,6 +188,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     // Allow time for all functions to recalculate before sending the event
                     Thread.Sleep(100);
 
+                    _currentDataProvider.CurrentCandle = algoCandle;
+                    _currentDataProvider.CurrentQuote = null;
+
+                    _currentDataProvider.CurrentTimestamp = algoCandle.DateTime;
+                    _currentDataProvider.CurrentPrice = algoCandle.Close;
+
                     var token = _monitoringService.StartAlgoEvent(
                         "The instance is being stopped because OnCandleReceived took too long to execute.");
 
@@ -218,6 +227,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             lock (_sync)
             {
+                _currentDataProvider.CurrentCandle = null;
+                _currentDataProvider.CurrentQuote = quote;
+
+                _currentDataProvider.CurrentTimestamp = quote.Timestamp;
+                _currentDataProvider.CurrentPrice = quote.Price;
+
                 var token = _monitoringService.StartAlgoEvent(
                     "The instance is being stopped because OnQuoteReceived took too long to execute.");
 
@@ -272,6 +287,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private void SetContextProperties(Context context)
         {
             context.Functions = _functionsService.GetFunctionResults();
+            context.Orders = _orderProvider;
         }
 
         public void SetUpAlgoParameters(AlgoClientInstanceData algoInstance)
