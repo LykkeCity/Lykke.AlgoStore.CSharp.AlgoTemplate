@@ -185,9 +185,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
             var instanceEventHandler = HttpClientGenerator.HttpClientGenerator
                  .BuildForUrl(_settings.CurrentValue.InstanceEventHandlerServiceClient.ServiceUrl)
                  .WithAdditionalDelegatingHandler(authHandler);
-                 
+
             builder.RegisterInstance(instanceEventHandler.Create().Generate<IInstanceEventHandlerClient>())
-                .As<IInstanceEventHandlerClient>();
+                .As<IInstanceEventHandlerClient>()
+                .SingleInstance();
 
             builder.RegisterType<MarketOrderManager>()
                 .As<IMarketOrderManager>()
