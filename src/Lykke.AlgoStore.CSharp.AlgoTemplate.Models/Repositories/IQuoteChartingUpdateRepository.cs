@@ -11,5 +11,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
     {
         Task WriteAsync(IEnumerable<QuoteChartingUpdateData> data);
         Task<IEnumerable<QuoteChartingUpdateData>> GetQuotesForPeriodAsync(string instanceId, string assetPair, DateTime from, DateTime to, CancellationToken ct, bool? isBuy = null);
+        Task SaveDifferentPartionsAsync(IEnumerable<QuoteChartingUpdateData> data);
     }
 }
