@@ -17,6 +17,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 
         Task<AlgoClientInstanceData> GetAlgoInstanceDataByAlgoIdAsync(string algoId, string instanceId);
         Task<AlgoClientInstanceData> GetAlgoInstanceDataByClientIdAsync(string clientId, string instanceId);
+        Task<AlgoClientInstanceData> GetAlgoInstanceDataByWalletIdAsync(string walletId, string instanceId);
         Task<AlgoClientInstanceData> GetAlgoInstanceDataByAuthTokenAsync(string authToken);
         Task<AlgoInstanceTcBuildData> GetAlgoInstanceDataByTcBuildIdAsync(string tcBuildId);
 
