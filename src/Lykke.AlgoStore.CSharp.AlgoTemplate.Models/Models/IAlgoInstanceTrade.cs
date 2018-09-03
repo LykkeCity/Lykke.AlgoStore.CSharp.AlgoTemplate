@@ -1,4 +1,5 @@
 ﻿using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
@@ -14,5 +15,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         string AssetPairId { get; set; }
         DateTime? DateOfTrade { get; set; }
         string AssetId { get; set; }
+        OrderType OrderType { get; set; }
     }
 }

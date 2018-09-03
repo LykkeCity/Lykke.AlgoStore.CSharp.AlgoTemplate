@@ -1,9 +1,11 @@
 ﻿using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.AzureStorage.Tables;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
 {
-    public class AlgoInstanceTradeEntity : TableEntity
+    public class AlgoInstanceTradeEntity : AzureTableEntity
     {
         public string InstanceId { get; set; }
 
@@ -24,5 +26,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public string WalletId { get; set; }
 
         public DateTime? DateOfTrade { get; set; }
+
+        public OrderType OrderType { get; set; }
     }
 }
