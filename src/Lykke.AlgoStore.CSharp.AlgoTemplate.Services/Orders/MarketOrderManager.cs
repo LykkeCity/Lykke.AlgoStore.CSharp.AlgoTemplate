@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 {
-    public class MarketOrderManager : IMarketOrderManager
+    public sealed class MarketOrderManager : IMarketOrderManager
     {
         private readonly ITradingService _tradingService;
         private readonly IAlgoSettingsService _settingsService;
@@ -21,6 +21,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
         private readonly ICurrentDataProvider _currentDataProvider;
 
         private readonly List<MarketOrder> _marketOrders = new List<MarketOrder>();
+        private readonly HashSet<Task> _pendingTasks = new HashSet<Task>();
+        private readonly object _sync = new object();
+
+        private bool _isDisposing;
 
         #region IReadOnlyList implementation
 
@@ -50,6 +54,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 
         public IMarketOrder Create(Algo.OrderAction action, double volume)
         {
+            // This check will handle the case where algo trade callbacks might create more trades
+            if (_isDisposing)
+                throw new ObjectDisposedException(nameof(MarketOrderManager));
+
             if (volume <= 0)
                 throw new ArgumentException("Volume must be positive", nameof(volume));
 
@@ -60,6 +68,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             AddHandlersAndExecute(marketOrder);
 
             return marketOrder;
+        }
+
+        public void Dispose()
+        {
+            if(_isDisposing) return;
+
+            _isDisposing = true;
+
+            try
+            {
+                Task.WhenAll(_pendingTasks).ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+            catch (Exception) { }
+            // We're disposing, ignore all uncaught exceptions to prevent interrupting the shutdown process
         }
 
         private void AddHandlersAndExecute(MarketOrder marketOrder)
@@ -80,12 +102,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             ITradeRequest tradeRequest,
             Func<ITradeRequest, Task<ResponseModel<double>>> executor)
         {
-            var task = executor(tradeRequest).WithTimeout();
+            var tradeTask = executor(tradeRequest).WithTimeout();
 
-            task.ContinueWith(previous =>
+            var tradeHandleTask = tradeTask.ContinueWith(async previous =>
             {
                 if (previous.IsCompletedSuccessfully)
-                    HandleResponse(previous.Result, marketOrder, tradeRequest);
+                    await HandleResponse(previous.Result, marketOrder, tradeRequest);
                 else if (previous.IsFaulted)
                 {
                     var ex = previous.Exception;
@@ -107,9 +129,27 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                 else if (previous.IsCanceled)
                     marketOrder.MarkErrored(TradeErrorCode.RequestTimeout, "");
             });
+
+            // Ensure that all market orders and their response handling will complete before the
+            // instance shutdown by keeping track of all non-completed tasks and awaiting them when disposing
+
+            lock(_sync)
+            {
+                _pendingTasks.Add(tradeHandleTask);
+            }
+
+            tradeHandleTask.ContinueWith((t) =>
+            {
+                if (_isDisposing) return;
+
+                lock(_sync)
+                {
+                    _pendingTasks.Remove(t);
+                }
+            });
         }
 
-        private void HandleResponse(
+        private async Task HandleResponse(
             ResponseModel<double> result,
             MarketOrder marketOrder,
             ITradeRequest tradeRequest)
@@ -155,7 +195,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     Id = Guid.NewGuid().ToString()
                 };
 
-                _eventCollector.SubmitTradeEvent(tradeChartingUpdate).GetAwaiter().GetResult();
+                await _eventCollector.SubmitTradeEvent(tradeChartingUpdate);
 
                 marketOrder.MarkFulfilled();
                 return;
