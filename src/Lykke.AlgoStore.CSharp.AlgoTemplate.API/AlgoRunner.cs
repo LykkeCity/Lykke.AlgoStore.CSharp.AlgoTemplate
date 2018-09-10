@@ -160,7 +160,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate
                 appSettings.CurrentValue.MatchingEngineAdapterClient.Port);
             builder.Populate(services);
 
-            var ioc = builder.Build();
+            var ioc = builder.Build();            
             return ioc;
         }
 

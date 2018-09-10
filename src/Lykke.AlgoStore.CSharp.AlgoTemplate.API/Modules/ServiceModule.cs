@@ -194,6 +194,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IMarketOrderManager>()
                 .SingleInstance();
 
+            builder.RegisterType<LimitOrderManager>()
+                .As<ILimitOrderManager>()
+                .SingleInstance();
+
             builder.RegisterType<OrderProvider>()
                 .As<IOrderProvider>()
                 .SingleInstance();
