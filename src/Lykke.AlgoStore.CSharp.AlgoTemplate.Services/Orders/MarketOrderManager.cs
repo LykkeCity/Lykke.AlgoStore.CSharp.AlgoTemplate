@@ -163,7 +163,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     $"There was a problem placing a {action} order. Error: {result.Error.Message} " +
                     $"is buying - {isBuy} ");
 
-                marketOrder.MarkErrored(result.Error.Code.ToTradeErrorCode(), result.Error.Message);
+                marketOrder.MarkErrored(result.Error.ToTradeErrorCode(), result.Error.Message);
                 return;
             }
 
@@ -192,7 +192,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     InstanceId = _settingsService.GetInstanceId(),
                     IsBuy = isBuy,
                     Price = result.Result,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid().ToString(),
+                    OrderType = Models.Enumerators.OrderType.Market
                 };
 
                 await _eventCollector.SubmitTradeEvent(tradeChartingUpdate);

@@ -61,7 +61,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Error = new ResponseModel.ErrorModel()
                     {
                         Message = ErrorMessages.NotEnoughFunds,
-                        Code = ResponseModel.ErrorCodeType.NotEnoughFunds
+                        Code = ErrorCodeType.NotEnoughFunds
                     }
                 };
 
@@ -102,7 +102,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Error = new ResponseModel.ErrorModel()
                     {
                         Message = ErrorMessages.NotEnoughFunds,
-                        Code = ResponseModel.ErrorCodeType.NotEnoughFunds
+                        Code = ErrorCodeType.NotEnoughFunds
                     }
                 };
 

@@ -5,26 +5,46 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions
 {
     public static class ErrorCodeTypeExtensions
     {
-        public static TradeErrorCode ToTradeErrorCode(this ResponseModel.ErrorCodeType meaErrorCodeType)
+        public static TradeErrorCode ToTradeErrorCode(this ResponseModel.ErrorModel meaErrorCodeType)
         {
-            switch (meaErrorCodeType)
+            switch (meaErrorCodeType.Code)
             {
-                case ResponseModel.ErrorCodeType.LowBalance:
+                case ErrorCodeType.LowBalance:
                     return TradeErrorCode.LowBalance;
-                case ResponseModel.ErrorCodeType.AlreadyProcessed:
+                case ErrorCodeType.AlreadyProcessed:
                     return TradeErrorCode.AlreadyProcessed;
-                case ResponseModel.ErrorCodeType.UnknownAsset:
+                case ErrorCodeType.UnknownAsset:
                     return TradeErrorCode.UnknownAsset;
-                case ResponseModel.ErrorCodeType.NoLiquidity:
+                case ErrorCodeType.NoLiquidity:
                     return TradeErrorCode.NoLiquidity;
-                case ResponseModel.ErrorCodeType.NotEnoughFunds:
+                case ErrorCodeType.NotEnoughFunds:
                     return TradeErrorCode.NotEnoughFunds;
-                case ResponseModel.ErrorCodeType.ReservedVolumeHigherThanBalance:
+                case ErrorCodeType.Dust:
+                    return TradeErrorCode.Dust;
+                case ErrorCodeType.ReservedVolumeHigherThanBalance:
                     return TradeErrorCode.ReservedVolumeHigherThanBalance;
-                case ResponseModel.ErrorCodeType.BalanceLowerThanReserved:
+                case ErrorCodeType.BalanceLowerThanReserved:
                     return TradeErrorCode.BalanceLowerThanReserved;
-                case ResponseModel.ErrorCodeType.LeadToNegativeSpread:
+                case ErrorCodeType.LeadToNegativeSpread:
                     return TradeErrorCode.LeadToNegativeSpread;
+                case ErrorCodeType.NotFound:
+                    return TradeErrorCode.NotFound;
+                case ErrorCodeType.Runtime:
+                    return TradeErrorCode.Runtime;
+                case ErrorCodeType.NotFoundPrevious:
+                    return TradeErrorCode.NotFoundPrevious;
+                case ErrorCodeType.Replaced:
+                    return TradeErrorCode.Replaced;
+                case ErrorCodeType.InvalidPrice:
+                    return TradeErrorCode.InvalidPrice;
+                case ErrorCodeType.Duplicate:
+                    return TradeErrorCode.Duplicate;
+                case ErrorCodeType.InvalidFee:
+                    return TradeErrorCode.InvalidFee;
+                case ErrorCodeType.BadRequest:
+                    return TradeErrorCode.BadRequest;
+                case ErrorCodeType.InvalidInputField:
+                    return TradeErrorCode.InvalidInputField;
                 default:
                     return TradeErrorCode.Runtime;
             }
