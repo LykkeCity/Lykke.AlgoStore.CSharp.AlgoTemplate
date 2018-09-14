@@ -16,5 +16,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         DateTime? DateOfTrade { get; set; }
         string AssetId { get; set; }
         OrderType OrderType { get; set; }
+        OrderStatus OrderStatus { get; set; }
     }
 }

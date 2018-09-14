@@ -28,5 +28,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities
         public DateTime? DateOfTrade { get; set; }
 
         public OrderType OrderType { get; set; }
+
+        public OrderStatus OrderStatus { get; set; }
     }
 }

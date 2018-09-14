@@ -17,5 +17,6 @@ namespace Lykke.AlgoStore.Algo.Charting
         public DateTime? DateOfTrade { get; set; }
         public string AssetId { get; set; }
         public OrderType OrderType { get; set; }
+        public OrderStatus OrderStatus { get; set; }
     }
 }

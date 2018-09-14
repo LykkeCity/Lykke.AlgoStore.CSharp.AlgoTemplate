@@ -1,4 +1,4 @@
-﻿namespace Lykke.AlgoStore.Algo
+﻿namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators
 {
     public enum OrderStatus
     {

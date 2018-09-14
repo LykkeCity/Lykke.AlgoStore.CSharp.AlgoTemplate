@@ -28,5 +28,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public string WalletId { get; set; }
 
         public OrderType OrderType { get; set; }
+
+        public OrderStatus OrderStatus { get; set; }
     }
 }
