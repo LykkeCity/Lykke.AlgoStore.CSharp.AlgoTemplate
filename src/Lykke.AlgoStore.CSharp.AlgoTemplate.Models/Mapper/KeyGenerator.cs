@@ -14,6 +14,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
         private const string AuthTokenPartitionKeyStatic = "authtoken";
         private const string EndDatePartitionKeyStatic = "StoppingEntity";
         private const string TcBuildPartitionKeyStatic = "TcBuildEntity";
+        private const string FakeLimitOrderPrefixStatic = "FakeOrderId";
 
         public static string GenerateKey(string clientId, string algoId)
         {
@@ -63,6 +64,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Mapper
         public static string GenerateStoppingEntityRowKey(DateTime instanceEndDate)
         {
             return instanceEndDate.Ticks.ToString();
+        }
+
+        public static string GenerateFakeLimitOrderPartitionKey(Guid limitOrderId)
+        {
+            return string.Format(PartitionKeyPattern, FakeLimitOrderPrefixStatic, PartitionKeySeparator, limitOrderId);
         }
 
         public static BaseAlgoData ParseKey(string partitionKey)
