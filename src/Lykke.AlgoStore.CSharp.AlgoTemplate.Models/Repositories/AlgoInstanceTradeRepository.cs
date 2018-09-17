@@ -70,13 +70,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             return AutoMapper.Mapper.Map<AlgoInstanceTrade>(result);
         }
 
-        public async Task CreateAlgoInstanceOrderAsync(AlgoInstanceTrade data)
+        public async Task CreateOrUpdateAlgoInstanceOrderAsync(AlgoInstanceTrade data)
         {
             var entity = AutoMapper.Mapper.Map<AlgoInstanceTradeEntity>(data);
             entity.PartitionKey = GeneratePartitionKeyByOrderId(data.OrderId);
             entity.RowKey = GenerateRowKeyByWalletId(data.WalletId);
             
-            await _tableStorage.InsertAsync(entity);
+            await _tableStorage.InsertOrMergeAsync(entity);
         }
 
         public async Task CreateOrUpdateAlgoInstanceOrderAsync(AlgoInstanceTrade data)
