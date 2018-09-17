@@ -79,6 +79,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _tableStorage.InsertAsync(entity);
         }
 
+        public async Task CreateOrUpdateAlgoInstanceOrderAsync(AlgoInstanceTrade data)
+        {
+            var entity = AutoMapper.Mapper.Map<AlgoInstanceTradeEntity>(data);
+            entity.PartitionKey = GeneratePartitionKeyByOrderId(data.OrderId);
+            entity.RowKey = GenerateRowKeyByWalletId(data.WalletId);
+
+            await _tableStorage.InsertOrMergeAsync(entity);
+        }
+
         /// <summary>
         /// Create new trade row with PK - instance Id and RK - ReverseTick
         /// </summary>
