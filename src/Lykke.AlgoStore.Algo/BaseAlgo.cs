@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Lykke.AlgoStore.Algo.Indicators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
@@ -7,7 +8,10 @@ namespace Lykke.AlgoStore.Algo
     public class BaseAlgo : IAlgo
     {
         // This will be set automatically during initialization
+        [UsedImplicitly(ImplicitUseKindFlags.Assign)]
         private IIndicatorManager _paramProvider;
+        [UsedImplicitly(ImplicitUseKindFlags.Assign)]
+        private IWalletDataProvider _walletDataProvider;
 
         #region Defaults
 
@@ -26,6 +30,8 @@ namespace Lykke.AlgoStore.Algo
         protected ulong? Default(ulong value) => null;
 
         #endregion // Defaults
+
+        public IWalletDataProvider Wallet => _walletDataProvider;
 
         protected MACD MACD(
             string indicatorName,

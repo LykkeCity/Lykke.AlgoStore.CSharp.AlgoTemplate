@@ -31,6 +31,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IMonitoringService _monitoringService;
         private readonly IOrderProvider _orderProvider;
         private readonly ICurrentDataProvider _currentDataProvider;
+        private readonly IWalletDataProvider _walletDataProvider;
         private readonly IAlgo _algo;
         private readonly ActionsService actions;
         private readonly object _sync = new object();
@@ -49,6 +50,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             IEventCollector eventCollector,
             IOrderProvider orderProvider,
             ICurrentDataProvider currentDataProvider,
+            IWalletDataProvider walletDataProvider,
             IAlgo algo)
         {
             _algoSettingsService = algoSettingsService;
@@ -61,6 +63,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _monitoringService = monitoringService;
             _orderProvider = orderProvider;
             _currentDataProvider = currentDataProvider;
+            _walletDataProvider = walletDataProvider;
             actions = new ActionsService(logService, algoSettingsService);
             _algo = algo;
         }
@@ -300,6 +303,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             var baseAlgo = parameterType.BaseType;
             baseAlgo.GetField("_paramProvider", BindingFlags.Instance | BindingFlags.NonPublic)
                     .SetValue(_algo, _functionsService);
+
+            baseAlgo.GetField("_walletDataProvider", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(_algo, _walletDataProvider);
 
             foreach (var parameter in algoInstance.AlgoMetaDataInformation.Parameters)
             {
