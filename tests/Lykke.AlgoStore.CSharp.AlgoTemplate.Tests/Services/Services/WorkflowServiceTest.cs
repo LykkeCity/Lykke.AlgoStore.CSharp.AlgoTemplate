@@ -23,7 +23,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
             var algoInstance = GetAlgoInstanceMockReturnCorrectData();
             var algo = new DummyAlgo();
 
-            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, null, null, null, null, algo);
+            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, null, null, null, null, null, algo);
 
             service.SetUpAlgoParameters(algoInstance);
             Assert.AreEqual(_tradedAsset, algo.TradedAsset);
@@ -37,7 +37,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Services.Services
         {
             var algo = new DummyAlgo();
 
-            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, null, null, null, null, algo);
+            WorkflowService service = new WorkflowService(null, null, null, null, null, null, null, null, null, null, null, null, null, algo);
 
             service.SetUpAlgoParameters(null);
             Assert.IsNull(algo.TradedAsset);

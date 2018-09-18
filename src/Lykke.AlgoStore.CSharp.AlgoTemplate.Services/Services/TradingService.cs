@@ -2,10 +2,12 @@
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain.Contracts;
 using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrderAction = Lykke.AlgoStore.Algo.OrderAction;
 
@@ -97,8 +99,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }           
             else
             {
-                //TODO Implement Fake Limit Orders
-                return new ResponseModel<LimitOrderResponseModel>();
+                return await _fakeTradingService.PlaceLimitOrderAsync(tradeRequest, orderAction == OrderAction.Buy);
             }
         }
 

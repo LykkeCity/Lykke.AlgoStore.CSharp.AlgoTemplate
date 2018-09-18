@@ -148,7 +148,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     $"price {tradeRequest.Price} at {dateTime.ToDefaultDateTimeFormat()}");
 
                 limitOrder.Id = result.Result.Id;
-                limitOrder.MarkRegistered();
+                limitOrder.MarkPlaced();
                 return;
             }
 
