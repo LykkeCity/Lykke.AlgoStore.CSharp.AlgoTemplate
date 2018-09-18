@@ -11,5 +11,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services
         Task<ResponseModel<double>> Sell(ITradeRequest tradeRequest);
         Task<ResponseModel<LimitOrderResponseModel>> PlaceLimitOrderAsync(ITradeRequest tradeRequest, bool isBuy);
         Task Initialize(string instanceId, string assetPairId, bool straight);
+
+        decimal TradedAssetBalance { get; }
+        decimal OppositeAssetBalance { get; }
     }
 }

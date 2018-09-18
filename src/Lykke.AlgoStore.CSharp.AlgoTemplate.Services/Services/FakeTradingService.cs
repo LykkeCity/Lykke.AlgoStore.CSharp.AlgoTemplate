@@ -26,6 +26,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly ICurrentDataProvider _currentDataProvider; 
 
+        public decimal TradedAssetBalance => (decimal)_summary.LastTradedAssetBalance;
+        public decimal OppositeAssetBalance => (decimal)_summary.LastAssetTwoBalance;
+
         public FakeTradingService(IAlgoSettingsService algoSettingsService,
             IAlgoInstanceTradeRepository algoInstanceTradeRepository,
             IStatisticsRepository statisticsRepository,
@@ -55,9 +58,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         {
             double tradedOppositeVolume = CalculateOppositeOfTradedAssetTradeValue(tradeRequest.Volume, _currentDataProvider.CurrentPrice);
 
-            var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
-
-            if (summary.LastTradedAssetBalance < tradeRequest.Volume)
+            if (_summary.LastTradedAssetBalance < tradeRequest.Volume)
                 return new ResponseModel<double>()
                 {
                     Error = new ResponseModel.ErrorModel()
@@ -73,15 +74,15 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
                 CreateAlgoInstanceTrade(_oppositeAssetId, tradedOppositeVolume, false));
 
-            summary.LastTradedAssetBalance -= tradeRequest.Volume;
-            summary.LastAssetTwoBalance += tradedOppositeVolume;
+            _summary.LastTradedAssetBalance -= tradeRequest.Volume;
+            _summary.LastAssetTwoBalance += tradedOppositeVolume;
 
             if (_straight)
-                summary.LastWalletBalance = Math.Round(summary.LastAssetTwoBalance + summary.LastTradedAssetBalance * _currentDataProvider.CurrentPrice, 8);
+                _summary.LastWalletBalance = Math.Round(_summary.LastAssetTwoBalance + _summary.LastTradedAssetBalance * _currentDataProvider.CurrentPrice, 8);
             else
-                summary.LastWalletBalance = Math.Round(summary.LastTradedAssetBalance + summary.LastAssetTwoBalance * _currentDataProvider.CurrentPrice, 8);
+                _summary.LastWalletBalance = Math.Round(_summary.LastTradedAssetBalance + _summary.LastAssetTwoBalance * _currentDataProvider.CurrentPrice, 8);
 
-            await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
+            await _statisticsRepository.CreateOrUpdateSummaryAsync(_summary);
 
             return new ResponseModel<double>()
             {
