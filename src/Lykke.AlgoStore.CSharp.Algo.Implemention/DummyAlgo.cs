@@ -46,7 +46,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             if (count < 2)
             {
-                context.Orders.Limit.Create(OrderAction.Buy, 0.2, 6500);
+                //context.Orders.Limit.Create(OrderAction.Buy, 0.2, 6500);
                 count++;
             }
 
@@ -75,7 +75,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             if (count < 2)
             {
-                context.Orders.Limit.Create(OrderAction.Buy, 0.5, 6500);
+                //context.Orders.Limit.Create(OrderAction.Buy, 0.5, 6500);
                 count++;
             }
         }
