@@ -55,14 +55,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 {
                     if (limitOrder.Status != OrderStatus.Matched)
                     {                 
-                        if (limitOrder.Action == OrderAction.Buy && currentCandle.Low <= limitOrder.Price)
-                        {
-                            FulfillLimitOrder(limitOrder, currentCandle.Close, currentCandle.DateTime);
-                            limitOrder.MarkMatched();
-                            MarkDbOrderMatched(limitOrder.Id);
-                            _summary.TotalNumberOfTrades++;
-                        }
-                        else if (limitOrder.Action == OrderAction.Sell && currentCandle.High >= limitOrder.Price)
+                        if ((limitOrder.Action == OrderAction.Buy && currentCandle.Low <= limitOrder.Price) || 
+                            (limitOrder.Action == OrderAction.Sell && currentCandle.High >= limitOrder.Price))
                         {
                             FulfillLimitOrder(limitOrder, currentCandle.Close, currentCandle.DateTime);
                             limitOrder.MarkMatched();
@@ -82,14 +76,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 {
                     if (limitOrder.Status != OrderStatus.Matched)
                     {
-                        if (limitOrder.Action == OrderAction.Buy && currentQuote.Price <= limitOrder.Price)
-                        {
-                            FulfillLimitOrder(limitOrder, currentQuote.Price, currentQuote.Timestamp);
-                            limitOrder.MarkMatched();
-                            MarkDbOrderMatched(limitOrder.Id);
-                            _summary.TotalNumberOfTrades++;
-                        }
-                        else if (limitOrder.Action == OrderAction.Sell && currentQuote.Price >= limitOrder.Price)
+                        if ((limitOrder.Action == OrderAction.Buy && currentQuote.Price <= limitOrder.Price) ||
+                            (limitOrder.Action == OrderAction.Sell && currentQuote.Price >= limitOrder.Price))
                         {
                             FulfillLimitOrder(limitOrder, currentQuote.Price, currentQuote.Timestamp);
                             limitOrder.MarkMatched();
