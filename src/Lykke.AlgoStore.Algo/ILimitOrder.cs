@@ -16,6 +16,7 @@ namespace Lykke.AlgoStore.Algo
         event Action<ILimitOrder> OnCancelled;
         event Action<ILimitOrder, TradeErrorCode, string> OnErrored;
 
+        void MarkMatched();
         void Cancel();
     }
 }

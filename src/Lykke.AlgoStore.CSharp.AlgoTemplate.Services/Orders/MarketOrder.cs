@@ -1,7 +1,7 @@
 ﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
 using System.Collections.Generic;
-using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 {

@@ -81,7 +81,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 });
 
             AlgoInstanceTradeRepository repository = new AlgoInstanceTradeRepository(storage.Object);
-            repository.CreateAlgoInstanceOrderAsync(new AlgoInstanceTrade()
+            repository.CreateOrUpdateAlgoInstanceOrderAsync(new AlgoInstanceTrade()
             {
                 InstanceId = _instanceId,
                 OrderId = _orderId,
@@ -112,7 +112,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 IsBuy = true,
                 WalletId = _walletId,
                 Amount = _amount,
-                AssetId = _assetId
+                AssetId = _assetId,
+                OrderStatus = Models.Enumerators.OrderStatus.UnknownStatus,
+                OrderType = Models.Enumerators.OrderType.Unknown
             }).Wait();
         }
 
@@ -234,7 +236,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                 IsBuy = true,
                 WalletId = _walletId,
                 Amount = _amount,
-                AssetId = _assetId
+                AssetId = _assetId,
+                OrderStatus = Models.Enumerators.OrderStatus.UnknownStatus,
+                OrderType = Models.Enumerators.OrderType.Unknown
             };
 
             string serializedFirst = JsonConvert.SerializeObject(entityToCheck);

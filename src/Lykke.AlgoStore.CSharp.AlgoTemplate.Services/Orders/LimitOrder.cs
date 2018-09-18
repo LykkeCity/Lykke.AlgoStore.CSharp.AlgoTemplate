@@ -1,4 +1,5 @@
 ﻿using Lykke.AlgoStore.Algo;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 using System;
 using System.Collections.Generic;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
@@ -51,17 +52,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             Status = OrderStatus.Pending;
         }
 
-        public void MarkFulfilled()
+        public void MarkMatched()
         {
-            ValidateAndSetStatus(OrderStatus.Errored, "Order already fulfilled");
+            ValidateAndSetStatus(OrderStatus.Matched, "Order already fulfilled");
 
             foreach (var callback in _fulfilledCallbacks)
                 callback(this);
         }
 
-        public void MarkRegistered()
+        public void MarkPlaced()
         {
-            ValidateAndSetStatus(OrderStatus.Errored, "Order already registered");
+            ValidateAndSetStatus(OrderStatus.Placed, "Order already registered");
 
             foreach (var callback in _registeredCallbacks)
                 callback(this);
@@ -69,7 +70,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 
         public void MarkCancelled()
         {
-            ValidateAndSetStatus(OrderStatus.Errored, "Order already registered");
+            ValidateAndSetStatus(OrderStatus.Cancelled, "Order already cancelled");
 
             foreach (var callback in _cancelledCallbacks)
                 callback(this);

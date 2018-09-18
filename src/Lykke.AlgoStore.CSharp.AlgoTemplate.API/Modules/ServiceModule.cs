@@ -138,6 +138,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IFakeTradingService>()
                 .SingleInstance();
 
+            builder.RegisterType<FakeLimitOrdersHandler>()
+                .As<IFakeLimitOrdersHandler>()
+                .SingleInstance();
+
             builder.RegisterType<CandlesService>()
                 .As<ICandlesService>()
                 .SingleInstance();

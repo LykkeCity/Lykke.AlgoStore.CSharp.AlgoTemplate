@@ -12,11 +12,13 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
     {
         public SMA _shortSma { get; set; }
         public SMA _longSma { get; set; }
+        public int count { get; set; }
 
         public override void OnStartUp()
         {
             _shortSma = SMA("SMA_Short");
             _longSma = SMA("SMA_Long");
+            count = 0;
         }
 
         public override void OnQuoteReceived(IQuoteContext context)
@@ -42,7 +44,11 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
                 //context.Orders.Market.Create(OrderAction.Sell, Volume);
             }
 
-            var lo = context.Orders.Limit.Create(OrderAction.Buy, 0.2, 3000);
+            if (count < 2)
+            {
+                context.Orders.Limit.Create(OrderAction.Buy, 0.2, 6500);
+                count++;
+            }
 
         }
 
@@ -67,7 +73,11 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
             //context.Orders.Market.Create(OrderAction.Sell, Volume);
             //}
 
-            var lo2 = context.Orders.Limit.Create(OrderAction.Buy, 0.2, 3000);
+            if (count < 2)
+            {
+                context.Orders.Limit.Create(OrderAction.Buy, 0.5, 6500);
+                count++;
+            }
         }
     }
 }
