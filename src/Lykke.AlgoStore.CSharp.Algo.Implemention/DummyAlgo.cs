@@ -18,7 +18,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         public override void OnStartUp()
         {
-            _shortSma = SMA("SMA_Short"/* period: 1, candleTimeInterval:CandleTimeInterval.Hour, candleOperationMode:CandleOperationMode.CLOSE*/ );
+            _shortSma = SMA("SMA_Short"/* period: 1, candleTimeInterval:CandleTimeInterval.Hour, candleOperationMode:CandleOperationMode.CLOSE*/ ); //example usage of inline arguments
             _longSma = SMA("SMA_Long"/* period: 1, candleTimeInterval:CandleTimeInterval.Hour, candleOperationMode:CandleOperationMode.CLOSE*/);
             count = 0;
         }
@@ -48,6 +48,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             if (count < 2)
             {
+                //example create limit order and subscribe for events
                 //var limitOrder = context.Orders.Limit.Create(OrderAction.Buy, 0.2, 6500);
                 //limitOrder.OnRegistered += LimitOrderPlaced;
                 count++;
@@ -55,6 +56,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         }
 
+        //limit order update example handlers
         private void LimitOrderPlaced(ILimitOrder order)
         {
             //action placed limit order
@@ -87,6 +89,7 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             if (count < 2)
             {
+                //example create limit order and subscribe for events
                 //var limitOrder = context.Orders.Limit.Create(OrderAction.Buy, 0.2, 6500);
                 //limitOrder.OnFulfilled += LimitOrderFulfilled;
                 count++;
