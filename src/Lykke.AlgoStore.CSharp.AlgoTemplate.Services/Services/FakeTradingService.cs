@@ -19,6 +19,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private string _oppositeAssetId;
         private string _instanceId;
         private bool _straight;
+        private StatisticsSummary _summary;
 
         private readonly IAlgoSettingsService _algoSettingsService;
         private readonly IAlgoInstanceTradeRepository _algoInstanceTradeRepository;
@@ -46,6 +47,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _straight = straight;
             _tradedAssetId = _algoSettingsService.GetTradedAssetId();
             _oppositeAssetId = _algoSettingsService.GetAlgoInstanceOppositeAssetId();
+            _summary = await _statisticsRepository.GetSummaryAsync(instanceId);
         }
 
         /// <summary>
@@ -106,9 +108,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             double tradedOppositeValue = CalculateOppositeOfTradedAssetTradeValue(tradeRequest.Volume,
                 _currentDataProvider.CurrentPrice);
 
-            var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
-
-            if (summary.LastAssetTwoBalance < tradedOppositeValue)
+            if (_summary.LastAssetTwoBalance < tradedOppositeValue)
                 return new ResponseModel<double>()
                 {
                     Error = new ResponseModel.ErrorModel()
@@ -119,22 +119,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 };
 
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
-                    CreateAlgoInstanceTrade(_tradedAssetId, tradeRequest.Volume, true));
+                CreateAlgoInstanceTrade(_tradedAssetId, tradeRequest.Volume, true));
 
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
                 CreateAlgoInstanceTrade(_oppositeAssetId, -tradedOppositeValue, true));
 
-            summary.LastTradedAssetBalance += tradeRequest.Volume;
-            summary.LastAssetTwoBalance -= tradedOppositeValue;
+            _summary.LastTradedAssetBalance += tradeRequest.Volume;
+            _summary.LastAssetTwoBalance -= tradedOppositeValue;
 
             if (_straight)
-                summary.LastWalletBalance = Math.Round(summary.LastAssetTwoBalance + summary.LastTradedAssetBalance * tradeRequest.Price, 8);
+                _summary.LastWalletBalance =
+                    Math.Round(_summary.LastAssetTwoBalance + _summary.LastTradedAssetBalance * tradeRequest.Price, 8);
             else
-                summary.LastWalletBalance = Math.Round(summary.LastTradedAssetBalance + summary.LastAssetTwoBalance * tradeRequest.Price, 8);
+                _summary.LastWalletBalance =
+                    Math.Round(_summary.LastTradedAssetBalance + _summary.LastAssetTwoBalance * tradeRequest.Price, 8);
 
-            summary.TotalNumberOfTrades++;
+            _summary.TotalNumberOfTrades++;
 
-            await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
+            await _statisticsRepository.CreateOrUpdateSummaryAsync(_summary);
 
             return new ResponseModel<double>()
             {
