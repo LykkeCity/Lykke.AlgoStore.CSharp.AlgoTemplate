@@ -79,6 +79,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             else
                 summary.LastWalletBalance = Math.Round(summary.LastTradedAssetBalance + summary.LastAssetTwoBalance * tradeRequest.Price, 8);
 
+            summary.TotalNumberOfTrades++;
+
             await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
 
             return new ResponseModel<double>()
@@ -119,6 +121,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _summary.LastWalletBalance = Math.Round(_summary.LastAssetTwoBalance + _summary.LastTradedAssetBalance * tradeRequest.Price, 8);
             else
                 _summary.LastWalletBalance = Math.Round(_summary.LastTradedAssetBalance + _summary.LastAssetTwoBalance * tradeRequest.Price, 8);
+
+            _summary.TotalNumberOfTrades++;
 
             await _statisticsRepository.CreateOrUpdateSummaryAsync(_summary);
 

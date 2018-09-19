@@ -169,8 +169,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 
             if (result.Result > 0)
             {
-                _statisticsService.OnAction(isBuy, tradeRequest.Volume, result.Result);
-
                 var dateTime = _settingsService.GetInstanceType() == Models.Enumerators.AlgoInstanceType.Test
                     ? _currentDataProvider.CurrentTimestamp
                     : DateTime.UtcNow;
