@@ -108,7 +108,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             double tradedOppositeValue = CalculateOppositeOfTradedAssetTradeValue(tradeRequest.Volume,
                 _currentDataProvider.CurrentPrice);
 
-            if (_summary.LastAssetTwoBalance < tradedOppositeValue)
+            var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
+
+            if (summary.LastAssetTwoBalance < tradedOppositeValue)
                 return new ResponseModel<double>()
                 {
                     Error = new ResponseModel.ErrorModel()
@@ -124,8 +126,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
                 CreateAlgoInstanceTrade(_oppositeAssetId, -tradedOppositeValue, true));
 
-            _summary.LastTradedAssetBalance += tradeRequest.Volume;
-            _summary.LastAssetTwoBalance -= tradedOppositeValue;
+            summary.LastTradedAssetBalance += tradeRequest.Volume;
+            summary.LastAssetTwoBalance -= tradedOppositeValue;
 
             if (_straight)
                 _summary.LastWalletBalance =
@@ -136,7 +138,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
             _summary.TotalNumberOfTrades++;
 
-            await _statisticsRepository.CreateOrUpdateSummaryAsync(_summary);
+            await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
 
             return new ResponseModel<double>()
             {
