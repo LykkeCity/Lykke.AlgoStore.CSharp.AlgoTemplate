@@ -46,14 +46,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnAction(bool isBuy, double volume, double price)
         {
-            // Live instances trade count gets adjusted by the algo trades service
-            if (_algoSettings.GetInstanceType() == Models.Enumerators.AlgoInstanceType.Live) return;
-
-            var summary = GetSummary();
-
-            summary.TotalNumberOfTrades++;
-
-            _statisticsRepository.CreateAsync(summary).Wait();
+            //REMARK: TotalNumberOfTrades is now updated inside
+            //FakeTradingService (backtest and demo instances) and inside trades service (live instances)
         }
 
         public void OnAlgoStarted()
