@@ -9,5 +9,6 @@
         public LoggingSettings EventHandlerSettings { get; set; }
         public LoggingSettings LoggingSettings { get; set; }
         public string AlgoNamespaceValue { get; set; }
+        public RedisSettings Redis { get; set; }
     }
 }

@@ -16,17 +16,20 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services
         private readonly IUserLogService _userLogService;
         private readonly IEventCollector _eventCollector;
         private readonly IMarketOrderManager _marketOrderManager;
+        private readonly ILimitOrderManager _limitOrderManager;
 
         public ShutdownManager(
             ILog log,
             IUserLogService userLogService,
             IEventCollector eventCollector,
-            IMarketOrderManager marketOrderManager)
+            IMarketOrderManager marketOrderManager,
+            ILimitOrderManager limitOrderManager)
         {
             _log = log;
             _userLogService = userLogService;
             _eventCollector = eventCollector;
             _marketOrderManager = marketOrderManager;
+            _limitOrderManager = limitOrderManager;
         }
 
         public async Task StopAsync()
@@ -50,7 +53,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services
             _userLogService.Dispose();
 
             await _log.WriteInfoAsync(nameof(ShutdownManager), nameof(StopAsync),
+                "Flushing and disposing the limit order manager...");
+
+            _limitOrderManager.Dispose();
+
+            await _log.WriteInfoAsync(nameof(ShutdownManager), nameof(StopAsync),
                 "ShutdownManager complete");
+
+           
         }
     }
 }

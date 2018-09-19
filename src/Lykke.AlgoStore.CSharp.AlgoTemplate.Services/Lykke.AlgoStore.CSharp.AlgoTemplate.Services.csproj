@@ -18,6 +18,8 @@
     <PackageReference Include="Lykke.Job.QuotesProducer.Contract" Version="1.0.0" />
     <PackageReference Include="Lykke.RabbitMqBroker" Version="7.3.0" />
     <PackageReference Include="Lykke.SettingsReader" Version="4.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="3.5.0" />
   </ItemGroup>
 
   <ItemGroup>
