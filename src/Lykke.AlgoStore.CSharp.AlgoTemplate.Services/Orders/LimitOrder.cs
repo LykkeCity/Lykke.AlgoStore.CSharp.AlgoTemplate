@@ -9,6 +9,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
     internal class LimitOrder : ILimitOrder
     {
         private readonly HashSet<Action<ILimitOrder>> _fulfilledCallbacks = new HashSet<Action<ILimitOrder>>();
+        private readonly HashSet<Action<ILimitOrder>> _partiallyfulfilledCallbacks = new HashSet<Action<ILimitOrder>>();
         private readonly HashSet<Action<ILimitOrder>> _registeredCallbacks = new HashSet<Action<ILimitOrder>>();        
         private readonly HashSet<Action<ILimitOrder>> _cancelledCallbacks = new HashSet<Action<ILimitOrder>>();
         private readonly HashSet<Action<ILimitOrder, TradeErrorCode, string>> _erroredCallbacks
@@ -17,6 +18,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
         public OrderAction Action { get; }
         public Guid Id { get; set; }
         public double Volume { get; }
+        public double VolumeFulfilled { get; set; }
         public double Price { get; }
         public OrderStatus Status { get; set; }
 
@@ -24,6 +26,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
         {
             add => AddHandler(value, _fulfilledCallbacks);
             remove => RemoveHandler(value, _fulfilledCallbacks);
+        }
+
+        public event Action<ILimitOrder> OnPartiallyFulfilled
+        {
+            add => AddHandler(value, _partiallyfulfilledCallbacks);
+            remove => RemoveHandler(value, _partiallyfulfilledCallbacks);
         }
 
         public event Action<ILimitOrder> OnRegistered
@@ -52,11 +60,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             Status = OrderStatus.Pending;
         }
 
-        public void MarkMatched()
+        public void MarkFulfilled()
         {
             ValidateAndSetStatus(OrderStatus.Matched, "Order already fulfilled");
 
+            this.VolumeFulfilled = Volume;
             foreach (var callback in _fulfilledCallbacks)
+                callback(this);
+        }
+
+        public void MarkPartiallyFulfilled(double amountFullfilled)
+        {
+            Status = OrderStatus.PartiallyMatched; // limit order can be partially fulfilled multiple times, no need to verify status
+            
+            this.VolumeFulfilled += amountFullfilled;
+            foreach (var callback in _partiallyfulfilledCallbacks)
                 callback(this);
         }
 

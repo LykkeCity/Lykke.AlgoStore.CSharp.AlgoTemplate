@@ -1,6 +1,8 @@
 ﻿using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.Algo.Indicators;
 using System;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.MatchingEngine.Connector.Models.Api;
 
 namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 {
@@ -16,8 +18,8 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
         public override void OnStartUp()
         {
-            _shortSma = SMA("SMA_Short");
-            _longSma = SMA("SMA_Long");
+            _shortSma = SMA("SMA_Short"/* period: 1, candleTimeInterval:CandleTimeInterval.Hour, candleOperationMode:CandleOperationMode.CLOSE*/ ); //example usage of inline arguments
+            _longSma = SMA("SMA_Long"/* period: 1, candleTimeInterval:CandleTimeInterval.Hour, candleOperationMode:CandleOperationMode.CLOSE*/);
             count = 0;
         }
 
@@ -46,10 +48,22 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             if (count < 2)
             {
-                //context.Orders.Limit.Create(OrderAction.Buy, 0.2, 6500);
+                //example create limit order and subscribe for events
+                //var limitOrder = context.Orders.Limit.Create(OrderAction.Buy, 0.2, 6500);
+                //limitOrder.OnRegistered += LimitOrderPlaced;
                 count++;
             }
 
+        }
+
+        //limit order update example handlers
+        private void LimitOrderPlaced(ILimitOrder order)
+        {
+            //action placed limit order
+        }
+        private void LimitOrderFulfilled(ILimitOrder order)
+        {
+            //action Fulfilled limit order
         }
 
         public override void OnCandleReceived(ICandleContext context)
@@ -75,7 +89,9 @@ namespace Lykke.AlgoStore.CSharp.Algo.Implemention
 
             if (count < 2)
             {
-                //context.Orders.Limit.Create(OrderAction.Buy, 0.5, 6500);
+                //example create limit order and subscribe for events
+                //var limitOrder = context.Orders.Limit.Create(OrderAction.Buy, 0.2, 6500);
+                //limitOrder.OnFulfilled += LimitOrderFulfilled;
                 count++;
             }
         }
