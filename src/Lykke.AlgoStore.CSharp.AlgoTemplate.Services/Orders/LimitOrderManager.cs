@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using OrderAction = Lykke.AlgoStore.Algo.OrderAction;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
@@ -22,8 +24,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
         private readonly IUserLogService _userLogService;
         private readonly IEventCollector _eventCollector;
         private readonly ICurrentDataProvider _currentDataProvider;
+        private readonly ILimitOrderUpdateSubscriber _limitOrderUpdateSubscriber;
 
         private readonly List<LimitOrder> _limitOrders = new List<LimitOrder>();
+
+        private bool _isDisposing;
 
         #region IReadOnlyList implementation
 
@@ -41,7 +46,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             IStatisticsService statisticsService,
             IUserLogService userLogService,
             IEventCollector eventCollector,
-            ICurrentDataProvider currentDataProvider)
+            ICurrentDataProvider currentDataProvider,
+            ILimitOrderUpdateSubscriber limitOrderUpdateSubscriber)
         {
             _tradingService = tradingService;
             _settingsService = settingsService;
@@ -49,6 +55,48 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             _userLogService = userLogService;
             _eventCollector = eventCollector;
             _currentDataProvider = currentDataProvider;
+            _limitOrderUpdateSubscriber = limitOrderUpdateSubscriber;
+
+            _limitOrderUpdateSubscriber.Subscribe(_settingsService.GetInstanceId(), ProcessLimitOrderUpdate);
+        }
+
+        private void ProcessLimitOrderUpdate(AlgoInstanceTrade tradeUpdate)
+        {
+            var order = _limitOrders.FirstOrDefault(o => o.Id.ToString() == tradeUpdate.OrderId && tradeUpdate.InstanceId == _settingsService.GetInstanceId());
+            if (order != null)
+            {
+                switch (tradeUpdate.OrderStatus)
+                {
+                    case OrderStatus.Matched:
+                        order.MarkFulfilled();
+                        break;
+                    case OrderStatus.Cancelled:
+                        order.MarkCancelled();
+                        break;
+                    case OrderStatus.PartiallyMatched:
+                        order.MarkPartiallyFulfilled(tradeUpdate.Amount ?? 0);
+                        break;
+                    case OrderStatus.Placed:
+                        order.MarkPlaced();
+                        break;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_isDisposing) return;
+
+            _isDisposing = true;
+
+            try
+            {
+                _limitOrderUpdateSubscriber.Dispose();
+            }
+            catch (Exception)
+            {
+                // We're disposing, ignore all uncaught exceptions to prevent interrupting the shutdown process
+            }
         }
 
         public ILimitOrder Create(OrderAction action, double volume, double price)
@@ -57,7 +105,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                 throw new ArgumentException("Volume must be positive", nameof(volume));
 
             var limitOrder = new LimitOrder(action, volume, price);
-       
+            
             AddHandlersAndExecute(limitOrder);
 
             _limitOrders.Add(limitOrder);

@@ -199,6 +199,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IMarketOrderManager>()
                 .SingleInstance();
 
+            builder.RegisterType<LimitOrderUpdateSubscriber>()
+                .WithParameter("endPoint", _settings.CurrentValue.CSharpAlgoTemplateService.Redis.EndPoint)
+                .WithParameter("password", _settings.CurrentValue.CSharpAlgoTemplateService.Redis.Password)
+                .SingleInstance()
+                .As<ILimitOrderUpdateSubscriber>();
+
             builder.RegisterType<LimitOrderManager>()
                 .As<ILimitOrderManager>()
                 .SingleInstance();
