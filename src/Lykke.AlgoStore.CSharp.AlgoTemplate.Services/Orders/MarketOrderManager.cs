@@ -15,7 +15,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
     {
         private readonly ITradingService _tradingService;
         private readonly IAlgoSettingsService _settingsService;
-        private readonly IStatisticsService _statisticsService;
         private readonly IUserLogService _userLogService;
         private readonly IEventCollector _eventCollector;
         private readonly ICurrentDataProvider _currentDataProvider;
@@ -39,14 +38,12 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
         public MarketOrderManager(
             ITradingService tradingService,
             IAlgoSettingsService settingsService,
-            IStatisticsService statisticsService,
             IUserLogService userLogService,
             IEventCollector eventCollector,
             ICurrentDataProvider currentDataProvider)
         {
             _tradingService = tradingService;
             _settingsService = settingsService;
-            _statisticsService = statisticsService;
             _userLogService = userLogService;
             _eventCollector = eventCollector;
             _currentDataProvider = currentDataProvider;
@@ -80,8 +77,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             {
                 Task.WhenAll(_pendingTasks).ConfigureAwait(false).GetAwaiter().GetResult();
             }
-            catch (Exception) { }
-            // We're disposing, ignore all uncaught exceptions to prevent interrupting the shutdown process
+            catch (Exception)
+            {
+                // We're disposing, ignore all uncaught exceptions to prevent interrupting the shutdown process
+            }
         }
 
         private void AddHandlersAndExecute(MarketOrder marketOrder)
@@ -169,8 +168,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 
             if (result.Result > 0)
             {
-                _statisticsService.OnAction(isBuy, tradeRequest.Volume, result.Result);
-
                 var dateTime = _settingsService.GetInstanceType() == Models.Enumerators.AlgoInstanceType.Test
                     ? _currentDataProvider.CurrentTimestamp
                     : DateTime.UtcNow;
