@@ -59,7 +59,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                             (limitOrder.Action == OrderAction.Sell && currentCandle.High >= limitOrder.Price))
                         {
                             FulfillLimitOrder(limitOrder, currentCandle.Close, currentCandle.DateTime);
-                            limitOrder.MarkMatched();
+                            limitOrder.MarkFulfilled();
                             MarkDbOrderMatched(limitOrder.Id);
                             _summary.TotalNumberOfTrades++;
                         }
@@ -80,7 +80,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                             (limitOrder.Action == OrderAction.Sell && currentQuote.Price >= limitOrder.Price))
                         {
                             FulfillLimitOrder(limitOrder, currentQuote.Price, currentQuote.Timestamp);
-                            limitOrder.MarkMatched();
+                            limitOrder.MarkFulfilled();
                             MarkDbOrderMatched(limitOrder.Id);
                             _summary.TotalNumberOfTrades++;
                         }
