@@ -155,7 +155,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 
                     foreach (var inner in ex.Flatten().InnerExceptions)
                     {
-                        if (inner is System.Net.Sockets.SocketException || inner is System.IO.IOException)
+                        if (inner is System.Net.Sockets.SocketException || inner is System.IO.IOException || inner is ObjectDisposedException)
                             limitOrder.MarkErrored(TradeErrorCode.NetworkError, "");
 
                         if (inner is TaskCanceledException || inner is OperationCanceledException)

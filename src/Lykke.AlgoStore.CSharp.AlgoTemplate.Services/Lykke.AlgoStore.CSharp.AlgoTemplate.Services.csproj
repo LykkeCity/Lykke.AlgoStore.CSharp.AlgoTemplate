@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="Lykke.AlgoStore.Common" Version="1.0.1" />
-    <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.18" />
+    <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.20" />
     <PackageReference Include="Lykke.AlgoStore.Service.InstanceBalance.Client" Version="1.0.2" />
     <PackageReference Include="Lykke.AlgoStore.Service.Logging.Client" Version="1.0.5" />
     <PackageReference Include="Lykke.Common" Version="7.0.3" />
