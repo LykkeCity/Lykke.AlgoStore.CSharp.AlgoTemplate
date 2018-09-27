@@ -36,7 +36,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
         
         public void MarkFulfilled()
         {
-            ValidateAndSetStatus(OrderStatus.Errored, "Order already fulfilled");
+            ValidateAndSetStatus(OrderStatus.Matched, "Order already fulfilled");
 
             foreach (var callback in _fulfilledCallbacks)
                 callback(this);
