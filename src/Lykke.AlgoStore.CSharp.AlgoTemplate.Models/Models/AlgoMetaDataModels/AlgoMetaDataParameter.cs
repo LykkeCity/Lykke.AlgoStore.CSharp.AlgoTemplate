@@ -25,6 +25,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models.AlgoMetaDataModels
         public string Type { get; set; }
 
         /// <summary>
+        /// Indicates whether the parameter is visible in the algo information page
+        /// </summary>
+        public bool Visible { get; set; }
+
+        /// <summary>
         /// If parameter is enum, it has predefined values which will be used from front-end guys for visualization in dropdowns
         /// </summary>
         public IList<EnumValue> PredefinedValues { get; set; }
