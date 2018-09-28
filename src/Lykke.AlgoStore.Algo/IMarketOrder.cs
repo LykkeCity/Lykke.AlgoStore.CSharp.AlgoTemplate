@@ -9,9 +9,7 @@ namespace Lykke.AlgoStore.Algo
         OrderStatus Status { get; }
         double Volume { get; }
 
-        event Action<IMarketOrder> OnFulfilled;
-        event Action<IMarketOrder, TradeErrorCode, string> OnErrored;
-
-        void Cancel();
+        event Action<IMarketOrder, IContext> OnFulfilled;
+        event Action<IMarketOrder, TradeErrorCode, string, IContext> OnErrored;
     }
 }

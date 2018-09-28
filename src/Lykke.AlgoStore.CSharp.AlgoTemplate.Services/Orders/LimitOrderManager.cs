@@ -26,17 +26,17 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
         private readonly ICurrentDataProvider _currentDataProvider;
         private readonly ILimitOrderUpdateSubscriber _limitOrderUpdateSubscriber;
 
-        private readonly List<LimitOrder> _limitOrders = new List<LimitOrder>();
+        private readonly List<(LimitOrder order, IContext context)> _limitOrders = new List<(LimitOrder order, IContext context)>(); //context is only used to provide access to logging and ordersProvider to the event handlers
 
         private bool _isDisposing;
 
         #region IReadOnlyList implementation
 
-        public ILimitOrder this[int index] => _limitOrders[index];
+        public ILimitOrder this[int index] => _limitOrders[index].order;
         public int Count => _limitOrders.Count;
 
-        public IEnumerator<ILimitOrder> GetEnumerator() => _limitOrders.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => _limitOrders.GetEnumerator();
+        public IEnumerator<ILimitOrder> GetEnumerator() => _limitOrders.Select(t=>t.order).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _limitOrders.Select(t => t.order).GetEnumerator();
 
         #endregion // IReadOnlyList implementation
 
@@ -62,22 +62,24 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 
         private void ProcessLimitOrderUpdate(AlgoInstanceTrade tradeUpdate)
         {
-            var order = _limitOrders.FirstOrDefault(o => o.Id.ToString() == tradeUpdate.OrderId && tradeUpdate.InstanceId == _settingsService.GetInstanceId());
-            if (order != null)
+            var orders = _limitOrders.Where(o => o.order.Id.ToString() == tradeUpdate.OrderId && tradeUpdate.InstanceId == _settingsService.GetInstanceId()).ToList();
+            if (orders.Any())
             {
+                var orderFound = orders.First();
+
                 switch (tradeUpdate.OrderStatus)
                 {
                     case OrderStatus.Matched:
-                        order.MarkFulfilled();
+                        orderFound.order.MarkFulfilled(orderFound.context);
                         break;
                     case OrderStatus.Cancelled:
-                        order.MarkCancelled();
+                        orderFound.order.MarkCancelled(orderFound.context);
                         break;
                     case OrderStatus.PartiallyMatched:
-                        order.MarkPartiallyFulfilled(tradeUpdate.Amount ?? 0);
+                        orderFound.order.MarkPartiallyFulfilled(tradeUpdate.Amount ?? 0, orderFound.context);
                         break;
                     case OrderStatus.Placed:
-                        order.MarkPlaced();
+                        orderFound.order.MarkPlaced(orderFound.context);
                         break;
                 }
             }
@@ -99,30 +101,30 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             }
         }
 
-        public ILimitOrder Create(OrderAction action, double volume, double price)
+        public ILimitOrder Create(OrderAction action, double volume, double price, IContext context)
         {
             if (volume <= 0)
                 throw new ArgumentException("Volume must be positive", nameof(volume));
 
             var limitOrder = new LimitOrder(action, volume, price);
             
-            AddHandlersAndExecute(limitOrder);
+            AddHandlersAndExecute(limitOrder, context);
 
-            _limitOrders.Add(limitOrder);
+            _limitOrders.Add((order: limitOrder, context: context));
 
             return limitOrder;
         }
 
         public ILimitOrder Cancel(Guid limitOrderId)
         {
-            var limitOrder = _limitOrders.First(lo => lo.Id == limitOrderId);
+            var limitOrder = _limitOrders.First(lo => lo.order.Id == limitOrderId);
 
-            AddCancelHandler(limitOrder, _tradingService.CancelLimiOrderAsync);
+            AddCancelHandler(limitOrder.order, _tradingService.CancelLimiOrderAsync, limitOrder.context);
 
-            return limitOrder;
+            return limitOrder.order;
         }
 
-        private void AddHandlersAndExecute(LimitOrder limitOrder)
+        private void AddHandlersAndExecute(LimitOrder limitOrder, IContext context)
         {
             var tradeRequest = new TradeRequest
             {
@@ -130,20 +132,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                 Price = limitOrder.Price
             };
 
-            AddHandler(limitOrder, tradeRequest, _tradingService.PlaceLimitOrderAsync);
+            AddHandler(limitOrder, tradeRequest, _tradingService.PlaceLimitOrderAsync, context);
         }
 
         private void AddHandler(
             LimitOrder limitOrder,
             ITradeRequest tradeRequest,
-            Func<ITradeRequest, OrderAction, Task<ResponseModel<LimitOrderResponseModel>>> executor)
+            Func<ITradeRequest, OrderAction, Task<ResponseModel<LimitOrderResponseModel>>> executor,
+            IContext context)
         {
             var task = executor(tradeRequest, limitOrder.Action).WithTimeout();
 
             task.ContinueWith(previous =>
             {
                 if (previous.IsCompletedSuccessfully)
-                    HandleResponse(previous.Result, limitOrder, tradeRequest);
+                    HandleResponse(previous.Result, limitOrder, tradeRequest, context);
                 else if (previous.IsFaulted)
                 {
                     var ex = previous.Exception;
@@ -156,21 +159,22 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     foreach (var inner in ex.Flatten().InnerExceptions)
                     {
                         if (inner is System.Net.Sockets.SocketException || inner is System.IO.IOException || inner is ObjectDisposedException)
-                            limitOrder.MarkErrored(TradeErrorCode.NetworkError, "");
+                            limitOrder.MarkErrored(TradeErrorCode.NetworkError, "", context);
 
                         if (inner is TaskCanceledException || inner is OperationCanceledException)
-                            limitOrder.MarkErrored(TradeErrorCode.RequestTimeout, "");
+                            limitOrder.MarkErrored(TradeErrorCode.RequestTimeout, "", context);
                     }
                 }
                 else if (previous.IsCanceled)
-                    limitOrder.MarkErrored(TradeErrorCode.RequestTimeout, "");
+                    limitOrder.MarkErrored(TradeErrorCode.RequestTimeout, "", context);
             });
         }
 
         private void HandleResponse(
             ResponseModel<LimitOrderResponseModel> result,
             LimitOrder limitOrder,
-            ITradeRequest tradeRequest)
+            ITradeRequest tradeRequest,
+            IContext context)
         {
             var isBuy = limitOrder.Action == OrderAction.Buy;
             var action = isBuy ? "buy" : "sell";
@@ -181,7 +185,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     $"There was a problem placing a {action} order. Error: {result.Error.Message} " +
                     $"is buying - {isBuy} ");
 
-                limitOrder.MarkErrored(result.Error.ToTradeErrorCode(), result.Error.Message);
+                limitOrder.MarkErrored(result.Error.ToTradeErrorCode(), result.Error.Message, context);
                 return;
             }
             else if (result.Error == null)
@@ -196,21 +200,21 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     $"price {tradeRequest.Price} at {dateTime.ToDefaultDateTimeFormat()}");
 
                 limitOrder.Id = result.Result.Id;
-                limitOrder.MarkPlaced();
+                limitOrder.MarkPlaced(context);
                 return;
             }
 
-            limitOrder.MarkErrored(TradeErrorCode.Runtime, "Unexpected (empty) response.");
+            limitOrder.MarkErrored(TradeErrorCode.Runtime, "Unexpected (empty) response.", context);
         }
 
-        private void AddCancelHandler(LimitOrder limitOrder, Func<Guid, Task<ResponseModel>> executor)
+        private void AddCancelHandler(LimitOrder limitOrder, Func<Guid, Task<ResponseModel>> executor, IContext context)
         {
             var task = executor(limitOrder.Id).WithTimeout();
 
             task.ContinueWith(previous =>
             {
                 if (previous.IsCompletedSuccessfully)
-                    HandleCancelResponse(previous.Result, limitOrder);
+                    HandleCancelResponse(previous.Result, limitOrder, context);
                 else if (previous.IsFaulted)
                 {
                     var ex = previous.Exception;
@@ -223,27 +227,28 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     foreach (var inner in ex.Flatten().InnerExceptions)
                     {
                         if (inner is System.Net.Sockets.SocketException || inner is System.IO.IOException)
-                            limitOrder.MarkErrored(TradeErrorCode.NetworkError, "");
+                            limitOrder.MarkErrored(TradeErrorCode.NetworkError, "", context);
 
                         if (inner is TaskCanceledException || inner is OperationCanceledException)
-                            limitOrder.MarkErrored(TradeErrorCode.RequestTimeout, "");
+                            limitOrder.MarkErrored(TradeErrorCode.RequestTimeout, "", context);
                     }
                 }
                 else if (previous.IsCanceled)
-                    limitOrder.MarkErrored(TradeErrorCode.RequestTimeout, "");
+                    limitOrder.MarkErrored(TradeErrorCode.RequestTimeout, "", context);
             });
         }
 
         private void HandleCancelResponse(
             ResponseModel result,
-            LimitOrder limitOrder)
+            LimitOrder limitOrder,
+            IContext context)
         {
             if (result.Error != null)
             {
                 _userLogService.Enqueue(_settingsService.GetInstanceId(),
                     $"There was a problem canceling a limit order with Id - {limitOrder.Id}. Error: {result.Error.Message} ");
 
-                limitOrder.MarkErrored(result.Error.ToTradeErrorCode(), result.Error.Message);
+                limitOrder.MarkErrored(result.Error.ToTradeErrorCode(), result.Error.Message, context);
                 return;
             }
             else if (result.Error == null)
@@ -257,11 +262,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     $"A limit order cancellation successful: limit order Id - {limitOrder.Id}" +
                     $" at {dateTime.ToDefaultDateTimeFormat()}");
 
-                limitOrder.MarkCancelled();
+                limitOrder.MarkCancelled(context);
                 return;
             }
 
-            limitOrder.MarkErrored(TradeErrorCode.Runtime, "Unexpected (empty) response.");
+            limitOrder.MarkErrored(TradeErrorCode.Runtime, "Unexpected (empty) response.", context);
         }
     }
 }

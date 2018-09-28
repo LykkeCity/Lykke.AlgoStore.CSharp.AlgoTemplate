@@ -12,15 +12,14 @@ namespace Lykke.AlgoStore.Algo
         double VolumeFulfilled { get; set; }
         double Price { get; }
 
-        event Action<ILimitOrder> OnFulfilled;
-        event Action<ILimitOrder> OnPartiallyFulfilled;
-        event Action<ILimitOrder> OnRegistered;
-        event Action<ILimitOrder> OnCancelled;
-        event Action<ILimitOrder, TradeErrorCode, string> OnErrored;
+        event Action<ILimitOrder, IContext> OnFulfilled;
+        event Action<ILimitOrder, IContext> OnPartiallyFulfilled;
+        event Action<ILimitOrder, IContext> OnRegistered;
+        event Action<ILimitOrder, IContext> OnCancelled;
+        event Action<ILimitOrder, TradeErrorCode, string, IContext> OnErrored;
 
-        void MarkFulfilled();
-        void MarkPartiallyFulfilled(double amountFullfilled);
-        void Cancel();
-        void MarkPlaced();
+        void MarkFulfilled(IContext context);
+        void MarkPartiallyFulfilled(double amountFullfilled, IContext context);
+        void MarkPlaced(IContext context);
     }
 }

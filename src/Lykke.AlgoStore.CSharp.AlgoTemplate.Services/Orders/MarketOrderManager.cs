@@ -49,7 +49,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             _currentDataProvider = currentDataProvider;
         }
 
-        public IMarketOrder Create(Algo.OrderAction action, double volume)
+        public IMarketOrder Create(Algo.OrderAction action, double volume, IContext context)
         {
             // This check will handle the case where algo trade callbacks might create more trades
             if (_isDisposing)
@@ -62,7 +62,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 
             _marketOrders.Add(marketOrder);
 
-            AddHandlersAndExecute(marketOrder);
+            AddHandlersAndExecute(marketOrder, context);
 
             return marketOrder;
         }
@@ -83,7 +83,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             }
         }
 
-        private void AddHandlersAndExecute(MarketOrder marketOrder)
+        private void AddHandlersAndExecute(MarketOrder marketOrder,IContext context)
         {
             var tradeRequest = new TradeRequest
             {
@@ -91,22 +91,23 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
             };
 
             if (marketOrder.Action == Algo.OrderAction.Buy)
-                AddHandler(marketOrder, tradeRequest, _tradingService.Buy);
+                AddHandler(marketOrder, tradeRequest, _tradingService.Buy, context);
             else
-                AddHandler(marketOrder, tradeRequest, _tradingService.Sell);
+                AddHandler(marketOrder, tradeRequest, _tradingService.Sell, context);
         }
 
         private void AddHandler(
             MarketOrder marketOrder,
             ITradeRequest tradeRequest,
-            Func<ITradeRequest, Task<ResponseModel<double>>> executor)
+            Func<ITradeRequest, Task<ResponseModel<double>>> executor,
+            IContext context)
         {
             var tradeTask = executor(tradeRequest).WithTimeout();
 
             var tradeHandleTask = tradeTask.ContinueWith(async previous =>
             {
                 if (previous.IsCompletedSuccessfully)
-                    await HandleResponse(previous.Result, marketOrder, tradeRequest);
+                    await HandleResponse(previous.Result, marketOrder, tradeRequest, context);
                 else if (previous.IsFaulted)
                 {
                     var ex = previous.Exception;
@@ -119,14 +120,14 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     foreach (var inner in ex.Flatten().InnerExceptions)
                     {
                         if (inner is System.Net.Sockets.SocketException || inner is System.IO.IOException)
-                            marketOrder.MarkErrored(TradeErrorCode.NetworkError, "");
+                            marketOrder.MarkErrored(TradeErrorCode.NetworkError, "", context);
 
                         if (inner is TaskCanceledException || inner is OperationCanceledException)
-                            marketOrder.MarkErrored(TradeErrorCode.RequestTimeout, "");
+                            marketOrder.MarkErrored(TradeErrorCode.RequestTimeout, "", context);
                     }
                 }
                 else if (previous.IsCanceled)
-                    marketOrder.MarkErrored(TradeErrorCode.RequestTimeout, "");
+                    marketOrder.MarkErrored(TradeErrorCode.RequestTimeout, "", context);
             });
 
             // Ensure that all market orders and their response handling will complete before the
@@ -151,7 +152,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
         private async Task HandleResponse(
             ResponseModel<double> result,
             MarketOrder marketOrder,
-            ITradeRequest tradeRequest)
+            ITradeRequest tradeRequest,
+            IContext context)
         {
             var isBuy = marketOrder.Action == Algo.OrderAction.Buy;
             var action = isBuy ? "buy" : "sell";
@@ -162,7 +164,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
                     $"There was a problem placing a {action} order. Error: {result.Error.Message} " +
                     $"is buying - {isBuy} ");
 
-                marketOrder.MarkErrored(result.Error.ToTradeErrorCode(), result.Error.Message);
+                marketOrder.MarkErrored(result.Error.ToTradeErrorCode(), result.Error.Message, context);
                 return;
             }
 
@@ -195,11 +197,11 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders
 
                 await _eventCollector.SubmitTradeEvent(tradeChartingUpdate);
 
-                marketOrder.MarkFulfilled();
+                marketOrder.MarkFulfilled(context);
                 return;
             }
 
-            marketOrder.MarkErrored(TradeErrorCode.Runtime, "Unexpected (empty) response.");
+            marketOrder.MarkErrored(TradeErrorCode.Runtime, "Unexpected (empty) response.", context);
         }
     }
 }
