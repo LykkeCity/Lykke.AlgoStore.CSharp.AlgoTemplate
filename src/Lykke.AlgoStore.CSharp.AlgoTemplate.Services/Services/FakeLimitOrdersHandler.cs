@@ -47,7 +47,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             _summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
         }
 
-        public async Task HandleLimitOrders(Candle currentCandle)
+        public async Task HandleLimitOrders(Candle currentCandle, IContext context)
         {
             lock (_sync)
             {
@@ -59,7 +59,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                             (limitOrder.Action == OrderAction.Sell && currentCandle.High >= limitOrder.Price))
                         {
                             FulfillLimitOrder(limitOrder, currentCandle.Close, currentCandle.DateTime);
-                            limitOrder.MarkFulfilled();
+                            limitOrder.MarkFulfilled(context);
                             MarkDbOrderMatched(limitOrder.Id);
                             _summary.TotalNumberOfTrades++;
                         }
@@ -68,7 +68,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             }
         }
 
-        public async Task HandleLimitOrders(IAlgoQuote currentQuote)
+        public async Task HandleLimitOrders(IAlgoQuote currentQuote, IContext context)
         {
             lock (_sync)
             {
@@ -80,7 +80,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                             (limitOrder.Action == OrderAction.Sell && currentQuote.Price >= limitOrder.Price))
                         {
                             FulfillLimitOrder(limitOrder, currentQuote.Price, currentQuote.Timestamp);
-                            limitOrder.MarkFulfilled();
+                            limitOrder.MarkFulfilled(context);
                             MarkDbOrderMatched(limitOrder.Id);
                             _summary.TotalNumberOfTrades++;
                         }

@@ -5,6 +5,6 @@ namespace Lykke.AlgoStore.Algo
 {
     public interface IMarketOrderManager : IReadOnlyList<IMarketOrder>, IDisposable
     {
-        IMarketOrder Create(OrderAction action, double volume);
+        IMarketOrder Create(OrderAction action, double volume, IContext context);
     }
 }

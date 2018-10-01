@@ -204,7 +204,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     _currentDataProvider.CurrentPrice = algoCandle.Close;
 
                     if (_algoSettingsService.GetInstanceType() != AlgoInstanceType.Live)
-                        _fakeLimitOrdersHandler.HandleLimitOrders(algoCandle);
+                        _fakeLimitOrdersHandler.HandleLimitOrders(algoCandle, ctx);
 
                     var token = _monitoringService.StartAlgoEvent(
                         "The instance is being stopped because OnCandleReceived took too long to execute.");
@@ -246,7 +246,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 _currentDataProvider.CurrentPrice = quote.Price;
 
                 if (_algoSettingsService.GetInstanceType() != AlgoInstanceType.Live)
-                    _fakeLimitOrdersHandler.HandleLimitOrders(quote);
+                    _fakeLimitOrdersHandler.HandleLimitOrders(quote, ctx);
 
                 var token = _monitoringService.StartAlgoEvent(
                     "The instance is being stopped because OnQuoteReceived took too long to execute.");
