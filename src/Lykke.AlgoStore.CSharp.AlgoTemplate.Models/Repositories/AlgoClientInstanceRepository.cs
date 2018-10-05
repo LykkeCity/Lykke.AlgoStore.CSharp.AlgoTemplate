@@ -79,6 +79,13 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             return entitiy.ToModel();
         }
 
+        public async Task<AlgoClientInstanceData> GetAlgoInstanceDataByWalletIdAsync(string walletId, string instanceId)
+        {
+            var entity = await _table.GetDataAsync(KeyGenerator.GenerateWalletIdPartitionKey(walletId), instanceId);
+
+            return entity.ToModel();
+        }
+
         public async Task<AlgoClientInstanceData> GetAlgoInstanceDataByAuthTokenAsync(string authToken)
         {
             var entity = await _table.GetDataAsync(KeyGenerator.GenerateAuthTokenPartitionKey(authToken));

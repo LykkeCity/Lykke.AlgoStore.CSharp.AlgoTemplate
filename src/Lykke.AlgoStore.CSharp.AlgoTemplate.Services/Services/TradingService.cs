@@ -1,10 +1,15 @@
 ﻿using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Services;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Extensions;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
+using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain.Contracts;
 using Lykke.AlgoStore.MatchingEngineAdapter.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrderAction = Lykke.AlgoStore.Algo.OrderAction;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
@@ -81,6 +86,28 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
             {
                 return await _fakeTradingService.Buy(tradeRequest);
             }
+        }
+
+        public async Task<ResponseModel<LimitOrderResponseModel>> PlaceLimitOrderAsync(ITradeRequest tradeRequest, OrderAction orderAction)
+        {
+            if (_algoSettingsService.GetInstanceType() == AlgoInstanceType.Live)
+            {
+                var meaResponse = await _matchingEngineAdapterClient.PlaceLimitOrderAsync(_walletId, _assetPairId, orderAction.ToMeaOrderAction(),
+                    tradeRequest.Volume, tradeRequest.Price, _instanceId);
+
+                return meaResponse;
+            }           
+            else
+            {
+                return await _fakeTradingService.PlaceLimitOrderAsync(tradeRequest, orderAction == OrderAction.Buy);
+            }
+        }
+
+        public async Task<ResponseModel> CancelLimiOrderAsync(Guid limitOrderId)
+        {
+            var response = await _matchingEngineAdapterClient.CancelLimitOrderAsync(limitOrderId, _instanceId);
+
+            return response;
         }
     }
 }

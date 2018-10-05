@@ -3,5 +3,6 @@
     public interface IOrderProvider
     {
         IMarketOrderManager Market { get; }
+        ILimitOrderManager Limit { get; }
     }
 }

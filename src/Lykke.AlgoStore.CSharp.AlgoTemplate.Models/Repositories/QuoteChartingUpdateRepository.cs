@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using AzureStorage;
+﻿using AzureStorage;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Entities;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Microsoft.WindowsAzure.Storage.Table;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
 {
@@ -46,6 +46,26 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             await _table.DoBatchAsync(batch);
         }
 
+        public async Task SaveDifferentPartionsAsync(IEnumerable<QuoteChartingUpdateData> data)
+        {
+            var entities = new List<QuoteChartingUpdateEntity>();
+            foreach (var chartingUpdate in data)
+            {
+                var entity = AutoMapper.Mapper.Map<QuoteChartingUpdateEntity>(chartingUpdate);
+
+                entity.PartitionKey = GeneratePartitionKey(chartingUpdate.InstanceId);
+                entity.RowKey = GenerateRowKey();
+                entities.Add(entity);
+            }
+
+            var groups = entities.GroupBy(p => p.PartitionKey).Select(grp => grp.ToList());
+
+            foreach (var group in groups)
+            {
+                await _table.InsertOrReplaceAsync(group);
+            }
+        }
+
         private string GenerateRowKey()
         {
             lock (_sync)
@@ -69,7 +89,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories
             string fromFilter = TableQuery.GenerateFilterConditionForDate("QuoteTimestamp", QueryComparisons.GreaterThanOrEqual, from);
             string toFilter = TableQuery.GenerateFilterConditionForDate("QuoteTimestamp", QueryComparisons.LessThanOrEqual, to);
             string assetPairFilter = TableQuery.GenerateFilterCondition("AssetPair", QueryComparisons.Equal, assetPair);
-            
+
             var filter = TableQuery.CombineFilters(TableQuery.CombineFilters(pkFilter, TableOperators.And, fromFilter), TableOperators.And, toFilter);
             filter = TableQuery.CombineFilters(filter, TableOperators.And, assetPairFilter);
 

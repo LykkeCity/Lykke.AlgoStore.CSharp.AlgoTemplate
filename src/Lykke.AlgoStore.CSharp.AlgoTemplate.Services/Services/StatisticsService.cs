@@ -46,11 +46,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 
         public void OnAction(bool isBuy, double volume, double price)
         {
-            var summary = GetSummary();
-
-            summary.TotalNumberOfTrades++;
-
-            _statisticsRepository.CreateAsync(summary).Wait();
+            //REMARK: TotalNumberOfTrades is now updated inside
+            //FakeTradingService (backtest and demo instances) and inside trades service (live instances)
         }
 
         public void OnAlgoStarted()
