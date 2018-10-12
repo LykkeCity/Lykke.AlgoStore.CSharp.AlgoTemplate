@@ -10,16 +10,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
 using AzureStorage;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Settings.ServiceSettings;
+using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
+using Lykke.Common.Log;
+using Lykke.SettingsReader;
 using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 {
     [TestFixture]
     public class AlgoInstanceTradeRepositoryTests
     {
+        private readonly Fixture _fixture = new Fixture();
+
         private AlgoInstanceTrade _entity;
 
         private readonly string _instanceId = "17169b36-a51c-4f8c-8d17-09a45f0f4bc6";
@@ -63,7 +72,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         public void AlgoTrades_TestGeneratePartitionKeyByInstanceIdAndAssetId()
         {
             string correctResult = _instanceId + "_" + _assetId;
-            string resultToTest = AlgoInstanceTradeRepository.GeneratePartitionKeyByInstanceIdAndAssetId(_instanceId, _assetId);
+            string resultToTest =
+                AlgoInstanceTradeRepository.GeneratePartitionKeyByInstanceIdAndAssetId(_instanceId, _assetId);
 
             Assert.AreEqual(correctResult, resultToTest);
         }
@@ -144,7 +154,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             var storage = new Mock<INoSQLTableStorage<AlgoInstanceTradeEntity>>();
 
             var fakeQuery = new TableQuery<AlgoInstanceTradeEntity>()
-                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, String.Format(_instanceId + "_" + _assetId)))
+                .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal,
+                    String.Format(_instanceId + "_" + _assetId)))
                 .Take(_itemCount);
 
             storage.Setup(s => s.ExecuteAsync(It.IsAny<TableQuery<AlgoInstanceTradeEntity>>(),
@@ -157,11 +168,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
                     return Task.FromResult(GetAlgoInstanceEntities());
                 })
                 .Callback<TableQuery<AlgoInstanceTradeEntity>,
-                          Action<IEnumerable<AlgoInstanceTradeEntity>>,
-                          Func<bool>>((query, items, stop) =>
-                {
-                    items(GetAlgoInstanceEntities());
-                });
+                    Action<IEnumerable<AlgoInstanceTradeEntity>>,
+                    Func<bool>>((query, items, stop) => { items(GetAlgoInstanceEntities()); });
 
             AlgoInstanceTradeRepository repository = new AlgoInstanceTradeRepository(storage.Object);
             var result = await repository.GetAlgoInstaceTradesByTradedAssetAsync(_instanceId, _assetId, _itemCount);
@@ -183,6 +191,35 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             Assert.IsNotNull(result);
             CheckIfAlgoInstanceModelIsCorrect(result);
+        }
+
+        [Test]
+        [Explicit("Should run manually only. Manipulate data in local Table Storage")]
+        public void AlgoTrades_CreateAlgoInstanceOrderAsync_Test()
+        {
+            var logFactory = new Mock<ILogFactory>();
+            var repository = new AlgoInstanceTradeRepository(
+                AzureTableStorage<AlgoInstanceTradeEntity>.Create(GetDataStorageConnectionString(),
+                    AlgoInstanceTradeRepository.TableName, logFactory.Object));
+
+            var order = _fixture.Build<AlgoInstanceTrade>().With(x => x.OrderId, "TEST_ORDERID")
+                .With(x => x.WalletId, "TEST_WALLETID").With(x => x.OrderType, OrderType.Limit).Create();
+
+            repository.CreateAlgoInstanceOrderAsync(order).Wait();
+        }
+
+        [Test]
+        [Explicit("Should run manually only. Manipulate data in local Table Storage")]
+        public void AlgoTrades_GetAlgoInstanceOrderAsync_WillReturnValidData_Test()
+        {
+            var logFactory = new Mock<ILogFactory>();
+            var repository = new AlgoInstanceTradeRepository(
+                AzureTableStorage<AlgoInstanceTradeEntity>.Create(GetDataStorageConnectionString(),
+                    AlgoInstanceTradeRepository.TableName, logFactory.Object));
+
+            var order = repository.GetAlgoInstanceOrderAsync("TEST_ORDERID", "TEST_WALLETID").Result;
+
+            Assert.IsNotNull(order);
         }
 
         #region  Unit Tests Helpers
@@ -247,7 +284,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
             Assert.AreEqual(serializedSecond, serializedFirst);
         }
 
-        private static IEnumerable<AlgoInstanceTrade> WhenInvokeGetTrades(AlgoInstanceTradeRepository repository, string instanceId, string assetId)
+        private static IEnumerable<AlgoInstanceTrade> WhenInvokeGetTrades(AlgoInstanceTradeRepository repository,
+            string instanceId, string assetId)
         {
             return repository.GetAlgoInstaceTradesByTradedAssetAsync(instanceId, assetId, 100).Result;
         }
@@ -288,6 +326,36 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
 
             return fakeResult;
         }
+
+        private static IReloadingManager<AppSettings> InitConfig()
+        {
+            var reloadingMock = new Mock<IReloadingManager<AppSettings>>();
+
+            reloadingMock.Setup(x => x.CurrentValue)
+                .Returns(new AppSettings
+                {
+                    CSharpAlgoTemplateService = new CSharpAlgoTemplateSettings
+                    {
+                        Db = new DbSettings
+                        {
+                            TableStorageConnectionString = "UseDevelopmentStorage=true",
+                            LogsConnString = "UseDevelopmentStorage=true"
+                        }
+                    }
+                });
+
+            var config = reloadingMock.Object;
+
+            return config;
+        }
+
+        private static IReloadingManager<string> GetDataStorageConnectionString()
+        {
+            var config = InitConfig();
+
+            return config.ConnectionString(x => x.CSharpAlgoTemplateService.Db.TableStorageConnectionString);
+        }
+
         #endregion
     }
 }
