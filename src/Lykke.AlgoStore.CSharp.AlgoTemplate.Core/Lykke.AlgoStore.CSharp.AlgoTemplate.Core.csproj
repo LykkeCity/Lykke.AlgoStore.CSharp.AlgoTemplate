@@ -18,9 +18,10 @@
 
   <ItemGroup>
     <PackageReference Include="Lykke.AlgoStore.Job.Stopping.Client" Version="1.0.6" />
-    <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.15" />
-    <PackageReference Include="Lykke.AlgoStore.Service.History.Client" Version="1.0.8" />
-    <PackageReference Include="Lykke.AlgoStore.Service.InstanceEventHandler.Client" Version="1.0.6" />
+    <PackageReference Include="Lykke.AlgoStore.MatchingEngineAdapter.Client" Version="1.0.21" />
+    <PackageReference Include="Lykke.AlgoStore.Service.History.Client" Version="1.0.11" />
+    <PackageReference Include="Lykke.AlgoStore.Service.InstanceEventHandler.Client" Version="1.0.7" />
+    <PackageReference Include="Lykke.AlgoStore.Service.InstanceBalance.Client" Version="1.0.2" />
     <PackageReference Include="Lykke.AlgoStore.Service.Logging.Client" Version="1.0.5" />
     <PackageReference Include="Lykke.Common" Version="7.0.3" />
   </ItemGroup>

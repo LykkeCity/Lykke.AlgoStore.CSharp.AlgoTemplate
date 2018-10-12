@@ -20,6 +20,7 @@ using Lykke.AlgoStore.Job.Stopping.Client;
 using Lykke.AlgoStore.Algo;
 using Lykke.AlgoStore.Service.InstanceEventHandler.Client;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Orders;
+using Lykke.AlgoStore.Service.InstanceBalance.Client;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
 {
@@ -138,6 +139,10 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IFakeTradingService>()
                 .SingleInstance();
 
+            builder.RegisterType<FakeLimitOrdersHandler>()
+                .As<IFakeLimitOrdersHandler>()
+                .SingleInstance();
+
             builder.RegisterType<CandlesService>()
                 .As<ICandlesService>()
                 .SingleInstance();
@@ -194,9 +199,25 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Modules
                 .As<IMarketOrderManager>()
                 .SingleInstance();
 
+            builder.RegisterType<LimitOrderUpdateSubscriber>()
+                .WithParameter("endPoint", _settings.CurrentValue.CSharpAlgoTemplateService.Redis.EndPoint)
+                .WithParameter("password", _settings.CurrentValue.CSharpAlgoTemplateService.Redis.Password)
+                .SingleInstance()
+                .As<ILimitOrderUpdateSubscriber>();
+
+            builder.RegisterType<LimitOrderManager>()
+                .As<ILimitOrderManager>()
+                .SingleInstance();
+
             builder.RegisterType<OrderProvider>()
                 .As<IOrderProvider>()
                 .SingleInstance();
+
+            builder.RegisterType<WalletDataProvider>()
+                .As<IWalletDataProvider>()
+                .SingleInstance();
+
+            builder.RegisterInstanceBalanceClient(_settings.CurrentValue.InstanceBalanceServiceClient, null);
 
             builder.Populate(_services);
         }

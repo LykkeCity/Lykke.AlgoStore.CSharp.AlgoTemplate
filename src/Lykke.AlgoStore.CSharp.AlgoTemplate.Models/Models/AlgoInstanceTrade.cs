@@ -3,6 +3,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Enumerators;
 
 namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
 {
+    [Serializable]
     public class AlgoInstanceTrade : IAlgoInstanceTrade
     {
         public string InstanceId { get; set; }
@@ -28,5 +29,7 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models
         public string WalletId { get; set; }
 
         public OrderType OrderType { get; set; }
+
+        public OrderStatus OrderStatus { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Lykke.AlgoStore.CSharp.AlgoTemplate.Core.Strings;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Models;
 using Lykke.AlgoStore.CSharp.AlgoTemplate.Models.Repositories;
 using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain;
+using Lykke.AlgoStore.MatchingEngineAdapter.Abstractions.Domain.Contracts;
 using System;
 using System.Threading.Tasks;
 
@@ -11,6 +12,8 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
 {
     public class FakeTradingService : IFakeTradingService
     {
+        private const string FakeWalletStatic = "FakeTradingWallet";
+        private const string FakeLimitOrderPrefixStatic = "FakeOrderId";
         private string _assetPairId;
         private string _tradedAssetId;
         private string _oppositeAssetId;
@@ -22,6 +25,9 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         private readonly IAlgoInstanceTradeRepository _algoInstanceTradeRepository;
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly ICurrentDataProvider _currentDataProvider;
+
+        public decimal TradedAssetBalance => (decimal) _summary.LastTradedAssetBalance;
+        public decimal OppositeAssetBalance => (decimal) _summary.LastAssetTwoBalance;
 
         public FakeTradingService(IAlgoSettingsService algoSettingsService,
             IAlgoInstanceTradeRepository algoInstanceTradeRepository,
@@ -47,54 +53,60 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
         /// <summary>
         /// Make a fake trade "Sell"
         /// </summary>
-        /// <param name="volume">Volume that we want to trade</param>
-        /// <param name="candleData">Candle data that is taken from history service</param>
+        /// <param name="tradeRequest">Trade request</param>
         public async Task<ResponseModel<double>> Sell(ITradeRequest tradeRequest)
         {
-            double tradedOppositeVolume = CalculateOppositeOfTradedAssetTradeValue(tradeRequest.Volume, tradeRequest.Price);
+            double tradedOppositeVolume =
+                CalculateOppositeOfTradedAssetTradeValue(tradeRequest.Volume, _currentDataProvider.CurrentPrice);
 
-            var summary = await _statisticsRepository.GetSummaryAsync(_instanceId);
-
-            if (summary.LastTradedAssetBalance < tradeRequest.Volume)
+            if (_summary.LastTradedAssetBalance < tradeRequest.Volume)
                 return new ResponseModel<double>()
                 {
                     Error = new ResponseModel.ErrorModel()
                     {
                         Message = ErrorMessages.NotEnoughFunds,
-                        Code = ResponseModel.ErrorCodeType.NotEnoughFunds
+                        Code = ErrorCodeType.NotEnoughFunds
                     }
                 };
 
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
-                CreateAlgoInstanceTrade(_tradedAssetId, -tradeRequest.Volume, tradeRequest, false));
+                CreateAlgoInstanceTrade(_tradedAssetId, -tradeRequest.Volume, false));
 
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
-                CreateAlgoInstanceTrade(_oppositeAssetId, tradedOppositeVolume, tradeRequest, false));
+                CreateAlgoInstanceTrade(_oppositeAssetId, tradedOppositeVolume, false));
 
-            summary.LastTradedAssetBalance -= tradeRequest.Volume;
-            summary.LastAssetTwoBalance += tradedOppositeVolume;
+            _summary.LastTradedAssetBalance -= tradeRequest.Volume;
+            _summary.LastAssetTwoBalance += tradedOppositeVolume;
 
             if (_straight)
-                summary.LastWalletBalance = Math.Round(summary.LastAssetTwoBalance + summary.LastTradedAssetBalance * tradeRequest.Price, 8);
+                _summary.LastWalletBalance =
+                    Math.Round(
+                        _summary.LastAssetTwoBalance +
+                        _summary.LastTradedAssetBalance * _currentDataProvider.CurrentPrice, 8);
             else
-                summary.LastWalletBalance = Math.Round(summary.LastTradedAssetBalance + summary.LastAssetTwoBalance * tradeRequest.Price, 8);
+                _summary.LastWalletBalance =
+                    Math.Round(
+                        _summary.LastTradedAssetBalance +
+                        _summary.LastAssetTwoBalance * _currentDataProvider.CurrentPrice, 8);
 
-            await _statisticsRepository.CreateOrUpdateSummaryAsync(summary);
+            _summary.TotalNumberOfTrades++;
+
+            await _statisticsRepository.CreateOrUpdateSummaryAsync(_summary);
 
             return new ResponseModel<double>()
             {
-                Result = tradeRequest.Price
+                Result = _currentDataProvider.CurrentPrice
             };
         }
 
         /// <summary>
         /// Make a fake trade "Buy"
         /// </summary>
-        /// <param name="volume">Volume that we want to trade</param>
-        /// <param name="candleData">Candle data that is taken from history service</param>
+        /// <param name="tradeRequest">Trade request</param>
         public async Task<ResponseModel<double>> Buy(ITradeRequest tradeRequest)
         {
-            double tradedOppositeValue = CalculateOppositeOfTradedAssetTradeValue(tradeRequest.Volume, tradeRequest.Price);
+            double tradedOppositeValue = CalculateOppositeOfTradedAssetTradeValue(tradeRequest.Volume,
+                _currentDataProvider.CurrentPrice);
 
             if (_summary.LastAssetTwoBalance < tradedOppositeValue)
                 return new ResponseModel<double>()
@@ -102,33 +114,85 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                     Error = new ResponseModel.ErrorModel()
                     {
                         Message = ErrorMessages.NotEnoughFunds,
-                        Code = ResponseModel.ErrorCodeType.NotEnoughFunds
+                        Code = ErrorCodeType.NotEnoughFunds
                     }
                 };
 
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
-                    CreateAlgoInstanceTrade(_tradedAssetId, tradeRequest.Volume, tradeRequest, true));
+                CreateAlgoInstanceTrade(_tradedAssetId, tradeRequest.Volume, true));
 
             await _algoInstanceTradeRepository.SaveAlgoInstanceTradeAsync(
-                CreateAlgoInstanceTrade(_oppositeAssetId, -tradedOppositeValue, tradeRequest, true));
+                CreateAlgoInstanceTrade(_oppositeAssetId, -tradedOppositeValue, true));
 
             _summary.LastTradedAssetBalance += tradeRequest.Volume;
             _summary.LastAssetTwoBalance -= tradedOppositeValue;
 
             if (_straight)
-                _summary.LastWalletBalance = Math.Round(_summary.LastAssetTwoBalance + _summary.LastTradedAssetBalance * tradeRequest.Price, 8);
+                _summary.LastWalletBalance =
+                    Math.Round(_summary.LastAssetTwoBalance + _summary.LastTradedAssetBalance * _currentDataProvider.CurrentPrice, 8);
             else
-                _summary.LastWalletBalance = Math.Round(_summary.LastTradedAssetBalance + _summary.LastAssetTwoBalance * tradeRequest.Price, 8);
+                _summary.LastWalletBalance =
+                    Math.Round(_summary.LastTradedAssetBalance + _summary.LastAssetTwoBalance * _currentDataProvider.CurrentPrice, 8);
+
+            _summary.TotalNumberOfTrades++;
 
             await _statisticsRepository.CreateOrUpdateSummaryAsync(_summary);
 
             return new ResponseModel<double>()
             {
-                Result = tradeRequest.Price
+                Result = _currentDataProvider.CurrentPrice
             };
         }
 
-        private AlgoInstanceTrade CreateAlgoInstanceTrade(string tradeAsset, double amount, ITradeRequest tradeRequest, bool isBuy)
+        public async Task<ResponseModel<LimitOrderResponseModel>> PlaceLimitOrderAsync(ITradeRequest tradeRequest,
+            bool isBuy)
+        {
+            if (!HasEnoughFunds(tradeRequest, isBuy))
+            {
+                return new ResponseModel<LimitOrderResponseModel>
+                {
+                    Error = new ResponseModel.ErrorModel
+                    {
+                        Message = ErrorMessages.NotEnoughFunds,
+                        Code = ErrorCodeType.NotEnoughFunds
+                    }
+                };
+            }
+
+            var limitOrderId = await SaveOrderInDbAsync(tradeRequest, isBuy);
+
+            return new ResponseModel<LimitOrderResponseModel>
+            {
+                Result = new LimitOrderResponseModel {Id = limitOrderId}
+            };
+        }
+
+        private async Task<Guid> SaveOrderInDbAsync(ITradeRequest tradeRequest, bool isBuy)
+        {
+            var orderId = Guid.NewGuid();
+            var orderIdString = string.Format("{0}_{1}", FakeLimitOrderPrefixStatic, orderId);
+
+            var fakeLimitOrder = new AlgoInstanceTrade
+            {
+                OrderId = orderIdString,
+                Amount = tradeRequest.Volume,
+                AssetPairId = _assetPairId,
+                AssetId = _straight ? _tradedAssetId : _oppositeAssetId,
+                DateOfTrade = DateTime.UtcNow,
+                Price = tradeRequest.Price,
+                InstanceId = _instanceId,
+                IsBuy = isBuy,
+                OrderType = Models.Enumerators.OrderType.Limit,
+                OrderStatus = Models.Enumerators.OrderStatus.Placed,
+                WalletId = FakeWalletStatic
+            };
+
+            await _algoInstanceTradeRepository.CreateOrUpdateAlgoInstanceOrderAsync(fakeLimitOrder);
+
+            return orderId;
+        }
+
+        private AlgoInstanceTrade CreateAlgoInstanceTrade(string tradeAsset, double amount, bool isBuy)
         {
             return new AlgoInstanceTrade()
             {
@@ -137,14 +201,32 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Services.Services
                 AssetId = tradeAsset,
                 Amount = amount,
                 Price = _currentDataProvider.CurrentPrice,
-                DateOfTrade =_currentDataProvider.CurrentTimestamp,
+                DateOfTrade = _currentDataProvider.CurrentTimestamp,
                 IsBuy = isBuy
             };
         }
 
+        private bool HasEnoughFunds(ITradeRequest tradeRequest, bool isBuy)
+        {
+            if (_straight)
+            {
+                if (isBuy)
+                    return _summary.LastAssetTwoBalance < tradeRequest.Volume * tradeRequest.Price ? false : true;
+                else
+                    return _summary.LastTradedAssetBalance < tradeRequest.Volume ? false : true;
+            }
+            else
+            {
+                if (isBuy)
+                    return _summary.LastTradedAssetBalance < tradeRequest.Volume * tradeRequest.Price ? false : true;
+                else
+                    return _summary.LastAssetTwoBalance < tradeRequest.Volume ? false : true;
+            }
+        }
+
         private double CalculateOppositeOfTradedAssetTradeValue(double volume, double closePrice)
         {
-            double tradedOppositeValue = 0;
+            double tradedOppositeValue;
             if (_straight)
                 tradedOppositeValue = volume * closePrice;
             else

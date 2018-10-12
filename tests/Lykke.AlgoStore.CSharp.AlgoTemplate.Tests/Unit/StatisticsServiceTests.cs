@@ -47,16 +47,6 @@ namespace Lykke.AlgoStore.CSharp.AlgoTemplate.Tests.Unit
         }
 
         [Test]
-        public void Create_Throws_Exception()
-        {
-            var repo = Given_Error_StatisticsRepositoryMock();
-            var service = Given_StatisticsService(repo);
-            When_Invoke_Create(service, out var exception);
-
-            Then_Exception_ShouldNotBe_Null(exception);
-        }
-
-        [Test]
         public void GetSummary_Returns_Data()
         {
             var repo = Given_Correct_StatisticsRepositoryMock();
